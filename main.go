@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/ykhedar/scone/vaultinitcas"
-	"github.com/ykhedar/scone/vaultinterface"
+	"github.com/shifty21/scone/vaultinitcas"
+	"github.com/shifty21/scone/vaultinterface"
 )
 
 func main() {

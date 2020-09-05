@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/ykhedar/scone/vaultinterface"
+	"github.com/shifty21/scone/vaultinterface"
 )
 
 //EncryptKeyFun stores keys as required by cas unseal process
