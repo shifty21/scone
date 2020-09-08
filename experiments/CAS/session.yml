@@ -1,0 +1,57 @@
+version: "0.2"
+name: ykhedar
+
+services:
+   - name: application
+     image_name: sconecuratedimages/services:cas
+     mrenclaves: [4cd0fe54d3d8d787553b7dac7347012682c402220acd062e4d0da3bbe10a1c2c]
+     command: cas
+     pwd: /
+     environment:
+        SCONE_MODE: sim
+images:
+   - name: sconecuratedimages/services:cas
+     injection_files:
+      - path: /home/my_private_key
+        content: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+               b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
+               NhAAAAAwEAAQAAAYEAutpYMeQc/igDUkSdcL+46Ok0Pd/yvPQrcqj0v1vzQrr1hkuZP9cO
+               LDOgHJ/Wr7PBVo1fUdFAIvFVMLSIKajSY1u+emr9OxRqUoNzQBolG7fYrp0sE4JWBKUSyL
+               fy/JI+GATOZccNcSAF5aY5LCbGT5KMLLA+cGGLzBDGFzenSGNCOSQNas9/BWWm36ORGJjA
+               YFdivPoJ0kC7PZeuz6+mKCUOOmC22RGUGIP1sJZMh95TVLjToJVdRzI/BFtMijAnkVNpES
+               cF3P0m1EKDB5EJmnEsb2ICrE79uML3Sl3eNqY0doNi9uIQzZ9+quPFBVBt8C0t8vz18Hvl
+               28+GLOjvfPpmg36a7whGDHRUKIxcvnclhCccp85eL1hXfdKEh+6HU60axLSH0rPQ4fLO8/
+               OEKNpREaXQoffkdW9AkDNGaBU5iY0YcgqX0E8dqQ4Ydn3bsxXGwW1Xt62TZKg473U5w4t8
+               ghsUpAOPKvHBEPWP3NSifCSAECNUCXFbk5pni32bAAAFoK96goOveoKDAAAAB3NzaC1yc2
+               EAAAGBALraWDHkHP4oA1JEnXC/uOjpND3f8rz0K3Ko9L9b80K69YZLmT/XDiwzoByf1q+z
+               wVaNX1HRQCLxVTC0iCmo0mNbvnpq/TsUalKDc0AaJRu32K6dLBOCVgSlEsi38vySPhgEzm
+               XHDXEgBeWmOSwmxk+SjCywPnBhi8wQxhc3p0hjQjkkDWrPfwVlpt+jkRiYwGBXYrz6CdJA
+               uz2Xrs+vpiglDjpgttkRlBiD9bCWTIfeU1S406CVXUcyPwRbTIowJ5FTaREnBdz9JtRCgw
+               eRCZpxLG9iAqxO/bjC90pd3jamNHaDYvbiEM2ffqrjxQVQbfAtLfL89fB75dvPhizo73z6
+               ZoN+mu8IRgx0VCiMXL53JYQnHKfOXi9YV33ShIfuh1OtGsS0h9Kz0OHyzvPzhCjaURGl0K
+               H35HVvQJAzRmgVOYmNGHIKl9BPHakOGHZ927MVxsFtV7etk2SoOO91OcOLfIIbFKQDjyrx
+               wRD1j9zUonwkgBAjVAlxW5OaZ4t9mwAAAAMBAAEAAAGAbFBBq7oV7GZ5dmj78u3QXINCm1
+               OEPHA192NlbL/6hYYm6VBNZ6pcNtc+SxmEs5k5y9hrltv7l8XZokAkZjHMs3ftNL1sSaEN
+               +QLl/hSpyiWKX74QXMbC4jJmbx/ipPKJOBchJfJ7IkZz5Km0npljf6DtzMHlj/ObvBFFIx
+               RJzjZrnv/9HxtlAFXqo90HMQDrE23UeMNgihan845H8XBamw7P7ps9oxsDhCqKc3DMsD36
+               hDQXyRCMX8cKrJXYCorahusXr3UhzOTNugyoo1/6FmQbdjv9hV0yGl08xWjuvw+xBDE+My
+               yoDxg+YP24pBP4aOEDji4lln0CRrayuf/mfzj5wXKShw6oozpTQyBR988ErpUNOLuC0eWa
+               FKzTKV68VOBWW+dhsjeWwmmgWzO1btS9MXI3v+DT1hckkt+BqPXqlP78VmjUR/S3CXtsbO
+               bdiy7WHmdVddP3RmiotinwCAE1PivPOJJoy6PXoOpfx/UyAv2TvIKn/VaWxElAT0/RAAAA
+               wDvQE7owqrAL9smAK3OSpBLWYVI4nxHENFNfZ3JLSPCwq0OuWANpmZZCzbIyBWkmfCZE/G
+               Z3T5tQAbKDDgnLc60UGgnV2zeMFmFvPs1VH1G4DPIWpXWX22glPcboO15C/Bfr1XlhaLZO
+               f32FvFZXPB5uMXsQoROmeOOyn4XZGi9M9PO7oAtF5FymtOX8L408/qAedWvIyEbNx0xp9T
+               zKAV2vGEKBWrHjf2TBoTPxZkxOY+5kOSOuUMpg08W8bH6p+AAAAMEA6A39TmnuCFzK6e1T
+               HCkK62uoVjWPQmycLIU7/0eqc7oDBLIbR77t8VNO3Hm3btCC4WrRY+Qp1zjJxlngYnPR2u
+               mHPD8Gdh1Cu/X2WBpwU7Z6BeiLfWiX/YXXIuOMo+lcaRwazrwyh0OR9MLhj4yKthJ5uy7v
+               hnWP80v2jM+dJKQgD2HJdzrvozotVzWAjCXDUAumXM07+GBFDXttGqTrwVTFjCVLnbLfbx
+               ns99LEBDrW20JzGU2kbZ93DrofwK4FAAAAwQDOIkuSx/lmGHbFDVlSRhb7C5hhF4JFFi15
+               igg0GLishUDnXTmVicivocwzhRBdlMqIB/7X/0lTKAPryAmnBYjPVughR+HSFr+lYVVM4h
+               LaaxYPb7hHKqAqdfr4HMBnVFyi6ryE5dhZmCimDUI5zN8Yw9oLoRhuS7xbkqkU3mUNUfF4
+               fMhp5WePm2vdOXfnoGJWC4GD3oyf7kwugEsonFlDNMCIpxUS+QjpikIs033WcBVmzIXJd7
+               uae1PjlJoNrx8AAAApYWJoaXNoZWtjaG91ZGhhcnlAQWJoaXNoZWtzLUFpci5mcml0ei5i
+               b3gBAg==
+               -----END OPENSSH PRIVATE KEY-----
+         
+

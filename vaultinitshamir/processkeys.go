@@ -1,29 +1,34 @@
 package vaultinitshamir
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-
+	"github.com/shifty21/scone/logger"
 	"github.com/shifty21/scone/vaultinterface"
 )
 
 //EncryptKeyFun stores keys as required by cas unseal process
-var EncryptKeyFun = func(initResponse *vaultinterface.InitResponse) error {
+func (v *VaultInitShamir) EncryptKeyFun(initResponse *vaultinterface.InitResponse) (*vaultinterface.InitResponse, error) {
 	//use a public key to encrypt the response
-	initResponseJSON, _ := json.Marshal(initResponse)
-	err := ioutil.WriteFile("initResponse.json", initResponseJSON, 0644)
+	encryptedInitResponse, err := v.EncryptInitResponse(initResponse)
 	if err != nil {
-		fmt.Printf("Error while saving file to json")
-		return err
+		logger.Error.Printf("EncryptKeyFun|Error while encrypting initresponse %v", err)
+		return nil, err
+
 	}
-	fmt.Printf("%+v\n", initResponseJSON)
-	return nil
+	if err != nil {
+		logger.Error.Printf("EncryptKeyFun|Error while saving file to json")
+		return nil, err
+	}
+	return encryptedInitResponse, nil
 }
 
 //ProcessKeyFun stores keys as required by cas unseal process
-var ProcessKeyFun = func() (*vaultinterface.InitResponse, error) {
+func (v *VaultInitShamir) ProcessKeyFun(encryptedInitResponseJSON *vaultinterface.InitResponse) (*vaultinterface.InitResponse, error) {
 	//CAS session can contain private keys, we can use public key to encrypt and upon
 	//verification we can use the provided privated key by CAS to decrypt the unseal keys
-	return nil, nil
+	decryptedInitResponse, err := v.DecryptInitResponse(encryptedInitResponseJSON)
+	if err != nil {
+		logger.Error.Printf("ProcessKeyFun|Error while decrypting initResponse\n")
+		return nil, err
+	}
+	return decryptedInitResponse, nil
 }

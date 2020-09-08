@@ -2,41 +2,31 @@ package vaultinterface
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime"
 	"strconv"
 	"syscall"
 	"time"
 
-	"cloud.google.com/go/storage"
-	"google.golang.org/api/cloudkms/v1"
+	"github.com/shifty21/scone/logger"
 )
 
 var (
 	vaultAddr             string
 	checkIntervalDuration time.Duration
-	gcsBucketName         string
 	httpClient            http.Client
 
-	kmsService *cloudkms.Service
-	kmsKeyID   string
-
-	storageClient *storage.Client
-	signalCh      chan os.Signal
-	stop          func()
+	signalCh chan os.Signal
+	stop     func()
 	//InitResp from vault
 	InitResp InitResponse
-
-	userAgent = fmt.Sprintf("vault-init/0.1.0 (%s)", runtime.Version())
 )
 
 //GetConfig reads config from env variables or set them to default values
 func GetConfig() {
-	log.Println("Starting the vault-init service...")
+	logger.Info.Println("GetConfig|Starting the vault-init service...")
 	if s := os.Getenv("VAULT_ADDR"); s != "" {
 		vaultAddr = s
 	} else {
@@ -72,9 +62,7 @@ func GetConfig() {
 	)
 
 	stop = func() {
-		log.Printf("Shutting down")
-		// kmsCtxCancel()
-		// storageCtxCancel()
+		logger.Error.Println("Shutting down")
 		os.Exit(0)
 	}
 }
