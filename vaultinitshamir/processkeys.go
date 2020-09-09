@@ -6,9 +6,9 @@ import (
 )
 
 //EncryptKeyFun stores keys as required by cas unseal process
-func (c *Crypto) EncryptKeyFun(initResponse *vaultinterface.InitResponse) error {
+var EncryptKeyFun = func(initResponse *vaultinterface.InitResponse) error {
 	//use a public key to encrypt the response
-	encryptedInitResponse, err := c.EncryptInitResponse(initResponse)
+	encryptedInitResponse, err := CryptoVar.EncryptInitResponse(initResponse)
 	if err != nil {
 		logger.Error.Printf("EncryptKeyFun|Error while encrypting initresponse %v", err)
 		return err
@@ -18,11 +18,11 @@ func (c *Crypto) EncryptKeyFun(initResponse *vaultinterface.InitResponse) error 
 }
 
 //ProcessKeyFun stores keys as required by cas unseal process
-func (c *Crypto) ProcessKeyFun() (*vaultinterface.InitResponse, error) {
+var ProcessKeyFun = func() (*vaultinterface.InitResponse, error) {
 	//CAS session can contain private keys, we can use public key to encrypt and upon
 	//verification we can use the provided privated key by CAS to decrypt the unseal keys
 	encryptedInitResponseJSON := vaultinterface.GetInitResponse()
-	decryptedInitResponse, err := c.DecryptInitResponse(encryptedInitResponseJSON)
+	decryptedInitResponse, err := CryptoVar.DecryptInitResponse(encryptedInitResponseJSON)
 	if err != nil {
 		logger.Error.Printf("ProcessKeyFun|Error while decrypting initResponse\n")
 		return nil, err

@@ -24,21 +24,22 @@ type Crypto struct {
 }
 
 //InitShamirInterface initializes variables need to shamir key based vault initialization
-func InitShamirInterface(config *Config) (*Crypto, error) {
+func InitShamirInterface(config *Config) error {
 	c := &Crypto{}
 	c.HashFun = sha512.New()
 	c.RandomIOReader = rand.Reader
 	err := c.GetRSAPublicKey(*config.PublicKeyPath)
 	if err != nil {
 		logger.Error.Printf("InitShamirInterface|Error while loading Public key\n")
-		return nil, err
+		return err
 	}
 	err = c.GetRSAPrivateKey(*config.PrivateKeyPath)
 	if err != nil {
 		logger.Error.Printf("InitShamirInterface|Error while loading Private key %v\n", err)
-		return nil, err
+		return err
 	}
-	return c, nil
+	CryptoVar = c
+	return nil
 }
 
 //GetRSAPublicKey loads PUBLIC KEY based pem block

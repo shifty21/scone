@@ -13,6 +13,8 @@ var (
 	ErrConfigStringEmpty = errors.New("VaultInitShamir: required fields cannot be empty, please check if crypto_public_key, and crypto_private_key are provided")
 	//ErrConfigInvalidFormat invalid format
 	ErrConfigInvalidFormat = errors.New("VaultInitShamir: invalid format")
+
+	CryptoVar *Crypto
 )
 
 // Config for vaultinitshamir module
