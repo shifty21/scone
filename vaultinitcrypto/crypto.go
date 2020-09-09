@@ -1,15 +1,15 @@
-package vaultinitshamir
+package vaultinitcrypto
 
 import (
 	"crypto/rsa"
 
 	"github.com/shifty21/scone/logger"
-	"github.com/shifty21/scone/vaultinterface"
+	"github.com/shifty21/scone/utils"
 )
 
 // EncryptInitResponse encryptes all fields one by one and sends back encrypted response
-func (c *Crypto) EncryptInitResponse(initResponse *vaultinterface.InitResponse) (*vaultinterface.InitResponse, error) {
-	encryptedInitResponseJSON := &vaultinterface.InitResponse{
+func (c *VaultInitCrypto) EncryptInitResponse(initResponse *utils.InitResponse) (*utils.InitResponse, error) {
+	encryptedInitResponseJSON := &utils.InitResponse{
 		Keys:       make([]string, len(initResponse.Keys)),
 		KeysBase64: make([]string, len(initResponse.KeysBase64)),
 	}
@@ -43,7 +43,7 @@ func (c *Crypto) EncryptInitResponse(initResponse *vaultinterface.InitResponse) 
 }
 
 //EncryptText encrypts given plaintext
-func (c *Crypto) EncryptText(plainText string) (*string, error) {
+func (c *VaultInitCrypto) EncryptText(plainText string) (*string, error) {
 	encryptedBytes, err := rsa.EncryptOAEP(c.HashFun, c.RandomIOReader, c.PublicKey, []byte(plainText), nil)
 	if err != nil {
 		logger.Error.Printf("encryptText|Error while encrypting initResponse\n")
@@ -54,8 +54,8 @@ func (c *Crypto) EncryptText(plainText string) (*string, error) {
 }
 
 //DecryptInitResponse decrypts all the fields of json
-func (c *Crypto) DecryptInitResponse(encryptedResponse *vaultinterface.InitResponse) (*vaultinterface.InitResponse, error) {
-	decryptedInitResponseJSON := &vaultinterface.InitResponse{
+func (c *VaultInitCrypto) DecryptInitResponse(encryptedResponse *utils.InitResponse) (*utils.InitResponse, error) {
+	decryptedInitResponseJSON := &utils.InitResponse{
 		Keys:       make([]string, len(encryptedResponse.Keys)),
 		KeysBase64: make([]string, len(encryptedResponse.KeysBase64)),
 	}
@@ -89,7 +89,7 @@ func (c *Crypto) DecryptInitResponse(encryptedResponse *vaultinterface.InitRespo
 }
 
 //DecryptText decryptes given ciphertext
-func (c *Crypto) DecryptText(cipherText string) (*string, error) {
+func (c *VaultInitCrypto) DecryptText(cipherText string) (*string, error) {
 	decryptedBytes, err := rsa.DecryptOAEP(c.HashFun, c.RandomIOReader, c.PrivateKey, []byte(cipherText), nil)
 	if err != nil {
 		logger.Error.Printf("decryptText|Error while decrypting init response\n")

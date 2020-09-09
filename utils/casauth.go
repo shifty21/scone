@@ -1,4 +1,4 @@
-package vaultinitcas
+package utils
 
 import (
 	"crypto/tls"
@@ -6,12 +6,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/logger"
 )
 
 // AuthVaultByCAS authenticates application with CAS.
-func AuthVaultByCAS(casConfig *VaultCASConfig) bool {
-	cer, err := tls.LoadX509KeyPair(*casConfig.Certificate, *casConfig.Key)
+func AuthVaultByCAS(config *config.VaultCAS) bool {
+	cer, err := tls.LoadX509KeyPair(config.GetCertificate(), config.GetKey())
 	if err != nil {
 		logger.Error.Printf("Error while loading keypair %s", err)
 		return false
@@ -22,7 +23,7 @@ func AuthVaultByCAS(casConfig *VaultCASConfig) bool {
 			TLSClientConfig: tlsConfig,
 		},
 	}
-	var url = *casConfig.GetSessionAPI + *casConfig.SessionName
+	var url = config.GetSessionAPI() + config.GetSessionName()
 	resp, err := client.Get(url)
 	if err != nil {
 		logger.Error.Printf("Error getting session information from CAS server, CAS get call [%s] %s \n", url, err)

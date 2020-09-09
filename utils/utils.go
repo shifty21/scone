@@ -1,4 +1,4 @@
-package vaultinterface
+package utils
 
 import "fmt"
 
@@ -37,4 +37,16 @@ type UnsealResponse struct {
 	T        int  `json:"t"`
 	N        int  `json:"n"`
 	Progress int  `json:"progress"`
+}
+
+// InitRequest holds a Vault init request.
+type InitRequest struct {
+	SecretShares    int `json:"secret_shares"`
+	SecretThreshold int `json:"secret_threshold"`
+}
+
+// UnsealRequest holds a Vault unseal request.
+type UnsealRequest struct {
+	Key   string `json:"key"`
+	Reset bool   `json:"reset"`
 }
