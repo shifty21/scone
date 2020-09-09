@@ -10,9 +10,9 @@ import (
 var (
 	// ErrVaultCASStringEmpty is the error returned when CAS is specified as an empty
 	// string.
-	ErrVaultCASStringEmpty = errors.New("CAS: required fields cannot be empty, please check if get_session_api, cert, key and session_name are provided")
+	ErrVaultCASStringEmpty = errors.New("VaultInitCAS: required fields cannot be empty, please check if get_session_api, cert, key and session_name are provided")
 	//ErrVaultCASInvalidFormat invalid format
-	ErrVaultCASInvalidFormat = errors.New("CAS: invalid format")
+	ErrVaultCASInvalidFormat = errors.New("VaultInitCAS: invalid format")
 	//VCASConfig variable
 	VCASConfig VaultCASConfig
 )
@@ -28,20 +28,6 @@ type VaultCASConfig struct {
 // DefaultVaultCASConfig is the default configuration.
 func DefaultVaultCASConfig() *VaultCASConfig {
 	return &VaultCASConfig{}
-}
-
-// Copy returns a deep copy of this configuration.
-func (c *VaultCASConfig) Copy() *VaultCASConfig {
-	if c == nil {
-		return nil
-	}
-
-	var o VaultCASConfig
-	o.GetSessionAPI = c.GetSessionAPI
-	o.Certificate = c.Certificate
-	o.Key = c.Key
-	o.SessionName = c.SessionName
-	return &o
 }
 
 // Finalize ensures there no nil pointers.

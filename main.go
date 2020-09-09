@@ -13,11 +13,16 @@ import (
 func main() {
 	logger.InitLogger()
 
-	// vaultinterface.GetConfig()
-	// vaultinitcas.CASCONFIG.Finalize()
+	// vaultinterface.Initialize()
 	// vaultinterface.Run(vaultinitcas.EncryptKeyFun, vaultinitcas.ProcessKeyFun)
 
-	v, err := vaultinitshamir.InitShamirInterface()
+	publicKeyPath := "experiments/keypairs/mykey.pub"
+	privateKeyPath := "experiments/keypairs/mykey.pem"
+	config := &vaultinitshamir.Config{}
+
+	config.PublicKeyPath = &publicKeyPath
+	config.PrivateKeyPath = &privateKeyPath
+	v, err := vaultinitshamir.InitShamirInterface(config)
 	if err != nil {
 		logger.Info.Printf("Error while initializing shamirInterface")
 		os.Exit(-1)
@@ -28,35 +33,13 @@ func main() {
 	if err != nil {
 		logger.Info.Printf("main|Error while saving file to json %v\n", err)
 	}
-	// logger.Info.Printf("RootToken %v \n", initResponseJSON.RootToken)
-	// encryptedToken, err := v.EncryptText(initResponseJSON.Keys[1])
-	// if err != nil {
-	// 	logger.Info.Printf("main|Error while encrypting %v\n", err)
-	// }
-	// logger.Info.Printf("EncryptedToken %v\n", *encryptedToken)
-
-	// decryptedToken, err := v.DecryptText(*encryptedToken)
-	// if err != nil {
-	// 	logger.Info.Printf("main|Error while decrypting %v\n", err)
-	// }
-	// logger.Info.Printf("RootToken %v\n", *decryptedToken)
-	// logger.Info.Printf("InitResponse %v\n", initResponseJSON)
-	// encryptedResponse, err := v.EncryptInitResponse(&initResponseJSON)
-	// if err != nil {
-	// 	logger.Info.Printf("main|Error while encrypting %v\n", err)
-	// }
-	// // logger.Info.Printf("PrivateKey %v", v.PrivateKey)
-	// decryptedResponse, err := v.DecryptInitResponse(encryptedResponse)
-	// if err != nil {
-	// 	logger.Info.Printf("main|Error while decrypting %v\n", err)
-	// }
-	// logger.Info.Printf("InitResponse %v\n", decryptedResponse)
 	logger.Info.Printf("Unencrypted Response %v", initResponseJSON.GoString())
-	encryptedResponse, err := v.EncryptKeyFun(&initResponseJSON)
+	err = v.EncryptKeyFun(&initResponseJSON)
 	if err != nil {
 		logger.Info.Printf("main|Error while encrypting %v\n", err)
 	}
-	decryptedRespose, err := v.ProcessKeyFun(encryptedResponse)
+	// logger.Info.Printf("Encrypted Response %v", vaultinterface.GetInitResponse())
+	decryptedRespose, err := v.ProcessKeyFun()
 	if err != nil {
 		logger.Info.Printf("main|Error while decrypting %v\n", err)
 	}

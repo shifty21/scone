@@ -21,11 +21,21 @@ var (
 	signalCh chan os.Signal
 	stop     func()
 	//InitResp from vault
-	InitResp InitResponse
+	initResp *InitResponse
 )
 
-//GetConfig reads config from env variables or set them to default values
-func GetConfig() {
+//SetInitResponse sets initResponse
+func SetInitResponse(initResponse *InitResponse) {
+	initResp = initResponse
+}
+
+//GetInitResponse gets initResponse
+func GetInitResponse() (initResponse *InitResponse) {
+	return initResp
+}
+
+//Initialize reads config from env variables or set them to default values
+func Initialize() {
 	logger.Info.Println("GetConfig|Starting the vault-init service...")
 	if s := os.Getenv("VAULT_ADDR"); s != "" {
 		vaultAddr = s

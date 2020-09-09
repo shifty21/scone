@@ -6,26 +6,23 @@ import (
 )
 
 //EncryptKeyFun stores keys as required by cas unseal process
-func (v *VaultInitShamir) EncryptKeyFun(initResponse *vaultinterface.InitResponse) (*vaultinterface.InitResponse, error) {
+func (c *Crypto) EncryptKeyFun(initResponse *vaultinterface.InitResponse) error {
 	//use a public key to encrypt the response
-	encryptedInitResponse, err := v.EncryptInitResponse(initResponse)
+	encryptedInitResponse, err := c.EncryptInitResponse(initResponse)
 	if err != nil {
 		logger.Error.Printf("EncryptKeyFun|Error while encrypting initresponse %v", err)
-		return nil, err
-
+		return err
 	}
-	if err != nil {
-		logger.Error.Printf("EncryptKeyFun|Error while saving file to json")
-		return nil, err
-	}
-	return encryptedInitResponse, nil
+	vaultinterface.SetInitResponse(encryptedInitResponse)
+	return nil
 }
 
 //ProcessKeyFun stores keys as required by cas unseal process
-func (v *VaultInitShamir) ProcessKeyFun(encryptedInitResponseJSON *vaultinterface.InitResponse) (*vaultinterface.InitResponse, error) {
+func (c *Crypto) ProcessKeyFun() (*vaultinterface.InitResponse, error) {
 	//CAS session can contain private keys, we can use public key to encrypt and upon
 	//verification we can use the provided privated key by CAS to decrypt the unseal keys
-	decryptedInitResponse, err := v.DecryptInitResponse(encryptedInitResponseJSON)
+	encryptedInitResponseJSON := vaultinterface.GetInitResponse()
+	decryptedInitResponse, err := c.DecryptInitResponse(encryptedInitResponseJSON)
 	if err != nil {
 		logger.Error.Printf("ProcessKeyFun|Error while decrypting initResponse\n")
 		return nil, err

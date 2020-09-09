@@ -29,7 +29,7 @@ func AuthVaultByCAS(casConfig *VaultCASConfig) bool {
 		return false
 	}
 	if resp.StatusCode != 200 {
-		logger.Error.Printf("[ERR] Unable to verify session, CAS get call [%s] body [%s] error := %s \n", url, resp.Body, err)
+		logger.Error.Printf("Unable to verify session, CAS get call [%s] body [%s] error := %s \n", url, resp.Body, err)
 		return false
 	}
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
@@ -37,6 +37,6 @@ func AuthVaultByCAS(casConfig *VaultCASConfig) bool {
 		log.Fatal(err)
 	}
 	bodyString := string(bodyBytes)
-	logger.Info.Printf("[INFO] Value of response %v ", bodyString)
+	logger.Info.Printf("Value of response %v ", bodyString)
 	return true
 }

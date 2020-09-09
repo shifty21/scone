@@ -6,13 +6,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/shifty21/scone/logger"
 )
 
-//Initialize vault, encrypt and store encrypted keys
-func Initialize(encryptKey EncryptKeyFun) bool {
+//ProcessInitVault vault, encrypt and store encrypted keys
+func ProcessInitVault(encryptKey EncryptKeyFun) bool {
 
 	initRequest := InitRequest{
 		SecretShares:    5,
@@ -49,19 +50,18 @@ func Initialize(encryptKey EncryptKeyFun) bool {
 		return false
 	}
 
-	var initResponse InitResponse
+	var initResponse *InitResponse
 	if err := json.Unmarshal(initRequestResponseBody, &initResponse); err != nil {
 		log.Printf("Error while unmarshalling reponse %v\n", err)
 		return false
 	}
-	InitResp = initResponse
 
 	logger.Info.Println("Encrypting unseal keys and the root token...")
 
 	//encrypt root token
 
 	logger.Info.Println("Initialization complete")
-	err = encryptKey(&initResponse)
+	err = encryptKey(initResponse)
 	if err != nil {
 		logger.Info.Printf("Initialize|Error while saving InitResponse %v", err)
 		return false
@@ -77,7 +77,11 @@ type ProcessKeyFun func() (*InitResponse, error)
 
 //Run vault init process
 func Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
-
+	// auth := vaultinitcas.AuthVaultByCAS(&vaultinitcas.VCASConfig)
+	// if auth == false {
+	// 	logger.Error.Println("Unable to authenticate Vault, check previous logs for details.")
+	// 	stop()
+	// }
 	for {
 		select {
 		case <-signalCh:
@@ -99,12 +103,13 @@ func Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
 
 		switch response.StatusCode {
 		case 200:
-			logger.Info.Println("Run|Vault is initialized and unsealed.")
+			logger.Info.Println("Run|Vault is initialized and unsealed. Exiting Program")
+			os.Exit(0)
 		case 429:
 			logger.Info.Println("Run|Vault is unsealed and in standby mode.")
 		case 501:
 			logger.Info.Println("Run|Vault is not initialized. Initializing and unsealing...")
-			status := Initialize(encryptKeyFun)
+			status := ProcessInitVault(encryptKeyFun)
 			if status == false {
 				logger.Error.Println("Run|Unable to complete initialization process of vault, continuing..")
 				continue

@@ -38,7 +38,7 @@ func CheckInitStatus() bool {
 		logger.Error.Printf("CheckInitStatus|Unable to unmarshal status %v\n", err)
 		return false
 	}
-
+	logger.Info.Printf("CheckInitStatus|Vault initialized %v\n", initStatus.Initialized)
 	return initStatus.Initialized
 }
 
@@ -73,14 +73,14 @@ func UnsealPerKey(key string) (bool, error) {
 
 	unsealRequestData, err := json.Marshal(&unsealRequest)
 	if err != nil {
-		logger.Error.Println("UnsealPerKey|Error while marshalling unsealrequest")
+		logger.Error.Println("UnsealPerKey|Error while marshalling UnsealRequest")
 		return false, err
 	}
 
 	r := bytes.NewReader(unsealRequestData)
 	request, err := http.NewRequest(http.MethodPut, vaultAddr+"/v1/sys/unseal", r)
 	if err != nil {
-		logger.Error.Println("UnsealPerKey|Error while creating unsealrequest")
+		logger.Error.Println("UnsealPerKey|Error while creating UnsealRequest")
 		return false, err
 	}
 
@@ -92,7 +92,7 @@ func UnsealPerKey(key string) (bool, error) {
 
 	if response.StatusCode != 200 {
 		logger.Error.Println("UnsealPerKey|Unknown status code")
-		return false, fmt.Errorf("UnsealPerKey|status code: %d", response.StatusCode)
+		return false, fmt.Errorf("UnsealPerKey|Non 200 status: %d", response.StatusCode)
 	}
 
 	unsealRequestResponseBody, err := ioutil.ReadAll(response.Body)
