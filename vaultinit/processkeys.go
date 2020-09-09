@@ -1,24 +1,20 @@
 package vaultinit
 
 import (
-	"errors"
-
 	"github.com/shifty21/scone/utils"
-	"github.com/shifty21/scone/vaultinterface"
 )
 
+//InitResponse response
+var InitResponse *utils.InitResponse
+
 //EncryptKeyFun stores keys as required by cas unseal process
-var EncryptKeyFun = func(initResponse *utils.InitResponse, vault *vaultinterface.Vault) error {
-	vault.InitResp = initResponse
+var EncryptKeyFun = func(initResponse *utils.InitResponse) error {
+	InitResponse = initResponse
 	return nil
 }
 
 //ProcessKeyFun stores keys as required by cas unseal process
-var ProcessKeyFun = func(vault *vaultinterface.Vault) (*utils.InitResponse, error) {
-	auth := utils.AuthVaultByCAS(vault.CASConfig)
-	if auth == false {
-		return nil, errors.New("Error while authenticating with CAS")
-	}
-	initResponseJSON := vault.InitResp
+var ProcessKeyFun = func() (*utils.InitResponse, error) {
+	initResponseJSON := InitResponse
 	return initResponseJSON, nil
 }
