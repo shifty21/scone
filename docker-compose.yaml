@@ -29,17 +29,10 @@ services:
           - SCONE_CAS_ADDR=cas
           - SCONE_LAS_ADDR=las
     consul:
-        command: consul agent -dev
-        image: consul
-        ports:
-          - target: 8500
-            published: 8500
-            protocol: tcp
-            mode: host
-          - target: 80
-            published: 80
-            protocol: tcp
-            mode: host
+        command: consul agent -dev -ui -client 0.0.0.0
+        build: experiments/CAS/consul
+        expose:
+          - "8500"
     las:
         image: sconecuratedimages/services:las
         environment:

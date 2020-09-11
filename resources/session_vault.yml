@@ -9,3 +9,4 @@ services:
      pwd: /
      environment:
         SCONE_MODE: hw
+        VAULT_CONFIG_PATH: /resources/config.hcl
