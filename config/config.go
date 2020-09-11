@@ -68,8 +68,8 @@ func panicIfErrorForKey(err error, key string) {
 func ConfigureAllInterfaces() *Configuration {
 	viper.SetConfigName("application.yaml")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("/")
-	viper.AddConfigPath("resources/application.yaml")
+	viper.AddConfigPath("resources/")
+	viper.AddConfigPath("/resources/")
 	viper.ReadInConfig()
 	Config = Configuration{}
 	Config["vault_config"] = LoadVaultConfig()
@@ -90,5 +90,5 @@ func (c *Configuration) GetCASConfig() *VaultCAS {
 
 //GetCryptoConfig returns cas related config
 func (c *Configuration) GetCryptoConfig() *Crypto {
-	return Config["cas_config"].(*Crypto)
+	return Config["crypto_config"].(*Crypto)
 }
