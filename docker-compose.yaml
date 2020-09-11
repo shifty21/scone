@@ -36,6 +36,10 @@ services:
             published: 8500
             protocol: tcp
             mode: host
+          - target: 80
+            published: 80
+            protocol: tcp
+            mode: host
     las:
         image: sconecuratedimages/services:las
         environment:

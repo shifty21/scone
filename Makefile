@@ -1,5 +1,5 @@
 GOCMD=go
-GOBUILD=${GOCMD} build -compiler gccgo -compiler gccgo -a -installsuffix cgo
+GOBUILD=${GOCMD} build -compiler gccgo -a -installsuffix cgo
 GOCLEAN=$(GOCMD) clean
 BINARY_NAME=vault_initializer
     
