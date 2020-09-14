@@ -144,9 +144,8 @@ func (v *Vault) Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
 		}
 
 		if err != nil {
-			logger.Error.Println(err)
-			time.Sleep(v.Config.CheckInterval())
-			continue
+			logger.Error.Printf("Error while checking health of vault %v", err)
+			os.Exit(-1)
 		}
 
 		switch response.StatusCode {

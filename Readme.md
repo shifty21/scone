@@ -9,7 +9,8 @@ For Demo all the files are under resources directory with a total of 4 session t
 3. consul-template session_consul_template.yml consul-template.crt consul-template-key.key
 4. demo_client session_client.yml client.crt client-key.key
 5. run.sh - registers all the session to local CAS instance
-6. config.hcl - configration file for consul-template containing the template and output file path
+6. resources/config.hcl - vault config file, it requires consul as backend for now. Will try default backend.
+6. resources/consul-template/config.hcl - configration file for consul-template containing the template and output file path
 
 ## Demo process
 
