@@ -35,3 +35,6 @@ RUN cd /root/go/src/github.com/hashicorp/vault && go mod tidy
 RUN go get github.com/mitchellh/gox
 RUN export PATH=$PATH:/root/go/bin
 
+ADD consul-template /home/
+ADD vault_binary /home
+
