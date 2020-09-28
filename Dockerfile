@@ -1,6 +1,6 @@
 FROM sconecuratedimages/www2019:vault-0.10.0-alpine
 
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
 RUN cat /etc/apk/repositories
 RUN apk update
@@ -8,7 +8,7 @@ RUN apk add make vim git curl git musl-utils busybox-extras openssh-client
 RUN apk add libc-dev gcc-go
 
 RUN chown root /usr/sbin/vault
-RUN mv /usr/local/bin/scone-gccgo /usr/local/bin/gccgo
+#RUN mv /usr/local/bin/scone-gccgo /usr/local/bin/gccgo
 
 #packages
 #vault_initializer

@@ -35,6 +35,7 @@ func InitShamirInterface(config *config.Crypto) (*VaultInitCrypto, error) {
 	c := &VaultInitCrypto{}
 	c.HashFun = sha512.New()
 	c.RandomIOReader = rand.Reader
+	logger.Error.Printf("Config initShamirInterface %v", config)
 	err := c.GetRSAPublicKey(config.PublicKeyPath())
 	if err != nil {
 		logger.Error.Printf("InitShamirInterface|Error while loading Public key\n")

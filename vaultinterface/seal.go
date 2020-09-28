@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/shifty21/scone/logger"
@@ -17,14 +16,14 @@ func (v *Vault) CheckInitStatus() bool {
 	logger.Info.Printf("CheckInitStatus|Checking InitStatus of vault")
 	response, err := v.HTTPClient.Get(v.Config.Address() + "/v1/sys/init")
 	if err != nil {
-		log.Println(err)
+		logger.Error.Printf("CheckInitStatus vault initi api response error %v", err)
 		return false
 	}
 	defer response.Body.Close()
 
 	initStatusResponseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Println(err)
+		logger.Error.Printf("CheckInitStatus vault initi api response read error %v", err)
 		return false
 	}
 

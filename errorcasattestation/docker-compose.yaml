@@ -19,9 +19,7 @@ services:
             mode: host
     vault:
         command: sh
-        build:
-          context: .
-          dockerfile : errorcasattestation/Dockerfile
+        build: .
         tty: true
         devices:
             - "/dev/isgx"
@@ -30,11 +28,6 @@ services:
           - SCONE_MODE=hw
           - SCONE_CAS_ADDR=cas
           - SCONE_LAS_ADDR=las
-    consul:
-        command: consul agent -dev -ui -client 0.0.0.0
-        build: experiments/CAS/consul
-        expose:
-          - "8500"
     las:
         image: sconecuratedimages/services:las
         environment:
