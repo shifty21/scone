@@ -25,7 +25,5 @@ docker-compose contains all the required services.
 7. Run consul_template to render the demo template (/resources/consul-template/find_address.tpl) -> SCONE_CONFIG_ID=consul_template/consul_template consul-template -auth -config config_back.hcl -once
 8. The template should be rendered on if demo_client session is verifed by CAS /resources/consul-template/hashicorp_address.txt
 
-try // +build !gccgo
-
 
 
