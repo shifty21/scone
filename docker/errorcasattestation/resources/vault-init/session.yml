@@ -1,11 +1,11 @@
 version: "0.2"
-name: vault_init_demo
+name: vault-init
 
 services:
-   - name: initializer
+   - name: dev
      image_name: sconecuratedimages/www2019:vault-0.10.0-alpine
      mrenclaves: [4cd0fe54d3d8d787553b7dac7347012682c402220acd062e4d0da3bbe10a1c2c]
-     command: ./vault_initializer
+     command: /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault_initializer
      pwd: /
      environment:
         SCONE_MODE: hw

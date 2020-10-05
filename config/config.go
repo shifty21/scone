@@ -68,8 +68,8 @@ func panicIfErrorForKey(err error, key string) {
 func ConfigureAllInterfaces() *Configuration {
 	viper.SetConfigName("application.yaml")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("resources/")
-	viper.AddConfigPath("/resources/")
+	viper.AddConfigPath("resources/vault-init/")
+	viper.AddConfigPath("/resources/vault-init/")
 	viper.ReadInConfig()
 	Config = Configuration{}
 	Config["vault_config"] = LoadVaultConfig()

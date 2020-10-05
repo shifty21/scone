@@ -19,7 +19,7 @@ services:
             mode: host
     vault:
         command: sh
-        image : vault_ubuntu
+        build : .
         tty: true
         devices:
             - "/dev/gsgx"

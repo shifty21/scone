@@ -30,7 +30,7 @@ services:
           - SCONE_LAS_ADDR=las
     consul:
         command: consul agent -dev -ui -client 0.0.0.0
-        build: experiments/CAS/consul
+        build: consul/
         expose:
           - "8500"
     las:

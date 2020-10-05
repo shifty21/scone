@@ -1,8 +1,8 @@
 version: "0.2"
-name: vault_demo
+name: vault
 
 services:
-   - name: vault
+   - name: dev
      image_name: sconecuratedimages/www2019:vault-0.10.0-alpine
      mrenclaves: [c2aa1803f2c6471ad66a10914012adf85c542589e37d8971eb4f11be389df3cc]
      command: vault server -dev

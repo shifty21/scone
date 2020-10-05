@@ -1,0 +1,11 @@
+version: "0.3"
+name: consul-template
+
+services:
+   - name: dev
+     image_name: vault-1.0
+     mrenclaves: [5128d0fbcb29dd5d85f120240d30bd9449ed36943ad3648d6db58a6c388f3241]
+     command: /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template
+     pwd: /
+     environment:
+        SCONE_MODE: hw

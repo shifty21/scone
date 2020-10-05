@@ -1,11 +1,12 @@
 version: "0.2"
-name: client
+name: vault
 
 services:
    - name: dev
      image_name: sconecuratedimages/www2019:vault-0.10.0-alpine
-     mrenclaves: [13548a00756f91bcb5a785a67cb21a62a737bb30001f057e620f00f72f23cc77]
+     mrenclaves: [c2aa1803f2c6471ad66a10914012adf85c542589e37d8971eb4f11be389df3cc]
      command: vault server -dev
      pwd: /
      environment:
         SCONE_MODE: hw
+        VAULT_CONFIG_PATH: /resources/config.hcl
