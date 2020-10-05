@@ -7,7 +7,7 @@ services:
          - SCONE_MODE=hw
         image: sconecuratedimages/services:cas
         devices:
-            - "/dev/gsgx"
+            - "/dev/isgx"
         ports:
           - target: 8081
             published: 8081
@@ -22,7 +22,7 @@ services:
         image : vault_ubuntu
         tty: true
         devices:
-            - "/dev/gsgx"
+            - "/dev/isgx"
         environment: 
           - SCONE_LOG=7
           - SCONE_MODE=hw
@@ -39,7 +39,7 @@ services:
           - SCONE_LOG=7
           - SCONE_MODE=hw
         devices:
-          - "/dev/gsgx"
+          - "/dev/isgx"
         ports:
           - target: 18766
             published: 18766
