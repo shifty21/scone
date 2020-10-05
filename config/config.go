@@ -75,6 +75,7 @@ func ConfigureAllInterfaces() *Configuration {
 	Config["vault_config"] = LoadVaultConfig()
 	Config["cas_config"] = LoadVaultCASConfig()
 	Config["crypto_config"] = LoadCryptoConfig()
+	Config["encryption_service"] = LoadCryptoConfig()
 	return &Config
 }
 
@@ -91,4 +92,9 @@ func (c *Configuration) GetCASConfig() *VaultCAS {
 //GetCryptoConfig returns cas related config
 func (c *Configuration) GetCryptoConfig() *Crypto {
 	return Config["crypto_config"].(*Crypto)
+}
+
+//GetEncryptionServiceConfig returns cas related config
+func (c *Configuration) GetEncryptionServiceConfig() *EncryptionService {
+	return Config["encryption_service"].(*EncryptionService)
 }
