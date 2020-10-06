@@ -16,4 +16,4 @@ RUN cd /root/go/src/github.com/hashicorp/vault && go mod tidy
 RUN cd /root/go/pkg/mod/github.com/modern-go/reflect2@v1.0.1 && printf '// +build !gccgo \n \n \n' | cat - type_map.go > /tmp/out && mv /tmp/out type_map.go
 RUN cd /root/go/src/github.com/hashicorp/vault && go build -compiler gccgo -o /root/go/bin/vault -v
 RUN export PATH=$PATH:/root/go/bin
-
+ADD vault_scone_ubuntu/resources /resources
