@@ -3,7 +3,7 @@ package encryptionservice
 import (
 	"context"
 
-	"github.com/shifty21/scone/vaultinitcrypto"
+	"github.com/shifty21/scone/crypto"
 )
 
 const (
@@ -18,11 +18,11 @@ type Service interface {
 
 //ServiceImpl struct
 type ServiceImpl struct {
-	crypto *vaultinitcrypto.VaultInitCrypto
+	crypto *crypto.Crypto
 }
 
 //NewEncryptionService for checking flying status in a particular location
-func NewEncryptionService(crypto *vaultinitcrypto.VaultInitCrypto) Service {
+func NewEncryptionService(crypto *crypto.Crypto) Service {
 	return &ServiceImpl{
 		crypto: crypto,
 	}

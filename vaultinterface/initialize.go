@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/shifty21/scone/config"
+	"github.com/shifty21/scone/crypto"
 	"github.com/shifty21/scone/logger"
 	"github.com/shifty21/scone/utils"
-	"github.com/shifty21/scone/vaultinitcrypto"
 )
 
 //Vault struct contains vault initialization realted components
@@ -26,14 +26,14 @@ type Vault struct {
 	SignalCh chan os.Signal
 	Stop     func()
 	//InitResp from vault
-	InitResp          *utils.InitResponse
-	Config            *config.Vault
-	CASConfig         *config.VaultCAS
-	VaultShamirCrypto *vaultinitcrypto.VaultInitCrypto
+	InitResp  *utils.InitResponse
+	Config    *config.Vault
+	CASConfig *config.VaultCAS
+	Crypto    *crypto.Crypto
 }
 
 //Initialize reads config from env variables or set them to default values
-func Initialize(config *config.Configuration, vaultShamirCrypto *vaultinitcrypto.VaultInitCrypto) *Vault {
+func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
 	logger.Info.Println("GetConfig|Starting the vault-init service...")
 	VaultInterface := &Vault{
 		HTTPClient: http.Client{
@@ -48,9 +48,9 @@ func Initialize(config *config.Configuration, vaultShamirCrypto *vaultinitcrypto
 			logger.Error.Println("Shutting down")
 			os.Exit(0)
 		},
-		Config:            config.GetVaultConfig(),
-		CASConfig:         config.GetCASConfig(),
-		VaultShamirCrypto: vaultShamirCrypto,
+		Config:    config.GetVaultConfig(),
+		CASConfig: config.GetCASConfig(),
+		Crypto:    crypto,
 	}
 	signal.Notify(VaultInterface.SignalCh,
 		syscall.SIGINT,
@@ -109,7 +109,7 @@ func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) bool {
 	//encrypt root token
 
 	logger.Info.Println("Initialization complete")
-	err = encryptKey(initResponse)
+	err = encryptKey(initResponse, v)
 	if err != nil {
 		logger.Info.Printf("Initialize|Error while saving InitResponse %v", err)
 		return false
@@ -118,10 +118,10 @@ func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) bool {
 }
 
 //EncryptKeyFun takes
-type EncryptKeyFun func(*utils.InitResponse) error
+type EncryptKeyFun func(initResponse *utils.InitResponse, vault *Vault) error
 
 //ProcessKeyFun reads key as per the type of initialization specified in configuration
-type ProcessKeyFun func() (*utils.InitResponse, error)
+type ProcessKeyFun func(vault *Vault) (*utils.InitResponse, error)
 
 //Run vault init process
 func (v *Vault) Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {

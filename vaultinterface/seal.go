@@ -49,7 +49,7 @@ func (v *Vault) Unseal(processKeyFun ProcessKeyFun) {
 		logger.Error.Println("Error while authenticating with CAS")
 		return
 	}
-	initResponse, err := processKeyFun()
+	initResponse, err := processKeyFun(v)
 	if err != nil {
 		logger.Error.Printf("Unseal|unable to read keys for vault unseal %v\n", err)
 		return
@@ -97,7 +97,7 @@ func (v *Vault) UnsealPerKey(key string) (bool, error) {
 
 	if response.StatusCode != 200 {
 		logger.Error.Println("UnsealPerKey|Unknown status code")
-		return false, fmt.Errorf("UnsealPerKey|Non 200 status: %d", response.StatusCode)
+		return false, fmt.Errorf("UnsealPerKey|Unknown status code: %d", response.StatusCode)
 	}
 
 	unsealRequestResponseBody, err := ioutil.ReadAll(response.Body)

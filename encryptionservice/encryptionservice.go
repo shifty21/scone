@@ -7,13 +7,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/shifty21/scone/config"
+	"github.com/shifty21/scone/crypto"
 	"github.com/shifty21/scone/logger"
-	"github.com/shifty21/scone/vaultinitcrypto"
 	"github.com/urfave/negroni"
 )
 
 //Run start encryptionservice
-func Run(config *config.Configuration, crypto *vaultinitcrypto.VaultInitCrypto) {
+func Run(config *config.Configuration, crypto *crypto.Crypto) {
 	router := mux.NewRouter()
 	service := NewEncryptionService(crypto)
 	router.Handle("/ping", http.HandlerFunc(PingHandler)).Methods("GET")

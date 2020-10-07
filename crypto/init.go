@@ -1,4 +1,4 @@
-package vaultinitcrypto
+package crypto
 
 import (
 	"crypto/rand"
@@ -16,8 +16,8 @@ import (
 	"github.com/shifty21/scone/utils"
 )
 
-//VaultInitCrypto struct to store crypto related stuff
-type VaultInitCrypto struct {
+//Crypto struct to store crypto related stuff
+type Crypto struct {
 	HashFun        hash.Hash
 	RandomIOReader io.Reader
 	PublicKey      *rsa.PublicKey
@@ -26,13 +26,13 @@ type VaultInitCrypto struct {
 }
 
 //VaultInit struct
-var VaultInit *VaultInitCrypto
+var VaultInit *Crypto
 
 var InitResponse *utils.InitResponse
 
 //InitShamirInterface initializes variables need to shamir key based vault initialization
-func InitShamirInterface(config *config.Crypto) (*VaultInitCrypto, error) {
-	c := &VaultInitCrypto{}
+func InitCrypto(config *config.Crypto) (*Crypto, error) {
+	c := &Crypto{}
 	c.HashFun = sha512.New()
 	c.RandomIOReader = rand.Reader
 	logger.Error.Printf("Config initShamirInterface %v", config)
@@ -51,7 +51,7 @@ func InitShamirInterface(config *config.Crypto) (*VaultInitCrypto, error) {
 }
 
 //GetRSAPublicKey loads PUBLIC KEY based pem block
-func (c *VaultInitCrypto) GetRSAPublicKey(publicKeyPath string) error {
+func (c *Crypto) GetRSAPublicKey(publicKeyPath string) error {
 	publicPEM, err := ioutil.ReadFile(publicKeyPath)
 	if err != nil {
 		logger.Error.Printf("GetRSAPublicKey|Error reading public key, path %v\n", publicKeyPath)
@@ -80,7 +80,7 @@ func (c *VaultInitCrypto) GetRSAPublicKey(publicKeyPath string) error {
 }
 
 //GetRSAPrivateKey loads RSA PRIVATE KEY based pem block
-func (c *VaultInitCrypto) GetRSAPrivateKey(privateKeyPath string) error {
+func (c *Crypto) GetRSAPrivateKey(privateKeyPath string) error {
 	priv, err := ioutil.ReadFile(privateKeyPath)
 	if err != nil {
 		logger.Error.Printf("GetRSAPrivateKey|Unable to read pvt key %v\n", err)
