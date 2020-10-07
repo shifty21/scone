@@ -75,7 +75,7 @@ func ConfigureAllInterfaces() *Configuration {
 	Config["vault_config"] = LoadVaultConfig()
 	Config["cas_config"] = LoadVaultCASConfig()
 	Config["crypto_config"] = LoadCryptoConfig()
-	Config["encryption_service"] = LoadCryptoConfig()
+	Config["encryption_service"] = LoadEncryptionServiceConfig()
 	return &Config
 }
 

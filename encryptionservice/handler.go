@@ -21,18 +21,21 @@ func EncryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 			RespondWithCustomErrors(w, nil, http.StatusBadRequest)
 			return
 		}
-		decryptedData, err := service.EncryptData(r.Context(), request.Data)
+		data, err := service.EncryptData(r.Context(), request.Data)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		marshalled, err := json.Marshal(decryptedData)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+		// encryptedData := &Response{Data: *data}
+		// // logger.Info.Printf("Encrypted Data %v", encryptedData)
+
+		// marshalled, err := json.Marshal(encryptedData)
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusInternalServerError)
+		// 	return
+		// }
 		w.WriteHeader(http.StatusOK)
-		w.Write(marshalled)
+		w.Write([]byte(*data))
 		return
 	}
 }

@@ -1,11 +1,12 @@
 #vault response encryption and decryption
-public_key_path: /resources/vault-init/mykey.pub
-private_key_path: /resources/vault-init/mykey.pem
+public_key_path: resources/vault-init/mykey.pub
+private_key_path: resources/vault-init/mykey.pem
 #cas vault authentication
-session_api: https://cas:8081/session
-certificate: /resources/conf/client.crt
 session_name: vault
-key: /resources/conf/client-key.key
+session_api: https://localhost:8081/session
+key: resources/vault/conf/client-key.key
+certificate: resources/vault/conf/client.crt
 #vault config
 vault_address: http://127.0.0.1:8200
 check_interval: 15
+port: 8083

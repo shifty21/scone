@@ -147,11 +147,11 @@ func (v *Vault) Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
 			logger.Error.Printf("Error while checking health of vault %v", err)
 			os.Exit(-1)
 		}
-
+		logger.Info.Printf("Response of vault health %v", response.StatusCode)
 		switch response.StatusCode {
 		case 200:
 			logger.Info.Println("Run|Vault is initialized and unsealed. Exiting Program")
-			os.Exit(0)
+			return
 		case 429:
 			logger.Info.Println("Run|Vault is unsealed and in standby mode.")
 		case 501:

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/shifty21/scone/crypto"
+	"github.com/shifty21/scone/logger"
 )
 
 const (
@@ -30,7 +31,11 @@ func NewEncryptionService(crypto *crypto.Crypto) Service {
 
 //EncryptData gets weather from darksky if its not present in cache
 func (s *ServiceImpl) EncryptData(ctx context.Context, data string) (*string, error) {
-	return s.crypto.EncryptText(data)
+	encryptedData, _ := s.crypto.EncryptText(data)
+	logger.Info.Printf("Encrypted Data %v \n", *encryptedData)
+	decryptedData, _ := s.crypto.DecryptText(*encryptedData)
+	logger.Info.Printf("Decrypted data Data %v \n", *decryptedData)
+	return encryptedData, nil
 }
 
 //DecryptData gets weather from darksky if its not present in cache

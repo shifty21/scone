@@ -44,11 +44,11 @@ func (v *Vault) CheckInitStatus() bool {
 
 //Unseal reads encrypted keys, decrypt them and calls unseal for each of them.
 func (v *Vault) Unseal(processKeyFun ProcessKeyFun) {
-	auth := utils.AuthVaultByCAS(v.CASConfig)
-	if auth == false {
-		logger.Error.Println("Error while authenticating with CAS")
-		return
-	}
+	// auth := utils.AuthVaultByCAS(v.CASConfig)
+	// if auth == false {
+	// 	logger.Error.Println("Error while authenticating with CAS")
+	// 	return
+	// }
 	initResponse, err := processKeyFun(v)
 	if err != nil {
 		logger.Error.Printf("Unseal|unable to read keys for vault unseal %v\n", err)

@@ -25,9 +25,6 @@ type Crypto struct {
 	PrivateKey     *rsa.PrivateKey
 }
 
-//VaultInit struct
-var VaultInit *Crypto
-
 var InitResponse *utils.InitResponse
 
 //InitShamirInterface initializes variables need to shamir key based vault initialization
@@ -35,18 +32,17 @@ func InitCrypto(config *config.Crypto) (*Crypto, error) {
 	c := &Crypto{}
 	c.HashFun = sha512.New()
 	c.RandomIOReader = rand.Reader
-	logger.Error.Printf("Config initShamirInterface %v", config)
+	logger.Info.Printf("Config initShamirInterface %v", config)
 	err := c.GetRSAPublicKey(config.PublicKeyPath())
 	if err != nil {
-		logger.Error.Printf("InitShamirInterface|Error while loading Public key\n")
+		logger.Error.Printf("InitCrypto|Error while loading Public key\n")
 		return nil, err
 	}
 	err = c.GetRSAPrivateKey(config.PrivateKeyPath())
 	if err != nil {
-		logger.Error.Printf("InitShamirInterface|Error while loading Private key %v\n", err)
+		logger.Error.Printf("InitCrypto|Error while loading Private key %v\n", err)
 		return nil, err
 	}
-	VaultInit = c
 	return c, nil
 }
 
