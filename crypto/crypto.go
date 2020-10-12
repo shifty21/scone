@@ -18,8 +18,8 @@ func (c *Crypto) EncryptText(plainText string) (*string, error) {
 }
 
 //EncryptTextBytes encrypts given plaintext
-func (c *Crypto) EncryptTextBytes(plainText string) ([]byte, error) {
-	encryptedBytes, err := rsa.EncryptOAEP(c.HashFun, c.RandomIOReader, c.PublicKey, []byte(plainText), nil)
+func (c *Crypto) EncryptTextBytes(plainText []byte) ([]byte, error) {
+	encryptedBytes, err := rsa.EncryptOAEP(c.HashFun, c.RandomIOReader, c.PublicKey, plainText, nil)
 	if err != nil {
 		logger.Error.Printf("encryptText|Error while encrypting initResponse\n")
 		return nil, err
@@ -40,12 +40,11 @@ func (c *Crypto) DecryptText(cipherText string) (*string, error) {
 }
 
 //DecryptTextByte decryptes given ciphertext
-func (c *Crypto) DecryptTextByte(cipherText []byte) (*string, error) {
+func (c *Crypto) DecryptTextByte(cipherText []byte) ([]byte, error) {
 	decryptedBytes, err := rsa.DecryptOAEP(c.HashFun, c.RandomIOReader, c.PrivateKey, cipherText, nil)
 	if err != nil {
 		logger.Error.Printf("decryptText|Error while decrypting init response %v\n", err)
 		return nil, err
 	}
-	decryptedString := string(decryptedBytes)
-	return &decryptedString, nil
+	return decryptedBytes, nil
 }

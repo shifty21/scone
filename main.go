@@ -5,7 +5,7 @@ import (
 
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/crypto"
-	"github.com/shifty21/scone/encryptionservice"
+	"github.com/shifty21/scone/encryptionservicegrpc"
 	"github.com/shifty21/scone/logger"
 )
 
@@ -20,7 +20,8 @@ func main() {
 	// vault := vaultinterface.Initialize(config, crypto)
 	// go vault.Run(vaultinit.EncryptKeyFun, vaultinit.ProcessKeyFun)
 	// go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
-	encryptionservice.Run(config, crypto)
+	// encryptionservice.Run(config, crypto)
+	encryptionservicegrpc.Run(config, crypto)
 	// vaultinterface.Initialize()
 	// vaultinterface.Run(vaultinitshamir.EncryptKeyFun, vaultinitshamir.ProcessKeyFun)
 

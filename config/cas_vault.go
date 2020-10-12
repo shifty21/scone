@@ -31,10 +31,10 @@ func (v *VaultCAS) GetSessionName() string {
 //LoadVaultCASConfig loads values from viper
 func LoadVaultCASConfig() *VaultCAS {
 	return &VaultCAS{
-		sessionAPI:  getStringOrPanic("session_api"),
-		certificate: getStringOrPanic("certificate"),
-		key:         getStringOrPanic("key"),
-		sessionName: getStringOrPanic("session_name"),
+		sessionAPI:  getStringOrPanic("cas_vault.session_api"),
+		certificate: getStringOrPanic("cas_vault.certificate"),
+		key:         getStringOrPanic("cas_vault.key"),
+		sessionName: getStringOrPanic("cas_vault.session_name"),
 	}
 
 }

@@ -24,3 +24,7 @@
     * wait for shutdown
     * Unsealing is done in core.go's NewCore function
 2. OperatorUnsealCommand also calls the http api endpoint 
+
+### seal configuration (for scone kms-wrapper)
+vault>internalshared>configutils>config.go>ParseConfig>list.Filter("seal")
+vault>internalshared>configutils>kms.go configureWrapper function

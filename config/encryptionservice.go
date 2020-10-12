@@ -16,7 +16,7 @@ func (c *EncryptionService) Port() int {
 //LoadEncryptionServiceConfig loads values from viper
 func LoadEncryptionServiceConfig() *EncryptionService {
 	return &EncryptionService{
-		port: getIntOrPanic("port"),
+		port: getIntOrPanic("http_encryption_server.port"),
 	}
 
 }

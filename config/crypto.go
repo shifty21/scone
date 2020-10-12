@@ -21,8 +21,8 @@ func (c *Crypto) PrivateKeyPath() string {
 //LoadCryptoConfig loads values from viper
 func LoadCryptoConfig() *Crypto {
 	return &Crypto{
-		publicKeyPath:  getStringOrPanic("public_key_path"),
-		privateKeyPath: getStringOrPanic("private_key_path"),
+		publicKeyPath:  getStringOrPanic("crypto.public_key_path"),
+		privateKeyPath: getStringOrPanic("crypto.private_key_path"),
 	}
 
 }

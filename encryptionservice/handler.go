@@ -26,16 +26,16 @@ func EncryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		// encryptedData := &Response{Data: *data}
-		// // logger.Info.Printf("Encrypted Data %v", encryptedData)
+		encryptedData := &Response{Data: *data}
+		// logger.Info.Printf("Encrypted Data %v", encryptedData)
 
-		// marshalled, err := json.Marshal(encryptedData)
-		// if err != nil {
-		// 	w.WriteHeader(http.StatusInternalServerError)
-		// 	return
-		// }
+		marshalled, err := json.Marshal(encryptedData)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(*data))
+		w.Write(marshalled)
 		return
 	}
 }
@@ -57,7 +57,9 @@ func DecryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		marshalled, err := json.Marshal(decryptedData)
+		var response Response
+		response.Data = *decryptedData
+		marshalled, err := json.Marshal(response)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
