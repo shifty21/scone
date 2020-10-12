@@ -3,13 +3,18 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	pb "github.com/shifty21/scone/sconecryptogrpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func httpTest() {
@@ -68,14 +73,58 @@ func grpcTest(conn *grpc.ClientConn) {
 	conn.Close()
 }
 
-func main() {
-	targetURL := "localhost:8083"
-	conn, err := grpc.Dial(targetURL, grpc.WithInsecure(), grpc.WithBlock())
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load certificate of the CA who signed server's certificate
+	pemServerCA, err := ioutil.ReadFile("../encryptionservicegrpc/cert/ca.cert")
 	if err != nil {
-		fmt.Printf("Test.Main|Error while connecting to grpc ")
+		return nil, err
 	}
-	defer conn.Close()
-	grpcTest(conn)
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add server CA's certificate")
+	}
+
+	// Create the credentials and return it
+	tlsconfig := &tls.Config{
+		RootCAs: certPool,
+	}
+	return credentials.NewTLS(tlsconfig), nil
+}
+
+func main() {
+	targetURL := "localhost:8082"
+	// config := config.ConfigureAllInterfaces()
+	tlsserver := true
+	var grpcConn *grpc.ClientConn
+	var err error
+	if tlsserver {
+		fmt.Println("Secure connection")
+		creds, err := loadTLSCredentials()
+		if err != nil {
+			fmt.Println("Error while loading tls cred")
+			os.Exit(1)
+		}
+
+		// creds, err := credentials.NewTLS("../encryptionservicegrpc/cert/ca-cert.pem", nil)
+		// if err != nil {
+		// 	fmt.Printf("Error while loading creds %v", err)
+		// }
+		grpcConn, err = grpc.Dial(targetURL, grpc.WithTransportCredentials(creds))
+		if err != nil {
+			fmt.Printf("Test.Main|Error while connecting to grpc ")
+			os.Exit(1)
+		}
+	} else {
+		fmt.Println("Unsecure connection")
+		grpcConn, err = grpc.Dial(targetURL, grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			fmt.Printf("Test.Main|Error while connecting to grpc ")
+			os.Exit(1)
+		}
+	}
+	defer grpcConn.Close()
+	grpcTest(grpcConn)
+
 }
 
 //Request request json to get the flying status

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/shifty21/scone/config"
@@ -21,8 +22,18 @@ func main() {
 	// go vault.Run(vaultinit.EncryptKeyFun, vaultinit.ProcessKeyFun)
 	// go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
 	// encryptionservice.Run(config, crypto)
-	encryptionservicegrpc.Run(config, crypto)
+
 	// vaultinterface.Initialize()
 	// vaultinterface.Run(vaultinitshamir.EncryptKeyFun, vaultinitshamir.ProcessKeyFun)
 
+	grpcServer, err := encryptionservicegrpc.NewGRPCService(
+		encryptionservicegrpc.Config(config),
+		encryptionservicegrpc.CryptoService(crypto),
+		encryptionservicegrpc.EnableTLS(true),
+	)
+	if err != nil {
+		fmt.Printf("Error while creating grpc service")
+		os.Exit(1)
+	}
+	grpcServer.Run()
 }

@@ -1,16 +1,12 @@
 rm *.pem
+rm *.srl
+rm *.cert
+rm *.key
 
 # 1. Generate CA's private key and self-signed certificate
-openssl req -x509 -newkey rsa:4096 -days 365 -nodes -keyout ca-key.pem -out ca-cert.pem -subj "/C=FR/ST=Occitanie/L=Toulouse/O=Tech School/OU=Education/CN=*.techschool.guru/emailAddress=techschool.guru@gmail.com"
-
-echo "CA's self-signed certificate"
-openssl x509 -in ca-cert.pem -noout -text
-
-# 2. Generate web server's private key and certificate signing request (CSR)
-openssl req -newkey rsa:4096 -nodes -keyout server-key.pem -out server-req.pem -subj "/C=FR/ST=Ile de France/L=Paris/O=PC Book/OU=Computer/CN=*.pcbook.com/emailAddress=pcbook@gmail.com"
-
-# 3. Use CA's private key to sign web server's CSR and get back the signed certificate
-openssl x509 -req -in server-req.pem -days 60 -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile server-ext.cnf
-
-echo "Server's signed certificate"
-openssl x509 -in server-cert.pem -noout -text
+openssl genrsa -out ca.key 4096
+openssl req -new -x509 -key ca.key -sha256 -subj "/C=GE/ST=LowerSaxony/L=Braunschweig/O=TUD/OU=Education/CN=sconedocs.github.io/emailAddress=yateenderk@gmail.com" -days 365 -out ca.cert
+openssl genrsa -out service.key 4096
+openssl req -new -key service.key -out service.csr -config certificate.conf
+openssl x509 -req -in service.csr -CA ca.cert -CAkey ca.key -CAcreateserial \
+		-out service.pem -days 365 -sha256 -extfile certificate.conf -extensions req_ext

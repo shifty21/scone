@@ -70,12 +70,14 @@ func ConfigureAllInterfaces() *Configuration {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("resources/vault-init/")
 	viper.AddConfigPath("/resources/vault-init/")
+	viper.AddConfigPath("../resources/vault-init/")
 	viper.ReadInConfig()
 	Config = Configuration{}
 	Config["vault_config"] = LoadVaultConfig()
 	Config["cas_config"] = LoadVaultCASConfig()
 	Config["crypto_config"] = LoadCryptoConfig()
 	Config["encryption_service"] = LoadEncryptionServiceConfig()
+	Config["grpc_service"] = LoadEncryptionGRPCConfig()
 	return &Config
 }
 
@@ -97,4 +99,9 @@ func (c *Configuration) GetCryptoConfig() *Crypto {
 //GetEncryptionServiceConfig returns cas related config
 func (c *Configuration) GetEncryptionServiceConfig() *EncryptionService {
 	return Config["encryption_service"].(*EncryptionService)
+}
+
+//GetGRPCServiceConfig returns cas related config
+func (c *Configuration) GetGRPCServiceConfig() *EncryptionGRPC {
+	return Config["grpc_service"].(*EncryptionGRPC)
 }

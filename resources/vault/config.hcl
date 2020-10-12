@@ -9,9 +9,9 @@ listener "tcp" {
   tls_disable = 1
 }
 seal "scone" {
-  VAULT_INIT_GRPC_TLS_CERT = "/Users/abhishekchoudhary/.go/src/github.com/hashicorp/scone/encryptionservicegrpc/cert/ca-cert.pem"
-	VAULT_INIT_GRPC_TLS_KEY  = "/Users/abhishekchoudhary/.go/src/github.com/hashicorp/scone/encryptionservicegrpc/cert/ca-key.pem"
-	VAULT_INIT_GRPC_ADDRESS = "http://127.0.0.1:8083/"
+  vault_init_grpc_tls_cert = "/Users/abhishekchoudhary/.go/src/github.com/hashicorp/scone/encryptionservicegrpc/cert/ca-cert.pem"
+  vault_init_grpc_tls_key  = "/Users/abhishekchoudhary/.go/src/github.com/hashicorp/scone/encryptionservicegrpc/cert/ca-key.pem"
+  vault_init_grpc_address = "http://127.0.0.1:8080/"
 }
 
 disable_mlock = true

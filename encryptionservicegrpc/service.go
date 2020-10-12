@@ -30,9 +30,8 @@ func NewEncryptionService(crypto *crypto.Crypto) Service {
 
 //EncryptData gets weather from darksky if its not present in cache
 func (s *ServiceImpl) EncryptData(ctx context.Context, data string) (*string, error) {
-	fmt.Printf("Encrypting")
 	encryptedData, _ := s.crypto.EncryptText(data)
-	fmt.Printf("Service.EncryptData|Encrypted Data %v \n", *encryptedData)
+	fmt.Printf("Service.EncryptData|Encrypted Data %v \n", string(*encryptedData))
 	decryptedData, _ := s.crypto.DecryptText(*encryptedData)
 	fmt.Printf("Service.EncryptData|Decrypted data match %v \n", data == *decryptedData)
 	return encryptedData, nil
