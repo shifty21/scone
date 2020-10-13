@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.0'
 services:
     cas:
         command: sh -c "SCONE_HEAP=1G cas -c /etc/cas/cas.toml"
@@ -8,15 +8,15 @@ services:
         image: sconecuratedimages/services:cas
         devices:
             - "/dev/isgx"
-        ports:
-          - target: 8081
-            published: 8081
-            protocol: tcp
-            mode: host
-          - target: 18765
-            published: 18765
-            protocol: tcp
-            mode: host
+        # ports:
+        #   - target: 8081
+        #     published: 8081
+        #     protocol: tcp
+        #     mode: host
+        #   - target: 18765
+        #     published: 18765
+        #     protocol: tcp
+        #     mode: host
     vault:
         command: sh
         build: .
@@ -35,9 +35,9 @@ services:
           - SCONE_MODE=hw
         devices:
           - "/dev/isgx"
-        ports:
-          - target: 18766
-            published: 18766
-            protocol: tcp
-            mode: host
+        # ports:
+        #   - target: 18766
+        #     published: 18766
+        #     protocol: tcp
+        #     mode: host
         

@@ -17,7 +17,7 @@ services:
     - name: dev$2
       image_name: sconecuratedimages/www2019:vault-0.10.0-alpine
       mrenclaves: [$HASH]
-      command: /opt/scone/lib/glibc-loader /root/go/bin/vault server -dev
+      command: /root/go/bin/vault server -dev
       pwd: /
       environment:
         SCONE_MODE: hw
