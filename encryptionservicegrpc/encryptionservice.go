@@ -10,7 +10,7 @@ import (
 
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/crypto"
-	pb "github.com/shifty21/scone/sconecryptogrpc"
+	pb "github.com/shifty21/scone/sconecryptoproto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

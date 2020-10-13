@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"os"
 
-	pb "github.com/shifty21/scone/sconecryptogrpc"
+	pb "github.com/shifty21/scone/sconecryptoproto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -57,19 +57,19 @@ func httpTest() {
 }
 
 func grpcTest(conn *grpc.ClientConn) {
-	req := pb.StringPacket{Value: "jackhammer"}
+	req := pb.BytePacket{Value: []byte("jackhammer")}
 	client := pb.NewCryptoServiceClient(conn)
 	response, err := client.Encrypt(context.Background(), &req)
 	if err != nil {
 		fmt.Printf("grpcTest|Error while making encrypt request %v", err)
 	}
-	fmt.Printf("grpcTest|encrypted response %v", response.Value)
+	fmt.Printf("grpcTest|encrypted response %v\n", string(response.Value))
 
 	decryptedResponse, err := client.Decrypt(context.Background(), response)
 	if err != nil {
-		fmt.Printf("grpcTest|Error while making decrypt request %v", err)
+		fmt.Printf("grpcTest|Error while making decrypt request %v\n", err)
 	}
-	fmt.Printf("grpcTest|decrypted response %v", decryptedResponse.Value)
+	fmt.Printf("grpcTest|Decrypted response %v\n", string(decryptedResponse.Value))
 	conn.Close()
 }
 

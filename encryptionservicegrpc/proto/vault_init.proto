@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package sconecryptogrpc;
+option go_package = "github.com/shifty21/scone/sconecryptogrpc";
+/* CryptoService Service */
+
+message BytePacket {
+	bytes value = 1;
+}
+
+service CryptoService {
+	rpc Encrypt(BytePacket) returns (BytePacket) {}
+	rpc Decrypt(BytePacket) returns (BytePacket) {}
+}
