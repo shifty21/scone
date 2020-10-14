@@ -139,10 +139,10 @@ func (v *Vault) Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
 		log.Printf("Run|Response of vault health %v \n", response.StatusCode)
 		switch response.StatusCode {
 		case 200:
-			log.Printf("Run|Vault is initialized and unsealed. Exiting Program")
+			log.Println("Run|Vault is initialized and unsealed. Exiting Program")
 			os.Exit(0)
 		case 429:
-			log.Printf("Run|Vault is unsealed and in standby mode. Exiting Program")
+			log.Println("Run|Vault is unsealed and in standby mode. Exiting Program")
 			os.Exit(0)
 		case 501:
 			log.Println("Run|Vault is not initialized. Initializing and unsealing...")

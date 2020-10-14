@@ -43,3 +43,6 @@ RUN echo export PATH=$PATH:/usr/local/go/bin:/opt/gccgo/bin >> /root/.profile
 RUN echo export LIBDIR=/opt/gccgo/lib/../lib64 >> /root/.profile
 RUN echo export LD_LIBRARY_PATH=/usr/local/lib64:/opt/gccgo/lib/../lib64 >> /root/.profile
 RUN cd ~/go/src/github.com/hashicorp/vault && git checkout tags/v1.5.3 -b dev
+RUN cd /root/go/src/github.com/hashicorp/vault && /usr/local/go/bin/go mod tidy
+RUN cd /root/go/pkg/mod/github.com/modern-go/reflect2@v1.0.1 && printf '// +build !gccgo \n \n \n' | cat - type_map.go > /tmp/out && mv /tmp/out type_map.go
+RUN cd /root/go/src/github.com/hashicorp/vault && /usr/local/go/bin/go build -compiler gccgo -o /root/go/bin/vault -v

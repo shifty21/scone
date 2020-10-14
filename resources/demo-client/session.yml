@@ -1,5 +1,5 @@
 version: "0.2"
-name: demo-client-session
+name: demo-client
 
 services:
    - name: dev

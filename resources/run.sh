@@ -8,8 +8,8 @@ set_plugin() {
         RUN_SESSION="vault-ini"
     elif [ "$2" == "consul-template" ]; then
         RUN_SESSION="consul-template"
-    elif [ "$2" == "demo-client-session" ]; then
-        RUN_SESSION="demo-client-session"
+    elif [ "$2" == "demo-client" ]; then
+        RUN_SESSION="demo-client"
     else 
         RUN_SESSION=${SESSION_LIST}
     fi

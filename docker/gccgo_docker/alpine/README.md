@@ -1,8 +1,8 @@
 ## GCCGO Alpine Dockerfile
 
-The Dockerfile tries to build gccgo from source.
+The Dockerfile tries to build gccgo from source but few errors were encountered during the process.
 
-1. For devel/gccgo branch
+1. For devel/gccgo of gccgo branch
 ```
 sigtab.go:38:2: error: duplicate value for index 29
    38 |  _SIGPOLL: {_SigNotify, "SIGPOLL: pollable event occurred"},
