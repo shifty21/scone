@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 	forever := make(chan struct{})
-	initType := "cas"
+	initType := "http"
 	switch initType {
 	case "vanilla":
 
@@ -33,8 +33,6 @@ func main() {
 		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
 		<-forever
 	case "http":
-		vault := vaultinterface.Initialize(config, crypto)
-		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
 		encryptionhttp.Run(config, crypto)
 	default:
 		grpcServer, err := encryptiongrpc.NewGRPCService(

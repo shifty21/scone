@@ -51,8 +51,10 @@ func DecryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 			RespondWithCustomErrors(w, nil, http.StatusBadRequest)
 			return
 		}
+		log.Println("Decrypting response")
 		decryptedData, err := service.DecryptData(r.Context(), request.Data)
 		if err != nil {
+			log.Printf("Error while decrypting data %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

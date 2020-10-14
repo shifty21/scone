@@ -30,7 +30,6 @@ func httpTest() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	// var encryptedResult RequestByte
 
 	// json.NewDecoder(resp.Body).Decode(&encryptedResult)
@@ -38,12 +37,18 @@ func httpTest() {
 	// 	Data: encryptedResult.Data,
 	// }
 	// log.Printf("encrypted message %v", encryptedResult)
-	var responsebody []byte
-	resp.Body.Read(responsebody)
+	var responsebody RequestByte
+	err = json.NewDecoder(resp.Body).Decode(&responsebody)
+	if err != nil {
+		log.Println("Error while decoding request body %v", err)
+		return
+	}
 	marshalledmessage, err = json.Marshal(responsebody)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	log.Printf("Encrypted Response %v", responsebody)
 	respdecrypt, err := http.Post("http://localhost:8083/decrypt", "application/json", bytes.NewBuffer(marshalledmessage))
 	if err != nil {
 		log.Fatalln(err)
@@ -53,7 +58,7 @@ func httpTest() {
 
 	json.NewDecoder(respdecrypt.Body).Decode(&resultdecrypt)
 
-	log.Println(resultdecrypt.Data)
+	log.Printf("response %v", resultdecrypt.Data)
 }
 
 func grpcTest(conn *grpc.ClientConn) {
@@ -91,7 +96,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	return credentials.NewTLS(tlsconfig), nil
 }
 
-func main() {
+func grpcClient() {
 	targetURL := "localhost:8082"
 	// config := config.ConfigureAllInterfaces()
 	tlsserver := true
@@ -125,6 +130,9 @@ func main() {
 	defer grpcConn.Close()
 	grpcTest(grpcConn)
 
+}
+func main() {
+	httpTest()
 }
 
 //RequestByte request json to get the flying status
