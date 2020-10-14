@@ -1,11 +1,13 @@
 package vaultcryptoinit
 
 import (
-	"github.com/shifty21/scone/logger"
+	"fmt"
+
 	"github.com/shifty21/scone/utils"
 	"github.com/shifty21/scone/vaultinterface"
 )
 
+//InitResponse for storing intermediate encrypted response
 var InitResponse *utils.InitResponse
 
 // EncryptInitResponse encryptes all fields one by one and sends back encrypted response
@@ -18,8 +20,7 @@ func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface
 	for key, plainText := range initResponse.Keys {
 		encryptedText, err := vault.Crypto.EncryptString(plainText)
 		if err != nil {
-			logger.Error.Printf("EncryptInitResponse|Unable to encrypt one of the Keys %d\n", key)
-			return nil, err
+			return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the Keys %w", err)
 		}
 		encryptedInitResponseJSON.Keys[key] = *encryptedText
 	}
@@ -27,16 +28,14 @@ func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface
 	for key, plainText := range initResponse.KeysBase64 {
 		encryptedText, err := vault.Crypto.EncryptString(plainText)
 		if err != nil {
-			logger.Error.Printf("EncryptInitResponse|Unable to encrypt one of the KeysBase64 %d\n", key)
-			return nil, err
+			return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the KeysBase64 %w", err)
 		}
 		encryptedInitResponseJSON.KeysBase64[key] = *encryptedText
 	}
 	//roottoken
 	encryptedText, err := vault.Crypto.EncryptString(initResponse.RootToken)
 	if err != nil {
-		logger.Error.Printf("EncryptInitResponse|Unable to encrypt one of the RootToken")
-		return nil, err
+		return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the RootToken %w", err)
 	}
 	encryptedInitResponseJSON.RootToken = *encryptedText
 	return encryptedInitResponseJSON, nil
@@ -53,8 +52,7 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 	for key, value := range encryptedResponse.Keys {
 		encryptedText, err := vault.Crypto.DecryptString(value)
 		if err != nil {
-			logger.Error.Printf("DecryptInitResponse|Unable to decrypt one of the Key %d\n", key)
-			return nil, err
+			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the Key %w", err)
 		}
 		decryptedInitResponseJSON.Keys[key] = *encryptedText
 	}
@@ -62,16 +60,14 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 	for key, value := range encryptedResponse.KeysBase64 {
 		encryptedText, err := vault.Crypto.DecryptString(value)
 		if err != nil {
-			logger.Error.Printf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %d", key)
-			return nil, err
+			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
 		}
 		decryptedInitResponseJSON.KeysBase64[key] = *encryptedText
 	}
 	// roottoken
 	encryptedText, err := vault.Crypto.DecryptString(encryptedResponse.RootToken)
 	if err != nil {
-		logger.Error.Printf("DecryptInitResponse|Unable to decrypt RootToken\n ")
-		return nil, err
+		return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt RootToken %w ", err)
 	}
 	decryptedInitResponseJSON.RootToken = *encryptedText
 	return decryptedInitResponseJSON, nil

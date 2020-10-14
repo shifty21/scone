@@ -1,13 +1,17 @@
-version: "0.2"
-name: vault4
+version: "0.3"
+name: vault
     
 services:
-    - name: dev4
-      image_name: sconecuratedimages/www2019:vault-0.10.0-alpine
-      mrenclaves: [a57715ffb7f30a2a3dda324e1e23eafa8ff407b47569f2529faf4782161ecbe0]
-      command: /root/go/bin/vault server -dev
+    - name: dev
+      image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+      mrenclaves: [c367325ae188c4eaa2ae52d5b929326b9e397d09af6cc9df9e8dd34d9f9ea104]
+      command: /root/go/bin/vault server -config /resources/vault/config.hcl
       pwd: /
       environment:
         SCONE_MODE: hw
         SCONE_HEAP: 8G
-        VAULT_CONFIG_PATH: /resources/vault/config.hcl
+
+security:
+  attestation:
+    tolerate: [debug-mode, outdated-tcb]
+    ignore_advisories: "*"

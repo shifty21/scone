@@ -1,4 +1,4 @@
-package encryptionservice
+package encryptionhttp
 
 //Response json for session
 type Response struct {

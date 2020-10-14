@@ -1,7 +1,7 @@
 package config
 
-//EncryptionService configration
-type EncryptionService struct {
+//encryptionhttp configration
+type encryptionhttp struct {
 	//PublicKeyPath for encryption
 	port int
 	//PrivateKeyPath for decryption, will be populated by CAS session
@@ -9,13 +9,13 @@ type EncryptionService struct {
 }
 
 //Port gives vault address
-func (c *EncryptionService) Port() int {
+func (c *encryptionhttp) Port() int {
 	return c.port
 }
 
-//LoadEncryptionServiceConfig loads values from viper
-func LoadEncryptionServiceConfig() *EncryptionService {
-	return &EncryptionService{
+//LoadencryptionhttpConfig loads values from viper
+func LoadencryptionhttpConfig() *encryptionhttp {
+	return &encryptionhttp{
 		port: getIntOrPanic("http_encryption_server.port"),
 	}
 

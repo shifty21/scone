@@ -1,10 +1,10 @@
-package encryptionservice
+package encryptionhttp
 
 import (
 	"context"
+	"log"
 
 	"github.com/shifty21/scone/crypto"
-	"github.com/shifty21/scone/logger"
 )
 
 const (
@@ -22,8 +22,8 @@ type ServiceImpl struct {
 	crypto *crypto.Crypto
 }
 
-//NewEncryptionService for checking flying status in a particular location
-func NewEncryptionService(crypto *crypto.Crypto) Service {
+//Newencryptionhttp for checking flying status in a particular location
+func Newencryptionhttp(crypto *crypto.Crypto) Service {
 	return &ServiceImpl{
 		crypto: crypto,
 	}
@@ -32,9 +32,9 @@ func NewEncryptionService(crypto *crypto.Crypto) Service {
 //EncryptData gets weather from darksky if its not present in cache
 func (s *ServiceImpl) EncryptData(ctx context.Context, data string) (*string, error) {
 	encryptedData, _ := s.crypto.EncryptString(data)
-	logger.Info.Printf("Encrypted Data %v \n", *encryptedData)
+	log.Printf("Encrypted Data %v \n", *encryptedData)
 	decryptedData, _ := s.crypto.DecryptString(*encryptedData)
-	logger.Info.Printf("Decrypted data Data %v \n", *decryptedData)
+	log.Printf("Decrypted data Data %v \n", *decryptedData)
 	return encryptedData, nil
 }
 

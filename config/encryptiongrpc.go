@@ -1,6 +1,6 @@
 package config
 
-//EncryptionService configration
+//encryptionhttp configration
 type EncryptionGRPC struct {
 	//certificate for tls grpc
 	certificate       string

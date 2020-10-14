@@ -1,8 +1,8 @@
-package encryptionservicegrpc
+package encryptiongrpc
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"github.com/shifty21/scone/crypto"
 )
@@ -18,9 +18,9 @@ type ServiceImpl struct {
 	crypto *crypto.Crypto
 }
 
-//NewEncryptionService for checking flying status in a particular location
-func NewEncryptionService(crypto *crypto.Crypto) Service {
-	// fmt.Println("NewEncryptionService")
+//Newencryptionhttp for checking flying status in a particular location
+func Newencryptionhttp(crypto *crypto.Crypto) Service {
+	// log.Println("Newencryptionhttp")
 	return &ServiceImpl{
 		crypto: crypto,
 	}
@@ -30,7 +30,7 @@ func NewEncryptionService(crypto *crypto.Crypto) Service {
 func (s *ServiceImpl) Encrypt(ctx context.Context, data []byte) ([]byte, error) {
 	encryptedData, _ := s.crypto.EncryptBytes(data)
 	decryptedData, _ := s.crypto.DecryptByte(encryptedData)
-	fmt.Printf("EncryptHandler|Plain text :%v\n", string(decryptedData))
+	log.Printf("EncryptHandler|Plain text :%v\n", string(decryptedData))
 	return encryptedData, nil
 }
 

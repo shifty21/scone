@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"os"
 
-	pb "github.com/shifty21/scone/sconecryptoproto"
+	pb "github.com/shifty21/scone/encryptiongrpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -37,7 +37,7 @@ func httpTest() {
 	// decryptmessage := &RequestByte{
 	// 	Data: encryptedResult.Data,
 	// }
-	// fmt.Printf("encrypted message %v", encryptedResult)
+	// log.Printf("encrypted message %v", encryptedResult)
 	var responsebody []byte
 	resp.Body.Read(responsebody)
 	marshalledmessage, err = json.Marshal(responsebody)
@@ -61,21 +61,21 @@ func grpcTest(conn *grpc.ClientConn) {
 	client := pb.NewCryptoServiceClient(conn)
 	response, err := client.Encrypt(context.Background(), &req)
 	if err != nil {
-		fmt.Printf("grpcTest|Error while making encrypt request %v", err)
+		log.Printf("grpcTest|Error while making encrypt request %v", err)
 	}
-	fmt.Printf("grpcTest|encrypted response %v\n", string(response.Value))
+	log.Printf("grpcTest|encrypted response %v\n", string(response.Value))
 
 	decryptedResponse, err := client.Decrypt(context.Background(), response)
 	if err != nil {
-		fmt.Printf("grpcTest|Error while making decrypt request %v\n", err)
+		log.Printf("grpcTest|Error while making decrypt request %v\n", err)
 	}
-	fmt.Printf("grpcTest|Decrypted response %v\n", string(decryptedResponse.Value))
+	log.Printf("grpcTest|Decrypted response %v\n", string(decryptedResponse.Value))
 	conn.Close()
 }
 
 func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	// Load certificate of the CA who signed server's certificate
-	pemServerCA, err := ioutil.ReadFile("../encryptionservicegrpc/cert/ca.cert")
+	pemServerCA, err := ioutil.ReadFile("../encryptiongrpc/cert/ca.cert")
 	if err != nil {
 		return nil, err
 	}
@@ -98,27 +98,27 @@ func main() {
 	var grpcConn *grpc.ClientConn
 	var err error
 	if tlsserver {
-		fmt.Println("Secure connection")
+		log.Println("Secure connection")
 		creds, err := loadTLSCredentials()
 		if err != nil {
-			fmt.Println("Error while loading tls cred")
+			log.Println("Error while loading tls cred")
 			os.Exit(1)
 		}
 
-		// creds, err := credentials.NewTLS("../encryptionservicegrpc/cert/ca-cert.pem", nil)
+		// creds, err := credentials.NewTLS("../encryptiongrpc/cert/ca-cert.pem", nil)
 		// if err != nil {
-		// 	fmt.Printf("Error while loading creds %v", err)
+		// 	log.Printf("Error while loading creds %v", err)
 		// }
 		grpcConn, err = grpc.Dial(targetURL, grpc.WithTransportCredentials(creds))
 		if err != nil {
-			fmt.Printf("Test.Main|Error while connecting to grpc ")
+			log.Printf("Test.Main|Error while connecting to grpc ")
 			os.Exit(1)
 		}
 	} else {
-		fmt.Println("Unsecure connection")
+		log.Println("Unsecure connection")
 		grpcConn, err = grpc.Dial(targetURL, grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
-			fmt.Printf("Test.Main|Error while connecting to grpc ")
+			log.Printf("Test.Main|Error while connecting to grpc ")
 			os.Exit(1)
 		}
 	}
@@ -127,7 +127,7 @@ func main() {
 
 }
 
-//Request request json to get the flying status
+//RequestByte request json to get the flying status
 type RequestByte struct {
 	Data string `json:"data"`
 }

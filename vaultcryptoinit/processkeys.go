@@ -1,7 +1,8 @@
 package vaultcryptoinit
 
 import (
-	"github.com/shifty21/scone/logger"
+	"fmt"
+
 	"github.com/shifty21/scone/utils"
 	"github.com/shifty21/scone/vaultinterface"
 )
@@ -11,8 +12,7 @@ var EncryptKeyFun = func(initResponse *utils.InitResponse, vault *vaultinterface
 	//use a public key to encrypt the response
 	encryptedInitResponse, err := EncryptInitResponse(initResponse, vault)
 	if err != nil {
-		logger.Error.Printf("EncryptKeyFun|Error while encrypting initresponse %v", err)
-		return err
+		return fmt.Errorf("EncryptKeyFun|Error while encrypting initresponse %v", err)
 	}
 	InitResponse = encryptedInitResponse
 	return nil
@@ -25,8 +25,7 @@ var ProcessKeyFun = func(vault *vaultinterface.Vault) (*utils.InitResponse, erro
 	encryptedInitResponseJSON := InitResponse
 	decryptedInitResponse, err := DecryptInitResponse(encryptedInitResponseJSON, vault)
 	if err != nil {
-		logger.Error.Printf("ProcessKeyFun|Error while decrypting initResponse\n")
-		return nil, err
+		return nil, fmt.Errorf("ProcessKeyFun|Error while decrypting initResponse %v", err)
 	}
 	return decryptedInitResponse, nil
 }

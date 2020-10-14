@@ -7,12 +7,13 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"hash"
 	"io"
 	"io/ioutil"
+	"log"
 
 	"github.com/shifty21/scone/config"
-	"github.com/shifty21/scone/logger"
 	"github.com/shifty21/scone/utils"
 )
 
@@ -25,23 +26,22 @@ type Crypto struct {
 	PrivateKey     *rsa.PrivateKey
 }
 
+//InitResponse stores initresponse
 var InitResponse *utils.InitResponse
 
-//InitShamirInterface initializes variables need to shamir key based vault initialization
+//InitCrypto initializes variables need to shamir key based vault initialization
 func InitCrypto(config *config.Crypto) (*Crypto, error) {
+
 	c := &Crypto{}
 	c.HashFun = sha512.New()
 	c.RandomIOReader = rand.Reader
-	logger.Info.Printf("Config initShamirInterface %v", config)
 	err := c.GetRSAPublicKey(config.PublicKeyPath())
 	if err != nil {
-		logger.Error.Printf("InitCrypto|Error while loading Public key\n")
-		return nil, err
+		return nil, fmt.Errorf("InitCrypto|Error while loading Public key %w", err)
 	}
 	err = c.GetRSAPrivateKey(config.PrivateKeyPath())
 	if err != nil {
-		logger.Error.Printf("InitCrypto|Error while loading Private key %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("InitCrypto|Error while loading Private key %w", err)
 	}
 	return c, nil
 }
@@ -50,25 +50,23 @@ func InitCrypto(config *config.Crypto) (*Crypto, error) {
 func (c *Crypto) GetRSAPublicKey(publicKeyPath string) error {
 	publicPEM, err := ioutil.ReadFile(publicKeyPath)
 	if err != nil {
-		logger.Error.Printf("GetRSAPublicKey|Error reading public key, path %v\n", publicKeyPath)
-		return err
+		return fmt.Errorf("GetRSAPublicKey|Error reading public key, path %w", err)
+
 	}
 	pemBlock, _ := pem.Decode([]byte(publicPEM))
 	if pemBlock == nil && pemBlock.Type != "PUBLIC KEY" {
-		logger.Error.Printf("GetRSAPublicKey|RSA public key is of the wrong type %v\n", err)
-		return err
+		return fmt.Errorf("GetRSAPublicKey|RSA public key is of the wrong type %w", err)
 	}
 	var pubKey interface{}
 	if pubKey, err = x509.ParsePKIXPublicKey(pemBlock.Bytes); err != nil {
-		logger.Error.Printf("GetRSAPublicKey|Unable to parse RSA public key%v\n", err)
-		return err
+		return fmt.Errorf("GetRSAPublicKey|Unable to parse RSA public key %w", err)
 	}
 	switch pub := pubKey.(type) {
 	case *rsa.PublicKey:
-		logger.Info.Printf("GetRSAPublicKey|RSA public key")
+		log.Println("GetRSAPublicKey|RSA public key")
 		c.PublicKey = pub
 	default:
-		logger.Error.Printf("GetRSAPublicKey|Unrecognized public key")
+		log.Println("GetRSAPublicKey|Unrecognized public key")
 		return errors.New("GetRSAPublicKey|Unrecognized public key. Handles on Public key with PEM block PUBLIC KEY")
 	}
 
@@ -79,17 +77,15 @@ func (c *Crypto) GetRSAPublicKey(publicKeyPath string) error {
 func (c *Crypto) GetRSAPrivateKey(privateKeyPath string) error {
 	priv, err := ioutil.ReadFile(privateKeyPath)
 	if err != nil {
-		logger.Error.Printf("GetRSAPrivateKey|Unable to read pvt key %v\n", err)
-		return err
+		return fmt.Errorf("GetRSAPrivateKey|Unable to read pvt key %w", err)
 	}
 	privatePEM, _ := pem.Decode(priv)
 	if privatePEM.Type != "RSA PRIVATE KEY" {
-		logger.Error.Printf("GetRSAPrivateKey|RSA private key is of the wrong type %v\n", err)
-		return errors.New("GetRSAPrivateKey|PEM block of type RSA PRIVATE KEY not found")
+		return fmt.Errorf("GetRSAPrivateKey|RSA private key is of the wrong type %w", err)
 	}
 	c.PrivateKey, err = x509.ParsePKCS1PrivateKey(privatePEM.Bytes)
 	if err != nil {
-		logger.Error.Printf("GetRSAPrivateKey|Error while parsing private key")
+		return fmt.Errorf("GetRSAPrivateKey|Error while parsing private key %w", err)
 	}
 	return nil
 

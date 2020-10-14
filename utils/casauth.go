@@ -2,20 +2,19 @@ package utils
 
 import (
 	"crypto/tls"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/shifty21/scone/config"
-	"github.com/shifty21/scone/logger"
 )
 
 // AuthVaultByCAS authenticates application with CAS.
-func AuthVaultByCAS(config *config.VaultCAS) bool {
+func AuthVaultByCAS(config *config.VaultCAS) error {
 	cer, err := tls.LoadX509KeyPair(config.GetCertificate(), config.GetKey())
 	if err != nil {
-		logger.Error.Printf("Error while loading keypair %s", err)
-		return false
+		return fmt.Errorf("AuthVaultByCAS|Error while loading keypair %w", err)
 	}
 	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cer}, InsecureSkipVerify: true}
 	client := &http.Client{
@@ -26,18 +25,16 @@ func AuthVaultByCAS(config *config.VaultCAS) bool {
 	var url = config.GetSessionAPI() + config.GetSessionName()
 	resp, err := client.Get(url)
 	if err != nil {
-		logger.Error.Printf("Error getting session information from CAS server, CAS get call [%s] %s \n", url, err)
-		return false
+		return fmt.Errorf("AuthVaultByCAS|Error getting session information from CAS server %w", err)
 	}
 	if resp.StatusCode != 200 {
-		logger.Error.Printf("Unable to verify session, CAS get call [%s] body [%s] error := %s \n", url, resp.Body, err)
-		return false
+		return fmt.Errorf("AuthVaultByCAS|Unable to verify session, CAS get call [%s] body [%s] error := %s", url, resp.Body, err)
 	}
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("AuthVaultByCAS|Error while reading response body %w", err)
 	}
 	bodyString := string(bodyBytes)
-	logger.Info.Printf("Value of response %v ", bodyString)
-	return true
+	log.Printf("AuthVaultByCAS|CAS Response %v ", bodyString)
+	return nil
 }

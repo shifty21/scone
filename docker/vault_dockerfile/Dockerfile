@@ -1,4 +1,4 @@
-FROM sconecuratedimages/www2019:vault-0.10.0-alpine
+FROM sconecuratedimages/www2019:vault-1.5.0-alpine
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories

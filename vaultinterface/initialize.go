@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,7 +15,6 @@ import (
 
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/crypto"
-	"github.com/shifty21/scone/logger"
 	"github.com/shifty21/scone/utils"
 )
 
@@ -34,7 +34,7 @@ type Vault struct {
 
 //Initialize reads config from env variables or set them to default values
 func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
-	logger.Info.Println("GetConfig|Starting the vault-init service...")
+	log.Println("GetConfig|Starting the vault-init service...")
 	VaultInterface := &Vault{
 		HTTPClient: http.Client{
 			Transport: &http.Transport{
@@ -45,7 +45,7 @@ func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
 		},
 		SignalCh: make(chan os.Signal),
 		Stop: func() {
-			logger.Error.Println("Shutting down")
+			log.Println("Shutting down")
 			os.Exit(0)
 		},
 		Config:    config.GetVaultConfig(),
@@ -61,60 +61,51 @@ func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
 }
 
 //ProcessInitVault vault, encrypt and store encrypted keys
-func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) bool {
+func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) error {
 
 	initRequest := utils.InitRequest{
 		SecretShares:    5,
 		SecretThreshold: 3,
 	}
-	logger.Info.Printf("Initializing vault with %v\n", initRequest)
+	log.Printf("Initializing vault with %v\n", initRequest)
 	initRequestData, err := json.Marshal(&initRequest)
 	if err != nil {
-		log.Println(err)
-		return false
+		return fmt.Errorf("ProcessInitVault|Error marshalling initRequest %w", err)
 	}
 
 	r := bytes.NewReader(initRequestData)
 	request, err := http.NewRequest("PUT", v.Config.Address()+"/v1/sys/init", r)
 	if err != nil {
-		log.Printf("Error while creating put request to initialize %v\n", err)
-		return false
+		return fmt.Errorf("ProcessInitVault|Error while creating init put request %w", err)
 	}
 	response, err := v.HTTPClient.Do(request)
 	if err != nil {
-		log.Printf("Error while posting request to initialize %v\n", err)
-		return false
+		return fmt.Errorf("ProcessInitVault|Error while posting init request %w", err)
 	}
 	defer response.Body.Close()
 
 	initRequestResponseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Printf("Error reading initialization response %v\n", err)
-		return false
+		return fmt.Errorf("ProcessInitVault|Error reading initialization response %w", err)
 	}
 
 	if response.StatusCode != 200 {
-		log.Printf("init: non 200 status code: %d", response.StatusCode)
-		return false
+		return fmt.Errorf("ProcessInitVault|Found non 200 status code %v", response.StatusCode)
 	}
 
 	var initResponse *utils.InitResponse
 	if err := json.Unmarshal(initRequestResponseBody, &initResponse); err != nil {
-		log.Printf("Error while unmarshalling reponse %v\n", err)
-		return false
+		return fmt.Errorf("ProcessInitVault|Error while unmarshalling reponse %w", err)
 	}
 
-	logger.Info.Println("Encrypting unseal keys and the root token...")
+	log.Println("ProcessInitVault|Encrypting unseal keys and the root token...")
 
 	//encrypt root token
-
-	logger.Info.Println("Initialization complete")
 	err = encryptKey(initResponse, v)
 	if err != nil {
-		logger.Info.Printf("Initialize|Error while saving InitResponse %v", err)
-		return false
+		return fmt.Errorf("ProcessInitVault|Error while saving InitResponse %w", err)
 	}
-	return true
+	return nil
 }
 
 //EncryptKeyFun takes
@@ -125,17 +116,15 @@ type ProcessKeyFun func(vault *Vault) (*utils.InitResponse, error)
 
 //Run vault init process
 func (v *Vault) Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
-	// auth := vaultinitcas.AuthVaultByCAS(&vaultinitcas.VCASConfig)
-	// if auth == false {
-	// 	logger.Error.Println("Unable to authenticate Vault, check previous logs for details.")
-	// 	stop()
-	// }
+	go func() {
+		<-v.SignalCh
+		v.Stop()
+	}()
 	for {
-		select {
-		case <-v.SignalCh:
-			v.Stop()
-		default:
-			v.CheckInitStatus()
+		err := v.CheckInitStatus()
+		if err != nil {
+			log.Printf("Run|Error checking initStatus %v", err)
+			os.Exit(1)
 		}
 		response, err := v.HTTPClient.Get(v.Config.Address() + "/v1/sys/health")
 
@@ -144,37 +133,32 @@ func (v *Vault) Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
 		}
 
 		if err != nil {
-			logger.Error.Printf("Error while checking health of vault %v", err)
-			os.Exit(-1)
+			log.Panicf("Error while checking health of vault %v", err)
+			os.Exit(1)
 		}
-		logger.Info.Printf("Response of vault health %v", response.StatusCode)
+		log.Printf("Run|Response of vault health %v \n", response.StatusCode)
 		switch response.StatusCode {
 		case 200:
-			logger.Info.Println("Run|Vault is initialized and unsealed. Exiting Program")
-			return
+			log.Printf("Run|Vault is initialized and unsealed. Exiting Program")
+			os.Exit(0)
 		case 429:
-			logger.Info.Println("Run|Vault is unsealed and in standby mode.")
+			log.Printf("Run|Vault is unsealed and in standby mode. Exiting Program")
+			os.Exit(0)
 		case 501:
-			logger.Info.Println("Run|Vault is not initialized. Initializing and unsealing...")
-			status := v.ProcessInitVault(encryptKeyFun)
-			if status == false {
-				logger.Error.Println("Run|Unable to complete initialization process of vault, continuing..")
-				continue
+			log.Println("Run|Vault is not initialized. Initializing and unsealing...")
+			err := v.ProcessInitVault(encryptKeyFun)
+			if err != nil {
+				log.Printf("Run|Error with initprocess %v", err)
+				os.Exit(1)
 			}
 			v.Unseal(processKeyFun)
 		case 503:
-			logger.Info.Println("Run|Vault is sealed. Unsealing...")
+			log.Println("Run|Vault is sealed. Unsealing...")
 			v.Unseal(processKeyFun)
 		default:
-			logger.Info.Printf("Run|Vault is in an unknown state. Status: %v", response)
+			log.Panicf("Run|Vault is in an unknown state. Status: %v", response)
+			os.Exit(1)
 		}
-
-		logger.Info.Printf("Run|Next check in %s", v.Config.CheckInterval())
-
-		select {
-		case <-v.SignalCh:
-			v.Stop()
-		case <-time.After(v.Config.CheckInterval()):
-		}
+		time.After(v.Config.CheckInterval())
 	}
 }

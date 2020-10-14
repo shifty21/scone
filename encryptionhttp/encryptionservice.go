@@ -1,4 +1,4 @@
-package encryptionservice
+package encryptionhttp
 
 import (
 	"context"
@@ -13,11 +13,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/crypto"
-	"github.com/shifty21/scone/logger"
 	"github.com/urfave/negroni"
 )
 
-//Run start encryptionservice
+//Run start encryptionhttp
 func Run(config *config.Configuration, crypto *crypto.Crypto) {
 	SignalCh := make(chan os.Signal)
 	signal.Notify(SignalCh,
@@ -26,14 +25,14 @@ func Run(config *config.Configuration, crypto *crypto.Crypto) {
 		syscall.SIGKILL,
 	)
 	router := mux.NewRouter()
-	service := NewEncryptionService(crypto)
+	service := Newencryptionhttp(crypto)
 	router.Handle("/ping", http.HandlerFunc(PingHandler)).Methods("GET")
 	router.Handle("/encrypt", EncryptHandler(nil, service)).Methods("POST")
 	router.Handle("/decrypt", DecryptHandler(nil, service)).Methods("POST")
 	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 	server := negroni.New(negroni.NewRecovery())
 	server.UseHandlerFunc(router.ServeHTTP)
-	portInfo := ":" + strconv.Itoa(config.GetEncryptionServiceConfig().Port())
+	portInfo := ":" + strconv.Itoa(config.GetencryptionhttpConfig().Port())
 	s := &http.Server{
 		Addr:           portInfo,
 		Handler:        server,
@@ -49,12 +48,12 @@ func Run(config *config.Configuration, crypto *crypto.Crypto) {
 		}()
 		err := s.Shutdown(ctxShutDown)
 		if err != nil {
-			log.Fatalf("Server Shutdown Failed:%+s", err)
+			log.Printf("Server Shutdown Failed:%+s", err)
 		}
 		if err == http.ErrServerClosed {
 			log.Printf("Server closed successfully")
 		}
 
 	}()
-	logger.Error.Fatal(s.ListenAndServe())
+	log.Fatal(s.ListenAndServe())
 }

@@ -4,7 +4,7 @@
 // 	protoc        v3.13.0
 // source: vault_init.proto
 
-package sconecryptoproto
+package proto
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

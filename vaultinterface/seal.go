@@ -5,45 +5,41 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
-	"github.com/shifty21/scone/logger"
 	"github.com/shifty21/scone/utils"
 )
 
 //CheckInitStatus of vault
-func (v *Vault) CheckInitStatus() bool {
-	logger.Info.Printf("CheckInitStatus|Checking InitStatus of vault")
+func (v *Vault) CheckInitStatus() error {
+	log.Println("CheckInitStatus|Checking InitStatus of vault")
 	response, err := v.HTTPClient.Get(v.Config.Address() + "/v1/sys/init")
 	if err != nil {
-		logger.Error.Printf("CheckInitStatus vault initi api response error %v", err)
-		return false
+		return fmt.Errorf("CheckInitStatus|vault init api response error %w", err)
 	}
 	defer response.Body.Close()
 
 	initStatusResponseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		logger.Error.Printf("CheckInitStatus vault initi api response read error %v", err)
-		return false
+		return fmt.Errorf("CheckInitStatus vault init api response read error %w", err)
 	}
 
 	if response.StatusCode != 200 {
-		logger.Error.Printf("CheckInitStatus|Non 200 status code: %v\n", response)
-		return false
+		return fmt.Errorf("CheckInitStatus|Non 200 status code: %w", err)
 	}
 
 	var initStatus utils.InitStatus
 
 	if err := json.Unmarshal(initStatusResponseBody, &initStatus); err != nil {
-		logger.Error.Printf("CheckInitStatus|Unable to unmarshal status %v\n", err)
-		return false
+		return fmt.Errorf("CheckInitStatus|Unable to unmarshal status %w", err)
 	}
-	logger.Info.Printf("CheckInitStatus|Vault initialized %v\n", initStatus.Initialized)
-	return initStatus.Initialized
+	log.Printf("CheckInitStatus|Vault initialized %v\n", initStatus.Initialized)
+	return nil
 }
 
 //Unseal reads encrypted keys, decrypt them and calls unseal for each of them.
-func (v *Vault) Unseal(processKeyFun ProcessKeyFun) {
+func (v *Vault) Unseal(processKeyFun ProcessKeyFun) error {
 	// auth := utils.AuthVaultByCAS(v.CASConfig)
 	// if auth == false {
 	// 	logger.Error.Println("Error while authenticating with CAS")
@@ -51,42 +47,39 @@ func (v *Vault) Unseal(processKeyFun ProcessKeyFun) {
 	// }
 	initResponse, err := processKeyFun(v)
 	if err != nil {
-		logger.Error.Printf("Unseal|unable to read keys for vault unseal %v\n", err)
-		return
-	}
-	fmt.Println("Unseal|Starting the unsealing process with InitResponse")
 
-	for i, key := range initResponse.KeysBase64 {
+		return fmt.Errorf("Unseal|unable to read keys for vault unseal %w", err)
+	}
+	log.Println("Unseal|Starting the unsealing process with InitResponse")
+
+	for _, key := range initResponse.KeysBase64 {
 		done, err := v.UnsealPerKey(key)
 		if done {
-			return
+			return nil
 		}
-
 		if err != nil {
-			logger.Error.Printf("Unseal|Error while unsealing %d key %v", i, err)
-			return
+			return fmt.Errorf("Unseal|Error while unsealing key %w", err)
 		}
 	}
+	return nil
 }
 
 //UnsealPerKey calls vaults unseal api with give key
 func (v *Vault) UnsealPerKey(key string) (bool, error) {
-	logger.Info.Printf("UnsealPerKey|Unsealing for key %v\n", key)
+	log.Printf("UnsealPerKey|Unsealing for key %v\n", key)
 	unsealRequest := utils.UnsealRequest{
 		Key: key,
 	}
 
 	unsealRequestData, err := json.Marshal(&unsealRequest)
 	if err != nil {
-		logger.Error.Println("UnsealPerKey|Error while marshalling UnsealRequest")
-		return false, err
+		return false, fmt.Errorf("UnsealPerKey|Error while marshalling UnsealRequest. %w", err)
 	}
 
 	r := bytes.NewReader(unsealRequestData)
 	request, err := http.NewRequest(http.MethodPut, v.Config.Address()+"/v1/sys/unseal", r)
 	if err != nil {
-		logger.Error.Println("UnsealPerKey|Error while creating UnsealRequest")
-		return false, err
+		return false, fmt.Errorf("UnsealPerKey|Error while creating UnsealRequest. %w", err)
 	}
 
 	response, err := v.HTTPClient.Do(request)
@@ -96,20 +89,17 @@ func (v *Vault) UnsealPerKey(key string) (bool, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		logger.Error.Println("UnsealPerKey|Unknown status code")
 		return false, fmt.Errorf("UnsealPerKey|Unknown status code: %d", response.StatusCode)
 	}
 
 	unsealRequestResponseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		logger.Error.Println("UnsealPerKey|Error while reading response body")
-		return false, err
+		return false, fmt.Errorf("UnsealPerKey|Error while reading response body. %w", err)
 	}
 
 	var unsealResponse utils.UnsealResponse
 	if err := json.Unmarshal(unsealRequestResponseBody, &unsealResponse); err != nil {
-		logger.Error.Println("UnsealPerKey|Error while unmarshalling unsealResponse")
-		return false, err
+		return false, fmt.Errorf("UnsealPerKey|Error while unmarshalling unsealResponse. %w", err)
 	}
 
 	if !unsealResponse.Sealed {

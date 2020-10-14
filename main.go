@@ -1,39 +1,52 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/crypto"
-	"github.com/shifty21/scone/encryptionservicegrpc"
-	"github.com/shifty21/scone/logger"
+	"github.com/shifty21/scone/encryptiongrpc"
+	"github.com/shifty21/scone/encryptionhttp"
+	"github.com/shifty21/scone/vaultcryptoinit"
+	"github.com/shifty21/scone/vaultinit"
+	"github.com/shifty21/scone/vaultinterface"
 )
 
 func main() {
-	logger.InitLogger()
 	config := config.ConfigureAllInterfaces()
 	crypto, err := crypto.InitCrypto(config.GetCryptoConfig())
 	if err != nil {
-		logger.Error.Printf("Error while initializing crypto module, Exiting")
+		log.Println("Error while initializing crypto module, Exiting")
 		os.Exit(1)
 	}
-	// vault := vaultinterface.Initialize(config, crypto)
-	// go vault.Run(vaultinit.EncryptKeyFun, vaultinit.ProcessKeyFun)
-	// go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
-	// encryptionservice.Run(config, crypto)
+	forever := make(chan struct{})
+	initType := "cas"
+	switch initType {
+	case "vanilla":
 
-	// vaultinterface.Initialize()
-	// vaultinterface.Run(vaultinitshamir.EncryptKeyFun, vaultinitshamir.ProcessKeyFun)
-
-	grpcServer, err := encryptionservicegrpc.NewGRPCService(
-		encryptionservicegrpc.Config(config),
-		encryptionservicegrpc.CryptoService(crypto),
-		encryptionservicegrpc.EnableTLS(true),
-	)
-	if err != nil {
-		fmt.Printf("Error while creating grpc service")
-		os.Exit(1)
+		vault := vaultinterface.Initialize(config, crypto)
+		go vault.Run(vaultinit.EncryptKeyFun, vaultinit.ProcessKeyFun)
+		<-forever
+	case "cas":
+		vault := vaultinterface.Initialize(config, crypto)
+		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
+		<-forever
+	case "http":
+		vault := vaultinterface.Initialize(config, crypto)
+		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
+		encryptionhttp.Run(config, crypto)
+	default:
+		grpcServer, err := encryptiongrpc.NewGRPCService(
+			encryptiongrpc.Config(config),
+			encryptiongrpc.CryptoService(crypto),
+			encryptiongrpc.EnableTLS(true),
+		)
+		if err != nil {
+			log.Printf("Error while creating grpc service")
+			os.Exit(1)
+		}
+		grpcServer.Run()
 	}
-	grpcServer.Run()
+
 }

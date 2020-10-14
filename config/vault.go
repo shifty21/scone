@@ -1,10 +1,9 @@
 package config
 
 import (
+	"log"
 	"strconv"
 	"time"
-
-	"github.com/shifty21/scone/logger"
 )
 
 //Vault configration
@@ -22,7 +21,8 @@ func (v *Vault) Address() string {
 func (v *Vault) CheckInterval() time.Duration {
 	i, err := strconv.Atoi(v.checkInterval)
 	if err != nil {
-		logger.Error.Printf("Error while converting configured checkinterval to integer %v", err)
+		log.Printf("Error while converting configured checkinterval to integer %v, setting default to 5 Second ", err)
+		return time.Duration(5) * time.Second
 	}
 	return time.Duration(i) * time.Second
 }

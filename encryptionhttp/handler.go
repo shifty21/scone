@@ -1,11 +1,10 @@
-package encryptionservice
+package encryptionhttp
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/shifty21/scone/logger"
 	"google.golang.org/grpc"
 )
 
@@ -17,7 +16,7 @@ func EncryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-			logger.Error.Println("Error while decoding request body")
+			log.Println("Error while decoding request body")
 			RespondWithCustomErrors(w, nil, http.StatusBadRequest)
 			return
 		}
@@ -48,7 +47,7 @@ func DecryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-			logger.Error.Println("Error while decoding request body")
+			log.Println("Error while decoding request body")
 			RespondWithCustomErrors(w, nil, http.StatusBadRequest)
 			return
 		}
@@ -73,7 +72,7 @@ func DecryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 
 //NotFoundHandler not found
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("No such route")
+	log.Println("No such route")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNotFound)
 }
