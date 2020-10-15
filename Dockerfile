@@ -24,17 +24,15 @@ RUN cat ~/.ssh/config
 RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/scone
 #vault and consul-template
 RUN go get github.com/mitchellh/gox
-RUN mkdir /root/go/src/github.com/hashicorp
 RUN cd /root/go/src/github.com/shifty21 && git@github.com:shifty21/go-kms-wrapping.git
 RUN cd /root/go/src/github.com/shifty21 && git clone git@github.com:shifty21/consul-template.git
 RUN cd /root/go/src/github.com/shifty21/consul-template && go mod tidy
 RUN cd /root/go/src/github.com/shifty21/consul-template && go build -compiler gccgo -o /root/go/bin/consul-template -v
 
-RUN cd /root/go/src/github.com/hashicorp && git clone git@github.com:shifty21/vault.git
-RUN cd /root/go/src/github.com/hashicorp/vault && git checkout tags/v1.5.3 -b dev
-RUN cd /root/go/src/github.com/hashicorp/vault && go mod tidy
+RUN cd /root/go/src/github.com/shifty21 && git clone git@github.com:shifty21/vault.git
+RUN cd /root/go/src/github.com/shifty21/vault && go mod tidy
 RUN cd /root/go/pkg/mod/github.com/modern-go/reflect2@v1.0.1 && printf '// +build !gccgo \n \n \n' | cat - type_map.go > /tmp/out && mv /tmp/out type_map.go
-RUN cd /root/go/src/github.com/hashicorp/vault && go build -compiler gccgo -o /root/go/bin/vault -v
+RUN cd /root/go/src/github.com/shifty21/vault && go build -compiler gccgo -o /root/go/bin/vault -v
 
 
 RUN export PATH=$PATH:/root/go/bin
