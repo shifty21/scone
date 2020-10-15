@@ -52,7 +52,10 @@ run.sh $1 $2
 Where $1 have register or check value only
 $2 can be among 4 values - vault vault-init consul-template demo-client
 ```
+Using update.sh
+```
 
+```
 ### Encryption keys generation
 ```
 openssl genrsa -out mykey.pem 1024

@@ -14,7 +14,7 @@ check_interval: 15
 http_encryption_server:
     port: 8083
 grpc_encryption_server:
-    cert: encryptiongrpc/cert/service.pem
-    key: encryptiongrpc/cert/service.key
-    client_cert: encryptiongrpc/cert/ca-cert.pem
+    cert: resources/vault-init/grpc/cert/service.pem
+    key: resources/vault-init/grpc/cert/service.key
+    client_cert: resources/vault-init/grpc/cert/ca-cert.pem
     port: 8082

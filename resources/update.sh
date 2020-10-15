@@ -10,19 +10,24 @@ print() {
 }
 
 update() {
-    echo "version: \"0.2\"
+    echo "version: \"0.3\"
 name: vault$2
     
 services:
     - name: dev$2
-      image_name: sconecuratedimages/www2019:vault-0.10.0-alpine
+      image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
       mrenclaves: [$HASH]
-      command: /root/go/bin/vault server -dev
+      command: /root/go/bin/vault server -config /resources/vault/config.hcl
       pwd: /
       environment:
         SCONE_MODE: hw
         SCONE_HEAP: $2G
-        VAULT_CONFIG_PATH: /resources/vault/config.hcl" > $VAULT_SESSION
+
+security:
+  attestation:
+    tolerate: [debug-mode, outdated-tcb]
+    ignore_advisories: "*"
+        " > $VAULT_SESSION
 }
 
 if [ "$1" == "print" ]; then
