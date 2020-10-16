@@ -27,5 +27,6 @@ var ProcessKeyFun = func(vault *vaultinterface.Vault) (*utils.InitResponse, erro
 	if err != nil {
 		return nil, fmt.Errorf("ProcessKeyFun|Error while decrypting initResponse %v", err)
 	}
+	fmt.Printf("decryptedInitResponse|Response %v", decryptedInitResponse)
 	return decryptedInitResponse, nil
 }

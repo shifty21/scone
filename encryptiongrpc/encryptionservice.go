@@ -99,6 +99,7 @@ func NewGRPCService(opts ...Option) (*GRPCServer, error) {
 
 //Run start encryptionhttp
 func (s *GRPCServer) Run(opts ...Options) {
+	log.Println("Starting grpc server")
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Opts.Config.GetGRPCServiceConfig().Port()))
 	if err != nil {
 		log.Printf("grpcTest|failed to listen: %v", err)

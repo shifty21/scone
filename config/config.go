@@ -70,6 +70,7 @@ func ConfigureAllInterfaces() *Configuration {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("resources/vault-init/")
 	viper.AddConfigPath("/resources/vault-init/")
+	viper.AddConfigPath("/root/go/bin/resources/vault-init/")
 	viper.AddConfigPath("../resources/vault-init/")
 	viper.ReadInConfig()
 	Config = Configuration{}

@@ -4,7 +4,7 @@ name: vault
 services:
     - name: dev
       image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
-      mrenclaves: [jackhammer]
+      mrenclaves: [56d37ffa65f3aa0e83aad166aa2b339b2bdda20254617c4b3b8e3fa794c41991]
       command: /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
       pwd: /
       environment:

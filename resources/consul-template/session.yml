@@ -3,9 +3,14 @@ name: consul-template
 
 services:
    - name: dev
-     image_name: vault-1.0
-     mrenclaves: [5128d0fbcb29dd5d85f120240d30bd9449ed36943ad3648d6db58a6c388f3241]
-     command: /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template
+     image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+     mrenclaves: [b8a136f200661817481753a02824ae1d799a5382f76a5caa71c348456d08fb42]
+     command: /root/go/bin/consul-template -auth -config /root/go/bin/resources/consul-template/config.hcl -once
      pwd: /
      environment:
         SCONE_MODE: hw
+
+security:
+  attestation:
+    tolerate: [debug-mode, outdated-tcb]
+    ignore_advisories: "*"

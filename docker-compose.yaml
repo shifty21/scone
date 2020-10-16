@@ -7,22 +7,22 @@ services:
          - SCONE_MODE=hw
         image: sconecuratedimages/services:cas
         devices:
-            - "/dev/gsgx"
-        ports:
-          - target: 8081
-            published: 8081
-            protocol: tcp
-            mode: host
-          - target: 18765
-            published: 18765
-            protocol: tcp
-            mode: host
+            - "/dev/isgx"
+              #        ports:
+              #- target: 8081
+              # published: 8081
+              #protocol: tcp
+              #mode: host
+              #- target: 18765
+              #published: 18765
+              #protocol: tcp
+              #mode: host
     vault:
         command: sh
-        build : .
+        image : vault_alpine_ykhedar
         tty: true
         devices:
-            - "/dev/gsgx"
+            - "/dev/isgx"
         environment: 
           - SCONE_LOG=7
           - SCONE_MODE=hw
@@ -30,19 +30,19 @@ services:
           - SCONE_LAS_ADDR=las
     consul:
         command: consul agent -dev -ui -client 0.0.0.0
-        build: docker/vault_dockerfile/vault_scone_ubuntu/consul/
-        expose:
-          - "8500"
+        build: docker/vault_dockerfile/consul/
+        #expose:
+        #  - "8500"
     las:
         image: sconecuratedimages/services:las
         environment:
           - SCONE_LOG=7
           - SCONE_MODE=hw
         devices:
-          - "/dev/gsgx"
-        ports:
-          - target: 18766
-            published: 18766
-            protocol: tcp
-            mode: host
+          - "/dev/isgx"
+            #ports:
+            #- target: 18766
+            #published: 18766
+            #protocol: tcp
+            #mode: host
         

@@ -1,18 +1,19 @@
-version: "0.2"
-name: vault-init
+version: "0.3"
+name: vault-init1
 
 services:
-   - name: dev
-     image_name: sconecuratedimages/www2019:vault-0.10.0-alpine
-     mrenclaves: [4cd0fe54d3d8d787553b7dac7347012682c402220acd062e4d0da3bbe10a1c2c]
-     command: /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault_initializer
+   - name: dev1
+     image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+     mrenclaves: [dc883ef08eeb0baa05b7fce488c57bfe8233d2d2eb50cb83e9b4d261239b0d04]
+     command: /root/go/bin/vault-init grpc
      pwd: /
      environment:
         SCONE_MODE: hw
+
 images:
-   - name: sconecuratedimages/www2019:vault-0.10.0-alpine
+   - name: sconecuratedimages/www2019:vault-1.5.0-alpine
      injection_files:
-      - path: /home/mykey.pem
+      - path: /resources/vault-init/mykey.pem
         content: |
             -----BEGIN RSA PRIVATE KEY-----
             MIIEpgIBAAKCAQEA1OSWQCTN/hgtYEyqh5VgngUDI+qBtyTbiVTdMM+ebMdA6YiV
@@ -41,6 +42,8 @@ images:
             RDDFyHwa9GdPHBjqIn/+2nM9epXhYKhrlMf6b5gFy41xmQNEqx5+rkaiDvX5NIFC
             XXBsjMK1c7q9mag23FqKlUkQUFZIxagFXm23NGhkaQOHTyyYtX/iXJVm
             -----END RSA PRIVATE KEY-----
-         
-         
 
+security:
+  attestation:
+    tolerate: [debug-mode, outdated-tcb]
+    ignore_advisories: "*"

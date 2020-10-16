@@ -25,18 +25,21 @@ Other files
 5. Once vault have successfully initialied add key to vault
    ```
    vault kv put secret/hello hashicorp="101 2nd St"
-   vault kv put secret/hello hashicorp/street_address="101 2nd St"
    ```
 6. Update demo-client's CAS session details to environment variables or configuration file(/resources/consul-template/config.hcl) for consul_template to pick up
 7. Run consul-template to render the demo template (/resources/consul-template/find_address.tpl) -> 
    ```
-   SCONE_CONFIG_ID=consul-template/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -auth -config /resources/consul-template/config.hcl -once
+   update /root/go/bin/resources/consul-template/config.hcl  with root token from vault
+   
+   SCONE_CONFIG_ID=consul-template/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -auth -config /root/go/bin/resources/consul-template/config.hcl -once
    ```
 8.  The template should be rendered in(/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
 
 ### Additional commands
 ```
 consul agent -dev
+
+ /root/go/bin/vault secrets enable -path=secret/ kv
 vault kv put secret/hello hashicorp="101 2nd St"
 vault kv put secret/hello hashicorp/street_address="101 2nd St"
 consul kv put hashicorp/street_address "101 2nd St"
@@ -63,3 +66,6 @@ openssl rsa -in mykey.pem -pubout > mykey.pub
 openssl rsa -in mykey.pem -pubout -out pubkey.pem
 ```
 
+
+If you dont have a root token but the keys are available 
+https://learn.hashicorp.com/tutorials/vault/generate-root

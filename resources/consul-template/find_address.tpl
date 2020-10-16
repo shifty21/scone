@@ -1,3 +1,3 @@
 {{ with secret "secret/hello" }}
-{{ .Data.data.hashicorp }}
+{{ .Data.hashicorp }}
 {{ end }}

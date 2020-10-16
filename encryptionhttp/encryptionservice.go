@@ -18,6 +18,7 @@ import (
 
 //Run start encryptionhttp
 func Run(config *config.Configuration, crypto *crypto.Crypto) {
+	log.Println("Starting http server")
 	SignalCh := make(chan os.Signal)
 	signal.Notify(SignalCh,
 		syscall.SIGINT,

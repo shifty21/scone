@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -14,6 +15,15 @@ import (
 )
 
 func main() {
+	args := os.Args[1:]
+	if len(args) != 1 {
+		log.Println("Please specify one of vanilla, cas, grpc")
+		os.Exit(0)
+	}
+	if args[0] == "--version" || args[0] == "version" {
+		fmt.Println("Vault Initializer Version - 0.01")
+		os.Exit(0)
+	}
 	config := config.ConfigureAllInterfaces()
 	crypto, err := crypto.InitCrypto(config.GetCryptoConfig())
 	if err != nil {
@@ -21,20 +31,22 @@ func main() {
 		os.Exit(1)
 	}
 	forever := make(chan struct{})
-	initType := "http"
+
+	initType := args[0]
 	switch initType {
 	case "vanilla":
-
+		log.Println("Starting vanilla vault initialization")
 		vault := vaultinterface.Initialize(config, crypto)
 		go vault.Run(vaultinit.EncryptKeyFun, vaultinit.ProcessKeyFun)
 		<-forever
 	case "cas":
+		log.Println("Starting cas based vault initialization")
 		vault := vaultinterface.Initialize(config, crypto)
 		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
 		<-forever
 	case "http":
 		encryptionhttp.Run(config, crypto)
-	default:
+	case "grpc":
 		grpcServer, err := encryptiongrpc.NewGRPCService(
 			encryptiongrpc.Config(config),
 			encryptiongrpc.CryptoService(crypto),
@@ -45,6 +57,9 @@ func main() {
 			os.Exit(1)
 		}
 		grpcServer.Run()
+	default:
+		log.Println("Please specify one of vanilla, cas, grpc")
+		os.Exit(0)
 	}
 
 }
