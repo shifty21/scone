@@ -22,7 +22,7 @@ RUN cat ~/.ssh/config
 RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_rsa
 
 ADD . / /root/go/src/github.com/shifty21/scone/
-RUN cd /root/go/src/github.com/shifty21/scone/ && go build -compiler gccgo -o /root/go/bin/vault_init -v
+RUN cd /root/go/src/github.com/shifty21/scone/ && go build -compiler gccgo -o /root/go/bin/vault-init -v
 #vault and consul-template
 RUN go get github.com/mitchellh/gox
 RUN cd /root/go/src/github.com/shifty21 && GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:shifty21/go-kms-wrapping.git

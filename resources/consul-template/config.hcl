@@ -8,17 +8,17 @@ wait {
 }
 vault {
     address = "http://127.0.0.1:8200"
-    token = "s.kEqN1GSTPze6DKF43yomfr3b"
+    token = "s.HYTNTvxIQVHXb1Ma7asHqTMv"
     renew_token = false
 }
 cas {
-get_session_api = "https://127.0.0.1:8081/session/"
-cert = "/resources/consul-template/conf/client.crt"
-key = "/resources/consul-template/conf/client-key.key"
-session_name = "client"
+get_session_api = "https://cas:8081/session/"
+cert = "/root/go/bin/resources/demo-client/conf/client.crt"
+key = "/root/go/bin//resources/demo-client/conf/client-key.key"
+session_name = "demo-client"
 }
 
 template {
-    source      = "/resources/consul-template/find_address.tpl"
-    destination = "/resources/consul-template/hashicorp_address.txt"
+    source      = "/root/go/bin/resources/consul-template/find_address.tpl"
+    destination = "/root/go/bin/resources/consul-template/hashicorp_address.txt"
 }

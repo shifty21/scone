@@ -27,7 +27,7 @@ func main() {
 	config := config.ConfigureAllInterfaces()
 	crypto, err := crypto.InitCrypto(config.GetCryptoConfig())
 	if err != nil {
-		log.Println("Error while initializing crypto module, Exiting")
+		log.Printf("Error while initializing crypto module, Exiting %v", err)
 		os.Exit(1)
 	}
 	forever := make(chan struct{})
