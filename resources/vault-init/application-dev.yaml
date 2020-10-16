@@ -5,7 +5,7 @@ crypto:
 #cas vault authentication
 cas_vault:
     session_name: vault
-    session_api: https://localhost:8081/session
+    session_api: https://cas:8081/session
     key: resources/vault/conf/client-key.key
     certificate: resources/vault/conf/client.crt
 #vault config

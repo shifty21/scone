@@ -31,7 +31,7 @@ var InitResponse *utils.InitResponse
 
 //InitCrypto initializes variables need to shamir key based vault initialization
 func InitCrypto(config *config.Crypto) (*Crypto, error) {
-
+	log.Printf("Initializing crypto package with public key [%v] and private key [%v]", config.PublicKeyPath(), config.PrivateKeyPath())
 	c := &Crypto{}
 	c.HashFun = sha512.New()
 	c.RandomIOReader = rand.Reader
