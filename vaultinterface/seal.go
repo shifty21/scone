@@ -26,7 +26,7 @@ func (v *Vault) CheckInitStatus() error {
 	}
 
 	if response.StatusCode != 200 {
-		return fmt.Errorf("CheckInitStatus|Non 200 status code: %w", err)
+		return fmt.Errorf("CheckInitStatus|Non 200 status code %v with body %v: %w", response.StatusCode, string(initStatusResponseBody), err)
 	}
 
 	var initStatus utils.InitStatus
@@ -45,9 +45,13 @@ func (v *Vault) Unseal(processKeyFun ProcessKeyFun) error {
 		return fmt.Errorf("Unseal|unable to read keys for vault unseal: %w", err)
 	}
 	log.Println("Unseal|Starting the unsealing process with InitResponse")
-	// arrLength = len(initResponse.Keys)>len(initResponse.RecoveryKeys)
-	// if v.AutoInitilization
-	for _, key := range initResponse.Keys {
+	var keysSet []string
+	if v.AutoInitilization {
+		keysSet = initResponse.RecoveryKeysBase64
+	} else {
+		keysSet = initResponse.Keys
+	}
+	for _, key := range keysSet {
 		done, err := v.UnsealPerKey(key)
 		if done {
 			return nil

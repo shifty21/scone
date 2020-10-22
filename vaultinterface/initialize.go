@@ -65,19 +65,21 @@ func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
 func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) error {
 	var initRequest utils.InitRequest
 	if !v.AutoInitilization {
+		fmt.Println("Setting secret shares")
 		initRequest.SecretShares = 5
 		initRequest.SecretThreshold = 3
 
 	} else {
+		fmt.Println("Setting Recover shares")
 		initRequest.RecoveryShares = 1
 		initRequest.RecoveryThreshold = 1
 	}
-	log.Printf("Initializing vault with %v\n", initRequest)
+
 	initRequestData, err := json.Marshal(&initRequest)
 	if err != nil {
 		return fmt.Errorf("ProcessInitVault|Error marshalling initRequest %w", err)
 	}
-
+	log.Printf("Initializing vault with %v\n", string(initRequestData))
 	r := bytes.NewReader(initRequestData)
 	request, err := http.NewRequest("PUT", v.Config.Address()+"/v1/sys/init", r)
 	if err != nil {
@@ -95,7 +97,7 @@ func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) error {
 	}
 
 	if response.StatusCode != 200 {
-		return fmt.Errorf("ProcessInitVault|Found non 200 status code %v", response.StatusCode)
+		return fmt.Errorf("ProcessInitVault|Non 200 status code %v with body %v: %w", response.StatusCode, string(initResponseBody), err)
 	}
 	fmt.Printf("initResponseBody %v", string(initResponseBody))
 	var initResponse *utils.InitResponse
