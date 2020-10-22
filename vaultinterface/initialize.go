@@ -26,10 +26,11 @@ type Vault struct {
 	SignalCh chan os.Signal
 	Stop     func()
 	//InitResp from vault
-	InitResp  *utils.InitResponse
-	Config    *config.Vault
-	CASConfig *config.VaultCAS
-	Crypto    *crypto.Crypto
+	InitResp          *utils.InitResponse
+	Config            *config.Vault
+	CASConfig         *config.VaultCAS
+	Crypto            *crypto.Crypto
+	AutoInitilization bool
 }
 
 //Initialize reads config from env variables or set them to default values
@@ -62,10 +63,14 @@ func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
 
 //ProcessInitVault vault, encrypt and store encrypted keys
 func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) error {
+	var initRequest utils.InitRequest
+	if !v.AutoInitilization {
+		initRequest.SecretShares = 5
+		initRequest.SecretThreshold = 3
 
-	initRequest := utils.InitRequest{
-		SecretShares:    5,
-		SecretThreshold: 3,
+	} else {
+		initRequest.RecoveryShares = 1
+		initRequest.RecoveryThreshold = 1
 	}
 	log.Printf("Initializing vault with %v\n", initRequest)
 	initRequestData, err := json.Marshal(&initRequest)
@@ -84,7 +89,7 @@ func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) error {
 	}
 	defer response.Body.Close()
 
-	initRequestResponseBody, err := ioutil.ReadAll(response.Body)
+	initResponseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return fmt.Errorf("ProcessInitVault|Error reading initialization response %w", err)
 	}
@@ -92,9 +97,9 @@ func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) error {
 	if response.StatusCode != 200 {
 		return fmt.Errorf("ProcessInitVault|Found non 200 status code %v", response.StatusCode)
 	}
-
+	fmt.Printf("initResponseBody %v", string(initResponseBody))
 	var initResponse *utils.InitResponse
-	if err := json.Unmarshal(initRequestResponseBody, &initResponse); err != nil {
+	if err := json.Unmarshal(initResponseBody, &initResponse); err != nil {
 		return fmt.Errorf("ProcessInitVault|Error while unmarshalling reponse %w", err)
 	}
 
@@ -148,13 +153,21 @@ func (v *Vault) Run(encryptKeyFun EncryptKeyFun, processKeyFun ProcessKeyFun) {
 			log.Println("Run|Vault is not initialized. Initializing and unsealing...")
 			err := v.ProcessInitVault(encryptKeyFun)
 			if err != nil {
-				log.Printf("Run|Error with initprocess %v", err)
+				log.Printf("Run|Error with initprocess: %v", err)
 				os.Exit(1)
 			}
-			v.Unseal(processKeyFun)
+			err = v.Unseal(processKeyFun)
+			if err != nil {
+				log.Printf("Run|Error unsealing: %v", err)
+				os.Exit(1)
+			}
 		case 503:
-			log.Println("Run|Vault is sealed. Unsealing...")
-			v.Unseal(processKeyFun)
+			log.Println("Run|Vault is initialized but in sealed state. Unsealing...")
+			err := v.Unseal(processKeyFun)
+			if err != nil {
+				log.Printf("Run|Error Unsealing: %v", err)
+				os.Exit(1)
+			}
 		default:
 			log.Panicf("Run|Vault is in an unknown state. Status: %v", response)
 			os.Exit(1)

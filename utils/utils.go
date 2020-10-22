@@ -9,9 +9,29 @@ type InitStatus struct {
 
 // InitResponse holds a Vault init response.
 type InitResponse struct {
-	Keys       []string `json:"keys"`
-	KeysBase64 []string `json:"keys_base64"`
-	RootToken  string   `json:"root_token"`
+	Keys               []string `json:"keys"`
+	KeysBase64         []string `json:"keys_base64"`
+	RecoveryKeys       []string `json:"recovery_keys"`
+	RecoveryKeysBase64 []string `json:"recovery_keys_base64"`
+	RootToken          string   `json:"root_token"`
+}
+
+// UnsealResponse holds a Vault init response.
+type UnsealResponse struct {
+	Type        string `json:"type"`
+	Initialized bool   `json:"initialized"`
+	Sealed      bool   `json:"sealed"`
+	T           int    `json:"t"`
+	N           int    `json:"n"`
+	Progress    int    `json:"progress"`
+
+	Nonce        string `json:"nonce"`
+	Version      string `json:"version"`
+	Migration    bool   `json:"migration"`
+	ClusterName  string `json:"cluster_name"`
+	ClusterID    string `json:"cluster_id"`
+	RecoverySeal bool   `json:"recovery_seal"`
+	StorageType  string `json:"storage_type"`
 }
 
 // GoString defines the printable version of this struct.
@@ -31,22 +51,24 @@ func (i *InitResponse) GoString() string {
 	)
 }
 
-// UnsealResponse holds a Vault unseal response.
-type UnsealResponse struct {
-	Sealed   bool `json:"sealed"`
-	T        int  `json:"t"`
-	N        int  `json:"n"`
-	Progress int  `json:"progress"`
-}
-
 // InitRequest holds a Vault init request.
 type InitRequest struct {
-	SecretShares    int `json:"secret_shares"`
-	SecretThreshold int `json:"secret_threshold"`
+	PGPKeys           []string `json:"pgp_keys"`
+	SecretShares      int      `json:"secret_shares"`
+	SecretThreshold   int      `json:"secret_threshold"`
+	RecoveryShares    int      `json:"recovery_shares"`
+	RecoveryThreshold int      `json:"recovery_threshold"`
+	RecoveryPGPKeys   []string `json:"recovery_pgp_keys"`
+	RootTokenPGPKey   string   `json:"root_token_pgp_key"`
 }
 
 // UnsealRequest holds a Vault unseal request.
 type UnsealRequest struct {
 	Key   string `json:"key"`
 	Reset bool   `json:"reset"`
+}
+
+// InitializedUnsealRequest holds a Vault unseal request.
+type InitializedUnsealRequest struct {
+	Key string `json:"key"`
 }

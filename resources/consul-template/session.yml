@@ -9,6 +9,7 @@ services:
      pwd: /
      environment:
         SCONE_MODE: hw
+        VAULT_TOKEN: s.8teKlO0msSvoTNyPmY1KYMrW
 
 security:
   attestation:

@@ -40,19 +40,14 @@ func (v *Vault) CheckInitStatus() error {
 
 //Unseal reads encrypted keys, decrypt them and calls unseal for each of them.
 func (v *Vault) Unseal(processKeyFun ProcessKeyFun) error {
-	// auth := utils.AuthVaultByCAS(v.CASConfig)
-	// if auth == false {
-	// 	logger.Error.Println("Error while authenticating with CAS")
-	// 	return
-	// }
 	initResponse, err := processKeyFun(v)
 	if err != nil {
-
-		return fmt.Errorf("Unseal|unable to read keys for vault unseal %w", err)
+		return fmt.Errorf("Unseal|unable to read keys for vault unseal: %w", err)
 	}
 	log.Println("Unseal|Starting the unsealing process with InitResponse")
-
-	for _, key := range initResponse.KeysBase64 {
+	// arrLength = len(initResponse.Keys)>len(initResponse.RecoveryKeys)
+	// if v.AutoInitilization
+	for _, key := range initResponse.Keys {
 		done, err := v.UnsealPerKey(key)
 		if done {
 			return nil
@@ -96,11 +91,12 @@ func (v *Vault) UnsealPerKey(key string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("UnsealPerKey|Error while reading response body. %w", err)
 	}
-
+	fmt.Printf("unsealRequestResponseBody %v", string(unsealRequestResponseBody))
 	var unsealResponse utils.UnsealResponse
 	if err := json.Unmarshal(unsealRequestResponseBody, &unsealResponse); err != nil {
 		return false, fmt.Errorf("UnsealPerKey|Error while unmarshalling unsealResponse. %w", err)
 	}
+	fmt.Printf("unsealResponse %v", unsealResponse)
 
 	if !unsealResponse.Sealed {
 		return true, nil

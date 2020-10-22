@@ -39,9 +39,20 @@ func main() {
 		vault := vaultinterface.Initialize(config, crypto)
 		go vault.Run(vaultinit.EncryptKeyFun, vaultinit.ProcessKeyFun)
 		<-forever
-	case "cas":
-		log.Println("Starting cas based vault initialization")
+	case "scone":
+		log.Println("Starting scone based vault initialization")
 		vault := vaultinterface.Initialize(config, crypto)
+		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
+		<-forever
+	case "pgp":
+		log.Println("Starting pgp based vault initialization")
+		vault := vaultinterface.Initialize(config, crypto)
+		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
+		<-forever
+	case "auto":
+		log.Println("Starting pgp based vault initialization")
+		vault := vaultinterface.Initialize(config, crypto)
+		vault.AutoInitilization = true
 		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
 		<-forever
 	case "http":

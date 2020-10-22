@@ -66,7 +66,7 @@ func panicIfErrorForKey(err error, key string) {
 
 //ConfigureAllInterfaces configures vaultinitcas, vaultinitshamir configurations
 func ConfigureAllInterfaces() *Configuration {
-	viper.SetConfigName("application.yaml")
+	viper.SetConfigName("application-dev.yaml")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("resources/vault-init/")
 	viper.AddConfigPath("/resources/vault-init/")

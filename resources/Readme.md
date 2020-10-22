@@ -19,13 +19,15 @@ Other files
 3. Start vault first only in case of shamir based initialization, in grpc based auto-initialization perform step 4 first.
    ```
    SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
+   SCONE_CONFIG_ID=vault1/dev1 SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config_vanilla.hcl
    ```
 4. Start vault_initializer - this will intialize vault based on the type suggeted. For the 2nd senario mentioned above the private key for decryption would be inserted by CAS at /home/mykey.pem. This ensures that only authenticated application is able to intialize vault.
    ```
-   SCONE_CONFIG_ID=vault-init/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault_init grpc
+   SCONE_CONFIG_ID=vault-init/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init grpc
    export VAULT_ADDR=http://127.0.0.1:8200
    /root/go/bin/vault operator init -recovery-shares=1 -recovery-threshold=1
-   /root/go/bin/vault login s.HYTNTvxIQVHXb1Ma7asHqTMv
+   /root/go/bin/vault login s.HEE6qF2teSZa0aNNgQYaHqMY
+   SCONE_CONFIG_ID=vault-init1/dev1 SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init cas
    ```
 5. Once vault have successfully initialied add key to vault
    ```
@@ -70,3 +72,8 @@ openssl rsa -in mykey.pem -pubout -out pubkey.pem
 
 * If you dont have a root token but the keys are available 
    https://learn.hashicorp.com/tutorials/vault/generate-root
+   vault operator unseal and provide unseal keys
+Recover keys can be used to unseal only for rekeying and generating root token again
+https://www.vaultproject.io/api-docs/system/init#recovery_shares
+
+Rekeying process

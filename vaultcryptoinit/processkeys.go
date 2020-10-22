@@ -10,10 +10,12 @@ import (
 //EncryptKeyFun stores keys as required by cas unseal process
 var EncryptKeyFun = func(initResponse *utils.InitResponse, vault *vaultinterface.Vault) error {
 	//use a public key to encrypt the response
+	// fmt.Printf("InitResponse %v", initResponse)
 	encryptedInitResponse, err := EncryptInitResponse(initResponse, vault)
 	if err != nil {
 		return fmt.Errorf("EncryptKeyFun|Error while encrypting initresponse %v", err)
 	}
+	// fmt.Printf("EncryptedInitResponse %v", encryptedInitResponse)
 	InitResponse = encryptedInitResponse
 	return nil
 }
@@ -25,8 +27,8 @@ var ProcessKeyFun = func(vault *vaultinterface.Vault) (*utils.InitResponse, erro
 	encryptedInitResponseJSON := InitResponse
 	decryptedInitResponse, err := DecryptInitResponse(encryptedInitResponseJSON, vault)
 	if err != nil {
-		return nil, fmt.Errorf("ProcessKeyFun|Error while decrypting initResponse %v", err)
+		return nil, fmt.Errorf("ProcessKeyFun|Error while decrypting initResponse: %w", err)
 	}
-	fmt.Printf("decryptedInitResponse|Response %v", decryptedInitResponse)
+	// fmt.Printf("decryptedInitResponse|Response %v", decryptedInitResponse)
 	return decryptedInitResponse, nil
 }
