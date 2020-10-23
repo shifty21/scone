@@ -14,9 +14,19 @@ vault operator rekey -target=recovery -nonce=55aa6ad5-a05c-65f7-4e7b-6fc3c1ea592
 
 #gpg keys
 gpg --gen-key
-gpg --export-secret-keys yateenderk@gmail.com > private.key
 gpg --import private.key
-gpg --output jack.gpg --encrypt --recipient yateender.khedar@tu-dresden.de key
+
+gpg --output output.gpg --encrypt --recipient yateenderk@gmail.com input
 #jack.gpg should be base64 decode output of the key provided by vault, use the base64 response
-echo "" | base64 --decode | > jack.gpg
-gpg --output jac_out --decrypt jack.gpg 
+echo "" | base64 --decode | > output.gpg
+gpg --output decrypted_out --decrypt output.gpg 
+#export public and private pgp key armored output 
+gpg --export-secret-keys -a -o private.key yateenderk@gmail.com
+gpg -a --export yateenderk@gmail.com > public.asc
+gpg --list-keys shifty21
+#export public and private pgp key base64 encoded output 
+gpg --export-secret-keys  yateenderk@gmail.com | base64  > private.asc
+gpg --export yateenderk@gmail.com | base64 > public.asc
+#to import the base64 key first decode it and then import
+cat private.asc | base64 --decode | >private.key
+gpg --import private.key 

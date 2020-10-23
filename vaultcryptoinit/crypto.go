@@ -89,23 +89,21 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 		}
 		decryptedInitResponseJSON.KeysBase64[key] = *encryptedText
 	}
-	if vault.AutoInitilization {
-		//RecoveryKeys
-		for key, value := range encryptedResponse.RecoveryKeys {
-			encryptedText, err := vault.Crypto.DecryptString(value)
-			if err != nil {
-				return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the Key %w", err)
-			}
-			decryptedInitResponseJSON.RecoveryKeys[key] = *encryptedText
+	//RecoveryKeys
+	for key, value := range encryptedResponse.RecoveryKeys {
+		encryptedText, err := vault.Crypto.DecryptString(value)
+		if err != nil {
+			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the Key %w", err)
 		}
-		//RecoveryKeybase64
-		for key, value := range encryptedResponse.RecoveryKeysBase64 {
-			encryptedText, err := vault.Crypto.DecryptString(value)
-			if err != nil {
-				return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
-			}
-			decryptedInitResponseJSON.RecoveryKeysBase64[key] = *encryptedText
+		decryptedInitResponseJSON.RecoveryKeys[key] = *encryptedText
+	}
+	//RecoveryKeybase64
+	for key, value := range encryptedResponse.RecoveryKeysBase64 {
+		encryptedText, err := vault.Crypto.DecryptString(value)
+		if err != nil {
+			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
 		}
+		decryptedInitResponseJSON.RecoveryKeysBase64[key] = *encryptedText
 	}
 
 	// roottoken

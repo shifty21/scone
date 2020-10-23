@@ -39,3 +39,5 @@ Try these things
 1. Generate gpg keys and try using them to auto-unseal, this will encrypt the response of init. These can also be used in normal shamir based initialization.
 2. Create one more package in vault-initializer that will initialize auto-unseal case with pgp keys and ask CAS sessions from stakeholders. Is this really possible ? since this would require the key and cert of the sessions.
 3. Check the case where vault is initialized and sealed if keys are there in memory unseal else exit. Or try to store in a location?
+4. Remove global variable for initresponse
+5. Decrypt pgp then decode to string

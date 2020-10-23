@@ -15,6 +15,7 @@ import (
 
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/crypto"
+	"github.com/shifty21/scone/gpgcrypto"
 	"github.com/shifty21/scone/utils"
 )
 
@@ -30,12 +31,17 @@ type Vault struct {
 	Config            *config.Vault
 	CASConfig         *config.VaultCAS
 	Crypto            *crypto.Crypto
+	GPGCrypto         *gpgcrypto.Crypto
 	AutoInitilization bool
 }
 
 //Initialize reads config from env variables or set them to default values
 func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
 	log.Println("GetConfig|Starting the vault-init service...")
+	gpgcrypt, err := gpgcrypto.InitGPGCrypto(config.GetGPGCryptoConfig())
+	if err != nil {
+		fmt.Printf("Error while initializing GPGCrypto : %v", err)
+	}
 	VaultInterface := &Vault{
 		HTTPClient: http.Client{
 			Transport: &http.Transport{
@@ -51,6 +57,7 @@ func Initialize(config *config.Configuration, crypto *crypto.Crypto) *Vault {
 		},
 		Config:    config.GetVaultConfig(),
 		CASConfig: config.GetCASConfig(),
+		GPGCrypto: gpgcrypt,
 		Crypto:    crypto,
 	}
 	signal.Notify(VaultInterface.SignalCh,
@@ -68,11 +75,15 @@ func (v *Vault) ProcessInitVault(encryptKey EncryptKeyFun) error {
 		fmt.Println("Setting secret shares")
 		initRequest.SecretShares = 5
 		initRequest.SecretThreshold = 3
+		//set pgp keys
 
 	} else {
 		fmt.Println("Setting Recover shares")
 		initRequest.RecoveryShares = 1
 		initRequest.RecoveryThreshold = 1
+		initRequest.RecoveryPGPKeys = make([]string, 1)
+		initRequest.RecoveryPGPKeys[0] = v.GPGCrypto.PublicKey[0]
+		//set pgp keys
 	}
 
 	initRequestData, err := json.Marshal(&initRequest)

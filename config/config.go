@@ -79,6 +79,7 @@ func ConfigureAllInterfaces() *Configuration {
 	Config["crypto_config"] = LoadCryptoConfig()
 	Config["encryption_service"] = LoadencryptionhttpConfig()
 	Config["grpc_service"] = LoadEncryptionGRPCConfig()
+	Config["gpg_crypto_Config"] = LoadGPGCryptoConfig()
 	return &Config
 }
 
@@ -105,4 +106,9 @@ func (c *Configuration) GetencryptionhttpConfig() *encryptionhttp {
 //GetGRPCServiceConfig returns cas related config
 func (c *Configuration) GetGRPCServiceConfig() *EncryptionGRPC {
 	return Config["grpc_service"].(*EncryptionGRPC)
+}
+
+//GetGPGCryptoConfig returns cas related config
+func (c *Configuration) GetGPGCryptoConfig() *GPGCrypto {
+	return Config["gpg_crypto_Config"].(*GPGCrypto)
 }

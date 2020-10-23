@@ -10,6 +10,7 @@ import (
 	"github.com/shifty21/scone/encryptiongrpc"
 	"github.com/shifty21/scone/encryptionhttp"
 	"github.com/shifty21/scone/vaultcryptoinit"
+	"github.com/shifty21/scone/vaultgpginit"
 	"github.com/shifty21/scone/vaultinit"
 	"github.com/shifty21/scone/vaultinterface"
 )
@@ -46,8 +47,14 @@ func main() {
 		<-forever
 	case "pgp":
 		log.Println("Starting pgp based vault initialization")
+		// crypto, err := gpgcrypto.InitGPGCrypto(config.GetGPGCryptoConfig())
+		// if err != nil {
+		// 	fmt.Printf("Error while initializing gpgcrypto %v: ", err)
+		// }
+		// gpgcrypto.Test(crypto)
 		vault := vaultinterface.Initialize(config, crypto)
-		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
+		vault.AutoInitilization = true
+		go vault.Run(vaultgpginit.EncryptKeyFun, vaultgpginit.ProcessKeyFun)
 		<-forever
 	case "auto":
 		log.Println("Starting pgp based vault initialization")

@@ -18,3 +18,6 @@ grpc_encryption_server:
     key: resources/vault-init/grpc/cert/service.key
     client_cert: resources/vault-init/grpc/cert/ca-cert.pem
     port: 8082
+gpgcrypto:
+    public_key_path: resources/vault/vault-experiments/keys/public.asc
+    private_key_path: resources/vault/vault-experiments/keys/private.asc
