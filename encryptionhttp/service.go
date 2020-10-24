@@ -22,8 +22,8 @@ type ServiceImpl struct {
 	crypto *crypto.Crypto
 }
 
-//Newencryptionhttp for checking flying status in a particular location
-func Newencryptionhttp(crypto *crypto.Crypto) Service {
+//NewEncryptionhttp for checking flying status in a particular location
+func NewEncryptionhttp(crypto *crypto.Crypto) Service {
 	return &ServiceImpl{
 		crypto: crypto,
 	}

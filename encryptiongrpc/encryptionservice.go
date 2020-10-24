@@ -16,80 +16,77 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-//Options contains optional parameters for GRPCServer
-type Options struct {
-	EnableTLS     bool
-	TLSConfig     *tls.Config
-	Config        *config.Configuration
-	CryptoService *crypto.Crypto
-}
-
 //Option function interface for options
-type Option func(o *Options)
+type Option func(o *GRPCServer)
 
 //EnableTLS for starting tls based grpc server
 func EnableTLS(b bool) Option {
-	return func(o *Options) {
+	return func(o *GRPCServer) {
 		o.EnableTLS = b
 	}
 }
 
-//TLSConfig gets tls config
-func TLSConfig(c *tls.Config) Option {
-	return func(o *Options) {
+//SetTLSConfig gets tls config
+func SetTLSConfig(c *tls.Config) Option {
+	return func(o *GRPCServer) {
 		o.TLSConfig = c
 	}
 }
 
-//Config sets config
-func Config(c *config.Configuration) Option {
-	return func(o *Options) {
+//SetConfig sets config
+func SetConfig(c *config.Configuration) Option {
+	return func(o *GRPCServer) {
 		o.Config = c
 	}
 }
 
 //CryptoService sets cryptoservice
 func CryptoService(c *crypto.Crypto) Option {
-	return func(o *Options) {
-		o.CryptoService = c
+	return func(o *GRPCServer) {
+		o.SconeCrypto = c
 	}
 }
 
 //GRPCServer for encryption service
 type GRPCServer struct {
-	Opts       Options
-	SignalChan chan os.Signal
-	Server     *grpc.Server
+	SignalChan  chan os.Signal
+	Server      *grpc.Server
+	EnableTLS   bool
+	TLSConfig   *tls.Config
+	Config      *config.Configuration
+	SconeCrypto *crypto.Crypto
 }
 
 //NewGRPCService creates new GRPCServer
 func NewGRPCService(opts ...Option) (*GRPCServer, error) {
-	var options Options
-	for _, o := range opts {
-		o(&options)
-	}
 	SignalCh := make(chan os.Signal)
 	signal.Notify(SignalCh,
 		syscall.SIGINT,
 		syscall.SIGTERM,
 		syscall.SIGKILL,
 	)
+	s := &GRPCServer{
+		SignalChan: SignalCh,
+		EnableTLS:  false,
+	}
 
-	if options.EnableTLS {
+	for _, o := range opts {
+		o(s)
+	}
+
+	sconecrypto, err := crypto.InitCrypto(s.Config.GetCryptoConfig())
+	if err != nil {
+		log.Printf("Error while initializing crypto module, Exiting %v", err)
+		os.Exit(1)
+	}
+	s.SconeCrypto = sconecrypto
+	if s.EnableTLS {
 		log.Println("Loading tls cred")
-		tlsconfig, err := LoadTLSCredentials(options.Config)
+		tlsconfig, err := LoadTLSCredentials(s.Config)
 		if err != nil {
 			return nil, fmt.Errorf("Error while generating certificate config %w", err)
 		}
-		options.TLSConfig = tlsconfig
-	}
-
-	s := &GRPCServer{
-		Opts:       options,
-		SignalChan: SignalCh,
-	}
-	if options.EnableTLS {
-		s.Server = grpc.NewServer(grpc.Creds(credentials.NewTLS(options.TLSConfig)))
+		s.Server = grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsconfig)))
 	} else {
 		log.Println("Enabling grpc server")
 		s.Server = grpc.NewServer()
@@ -98,15 +95,15 @@ func NewGRPCService(opts ...Option) (*GRPCServer, error) {
 }
 
 //Run start encryptionhttp
-func (s *GRPCServer) Run(opts ...Options) {
+func (s *GRPCServer) Run(opts ...Option) {
 	log.Println("Starting grpc server")
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Opts.Config.GetGRPCServiceConfig().Port()))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Config.GetGRPCServiceConfig().Port()))
 	if err != nil {
 		log.Printf("grpcTest|failed to listen: %v", err)
 		os.Exit(1)
 	}
 
-	service := Newencryptionhttp(s.Opts.CryptoService)
+	service := NewEncryptionhttp(s.SconeCrypto)
 	pb.RegisterCryptoServiceServer(s.Server, &SconeCryptoGRPC{service: service})
 	go func() {
 		select {

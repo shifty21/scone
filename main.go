@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/shifty21/scone/config"
-	"github.com/shifty21/scone/crypto"
 	"github.com/shifty21/scone/encryptiongrpc"
 	"github.com/shifty21/scone/encryptionhttp"
 	"github.com/shifty21/scone/vaultcryptoinit"
@@ -22,52 +21,18 @@ func main() {
 		os.Exit(0)
 	}
 	if args[0] == "--version" || args[0] == "version" {
-		fmt.Println("Vault Initializer Version - 0.01")
+		log.Println("Vault Initializer Version - 0.01")
 		os.Exit(0)
 	}
 	config := config.ConfigureAllInterfaces()
-	crypto, err := crypto.InitCrypto(config.GetCryptoConfig())
-	if err != nil {
-		log.Printf("Error while initializing crypto module, Exiting %v", err)
-		os.Exit(1)
-	}
-	forever := make(chan struct{})
-
-	initType := args[0]
-	switch initType {
-	case "vanilla":
-		log.Println("Starting vanilla vault initialization")
-		vault := vaultinterface.Initialize(config, crypto)
-		go vault.Run(vaultinit.EncryptKeyFun, vaultinit.ProcessKeyFun)
-		<-forever
-	case "scone":
-		log.Println("Starting scone based vault initialization")
-		vault := vaultinterface.Initialize(config, crypto)
-		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
-		<-forever
-	case "pgp":
-		log.Println("Starting pgp based vault initialization")
-		// crypto, err := gpgcrypto.InitGPGCrypto(config.GetGPGCryptoConfig())
-		// if err != nil {
-		// 	fmt.Printf("Error while initializing gpgcrypto %v: ", err)
-		// }
-		// gpgcrypto.Test(crypto)
-		vault := vaultinterface.Initialize(config, crypto)
-		vault.AutoInitilization = true
-		go vault.Run(vaultgpginit.EncryptKeyFun, vaultgpginit.ProcessKeyFun)
-		<-forever
-	case "auto":
-		log.Println("Starting pgp based vault initialization")
-		vault := vaultinterface.Initialize(config, crypto)
-		vault.AutoInitilization = true
-		go vault.Run(vaultcryptoinit.EncryptKeyFun, vaultcryptoinit.ProcessKeyFun)
-		<-forever
+	switch args[0] {
 	case "http":
-		encryptionhttp.Run(config, crypto)
+		encryptionhttp.Run(
+			encryptionhttp.SetConfig(config),
+		)
 	case "grpc":
 		grpcServer, err := encryptiongrpc.NewGRPCService(
-			encryptiongrpc.Config(config),
-			encryptiongrpc.CryptoService(crypto),
+			encryptiongrpc.SetConfig(config),
 			encryptiongrpc.EnableTLS(true),
 		)
 		if err != nil {
@@ -76,8 +41,43 @@ func main() {
 		}
 		grpcServer.Run()
 	default:
-		log.Println("Please specify one of vanilla, cas, grpc")
-		os.Exit(0)
+		v, err := vaultinterface.Initialize()
+		if err != nil {
+			fmt.Printf("Couldnt initialize vaultinterface %v", err)
+			os.Exit(0)
+		}
+		var options []vaultinterface.Option
+		forever := make(chan struct{})
+		switch args[0] {
+		case "scone":
+			log.Println("Initializing Vault with scone based encryption of vault initresponse")
+			v.EncryptKeyFun = vaultcryptoinit.EncryptKeyFun
+			v.ProcessKeyFun = vaultcryptoinit.ProcessKeyFun
+			options = append(options, vaultinterface.EnableGPGEncryption())
+			options = append(options, vaultinterface.SetGPGCryptoConfig(config.GetGPGCryptoConfig()))
+			options = append(options, vaultinterface.SconeCryptoConfig(config.GetCryptoConfig()))
+		case "auto":
+			log.Println("Initializing Vault with auto-seal")
+			v.EncryptKeyFun = vaultgpginit.EncryptKeyFun
+			v.ProcessKeyFun = vaultgpginit.ProcessKeyFun
+			options = append(options, vaultinterface.EnableGPGEncryption())
+			options = append(options, vaultinterface.SetGPGCryptoConfig(config.GetGPGCryptoConfig()))
+			options = append(options, vaultinterface.EnableAutoInitialization())
+		case "vanilla":
+			log.Println("Initializing Vault without encryption")
+			v.EncryptKeyFun = vaultinit.EncryptKeyFun
+			v.ProcessKeyFun = vaultinit.ProcessKeyFun
+		default:
+			log.Printf("Please specify gpg, scone, vanilla")
+			os.Exit(1)
+		}
+		options = append(options, vaultinterface.SetConfig(config.GetVaultConfig()))
+		err = v.Finalize(options...)
+		if err != nil {
+			log.Printf("Error finalizing vaultinterface %v", err)
+			os.Exit(1)
+		}
+		v.Run()
+		<-forever
 	}
-
 }

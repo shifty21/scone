@@ -14,7 +14,7 @@ import (
 //CheckInitStatus of vault
 func (v *Vault) CheckInitStatus() error {
 	log.Println("CheckInitStatus|Checking InitStatus of vault")
-	response, err := v.HTTPClient.Get(v.Config.Address() + "/v1/sys/init")
+	response, err := v.HTTPClient.Get(v.Opt.VaultConfig.Address() + "/v1/sys/init")
 	if err != nil {
 		return fmt.Errorf("CheckInitStatus|vault init api response error %w", err)
 	}
@@ -46,7 +46,7 @@ func (v *Vault) Unseal(processKeyFun ProcessKeyFun) error {
 	}
 	log.Println("Unseal|Starting the unsealing process with InitResponse")
 	var keysSet []string
-	if v.AutoInitilization {
+	if v.Opt.IsAutoInitilization {
 		keysSet = initResponse.RecoveryKeysBase64
 	} else {
 		keysSet = initResponse.Keys
@@ -76,7 +76,7 @@ func (v *Vault) UnsealPerKey(key string) (bool, error) {
 	}
 
 	r := bytes.NewReader(unsealRequestData)
-	request, err := http.NewRequest(http.MethodPut, v.Config.Address()+"/v1/sys/unseal", r)
+	request, err := http.NewRequest(http.MethodPut, v.Opt.VaultConfig.Address()+"/v1/sys/unseal", r)
 	if err != nil {
 		return false, fmt.Errorf("UnsealPerKey|Error while creating UnsealRequest. %w", err)
 	}

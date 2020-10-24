@@ -9,9 +9,6 @@ import (
 	"github.com/shifty21/scone/vaultinterface"
 )
 
-//InitResponse for storing intermediate encrypted response
-var InitResponse *utils.InitResponse
-
 //DecryptPGPInitResponse decrypts all the fields of json
 func DecryptPGPInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinterface.Vault) (*utils.InitResponse, error) {
 	if encryptedResponse == nil {
@@ -35,7 +32,7 @@ func DecryptPGPInitResponse(encryptedResponse *utils.InitResponse, vault *vaulti
 	// }
 	//decrypt RecoveryKeybase64
 	for key, value := range encryptedResponse.RecoveryKeysBase64 {
-		encryptedText, err := gpgcrypto.DecryptBytes(value, vault.GPGCrypto.PrivateKey[0])
+		encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto.PrivateKey[0])
 		if err != nil {
 			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
 		}

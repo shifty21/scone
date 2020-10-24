@@ -8,9 +8,6 @@ import (
 	"github.com/shifty21/scone/vaultinterface"
 )
 
-//InitResponse for storing intermediate encrypted response
-var InitResponse *utils.InitResponse
-
 // EncryptInitResponse encryptes all fields one by one and sends back encrypted response
 func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface.Vault) (*utils.InitResponse, error) {
 	encryptedInitResponseJSON := &utils.InitResponse{
@@ -21,7 +18,7 @@ func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface
 	}
 	//Keys
 	for key, plainText := range initResponse.Keys {
-		encryptedText, err := vault.Crypto.EncryptString(plainText)
+		encryptedText, err := vault.Opt.SconeCrypto.EncryptString(plainText)
 		if err != nil {
 			return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the Keys %w", err)
 		}
@@ -29,7 +26,7 @@ func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface
 	}
 	//base64
 	for key, plainText := range initResponse.KeysBase64 {
-		encryptedText, err := vault.Crypto.EncryptString(plainText)
+		encryptedText, err := vault.Opt.SconeCrypto.EncryptString(plainText)
 		if err != nil {
 			return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the KeysBase64 %w", err)
 		}
@@ -38,7 +35,7 @@ func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface
 
 	//Recovery Keys
 	for key, plainText := range initResponse.RecoveryKeys {
-		encryptedText, err := vault.Crypto.EncryptString(plainText)
+		encryptedText, err := vault.Opt.SconeCrypto.EncryptString(plainText)
 		if err != nil {
 			return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the Keys %w", err)
 		}
@@ -46,14 +43,14 @@ func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface
 	}
 	//recovery key base64
 	for key, plainText := range initResponse.RecoveryKeysBase64 {
-		encryptedText, err := vault.Crypto.EncryptString(plainText)
+		encryptedText, err := vault.Opt.SconeCrypto.EncryptString(plainText)
 		if err != nil {
 			return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the KeysBase64 %w", err)
 		}
 		encryptedInitResponseJSON.RecoveryKeysBase64[key] = *encryptedText
 	}
 	//root token
-	encryptedText, err := vault.Crypto.EncryptString(initResponse.RootToken)
+	encryptedText, err := vault.Opt.SconeCrypto.EncryptString(initResponse.RootToken)
 	if err != nil {
 		return nil, fmt.Errorf("EncryptInitResponse|Unable to encrypt one of the RootToken %w", err)
 	}
@@ -75,7 +72,7 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 	}
 	//Keys
 	for key, value := range encryptedResponse.Keys {
-		encryptedText, err := vault.Crypto.DecryptString(value)
+		encryptedText, err := vault.Opt.SconeCrypto.DecryptString(value)
 		if err != nil {
 			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the Key %w", err)
 		}
@@ -83,7 +80,7 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 	}
 	//base64
 	for key, value := range encryptedResponse.KeysBase64 {
-		encryptedText, err := vault.Crypto.DecryptString(value)
+		encryptedText, err := vault.Opt.SconeCrypto.DecryptString(value)
 		if err != nil {
 			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
 		}
@@ -91,7 +88,7 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 	}
 	//RecoveryKeys
 	for key, value := range encryptedResponse.RecoveryKeys {
-		encryptedText, err := vault.Crypto.DecryptString(value)
+		encryptedText, err := vault.Opt.SconeCrypto.DecryptString(value)
 		if err != nil {
 			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the Key %w", err)
 		}
@@ -99,7 +96,7 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 	}
 	//RecoveryKeybase64
 	for key, value := range encryptedResponse.RecoveryKeysBase64 {
-		encryptedText, err := vault.Crypto.DecryptString(value)
+		encryptedText, err := vault.Opt.SconeCrypto.DecryptString(value)
 		if err != nil {
 			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
 		}
@@ -107,7 +104,7 @@ func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinte
 	}
 
 	// roottoken
-	encryptedText, err := vault.Crypto.DecryptString(encryptedResponse.RootToken)
+	encryptedText, err := vault.Opt.SconeCrypto.DecryptString(encryptedResponse.RootToken)
 	if err != nil {
 		return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt RootToken %w ", err)
 	}
