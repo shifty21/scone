@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/shifty21/scone/config"
-	"github.com/shifty21/scone/crypto"
 	"github.com/shifty21/scone/gpgcrypto"
+	"github.com/shifty21/scone/rsacrypto"
 )
 
 //Options for vault interface
@@ -14,7 +14,7 @@ type Options struct {
 	CASConfig          *config.VaultCAS
 	InitializationType string
 	SconeCryptoConfig  *config.Crypto
-	SconeCrypto        *crypto.Crypto
+	SconeCrypto        *rsacrypto.Crypto
 
 	EnableGPGEncryption bool
 	GPGCryptoConfig     *config.GPGCrypto

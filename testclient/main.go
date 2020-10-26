@@ -17,65 +17,57 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-func httpTest() {
+func httpTest() error {
 	message := &RequestByte{
 		Data: "jackhammer",
 	}
 
 	marshalledmessage, err := json.Marshal(message)
 	if err != nil {
-		log.Fatalln(err)
+		return fmt.Errorf("httpTest|Error while marshalling request: %w", err)
 	}
 	resp, err := http.Post("http://localhost:8083/encrypt", "application/json", bytes.NewBuffer(marshalledmessage))
 	if err != nil {
-		log.Fatalln(err)
+		return fmt.Errorf("httpTest|Error while making post request: %w", err)
 	}
-	// var encryptedResult RequestByte
 
-	// json.NewDecoder(resp.Body).Decode(&encryptedResult)
-	// decryptmessage := &RequestByte{
-	// 	Data: encryptedResult.Data,
-	// }
-	// log.Printf("encrypted message %v", encryptedResult)
 	var responsebody RequestByte
 	err = json.NewDecoder(resp.Body).Decode(&responsebody)
 	if err != nil {
-		log.Println("Error while decoding request body %v", err)
-		return
+		return fmt.Errorf("httpTest|Error while decoding request body: %w", err)
 	}
 	marshalledmessage, err = json.Marshal(responsebody)
 	if err != nil {
-		log.Fatalln(err)
+		return fmt.Errorf("httpTest|Error while marshalling decryption request body: %w", err)
 	}
-
-	log.Printf("Encrypted Response %v", responsebody)
 	respdecrypt, err := http.Post("http://localhost:8083/decrypt", "application/json", bytes.NewBuffer(marshalledmessage))
 	if err != nil {
-		log.Fatalln(err)
+		return fmt.Errorf("httpTest|Error while making decryption request: %w", err)
 	}
 
 	var resultdecrypt RequestByte
-
-	json.NewDecoder(respdecrypt.Body).Decode(&resultdecrypt)
-
-	log.Printf("response %v", resultdecrypt.Data)
+	err = json.NewDecoder(respdecrypt.Body).Decode(&resultdecrypt)
+	if err != nil {
+		return fmt.Errorf("httpTest|Error while decoding decrypted request body: %w", err)
+	}
+	log.Printf("httpTest|Decrypted Response %v", resultdecrypt.Data)
+	return nil
 }
 
-func grpcTest(conn *grpc.ClientConn) {
+func grpcTest(conn *grpc.ClientConn) error {
 	req := pb.BytePacket{Value: []byte("jackhammer")}
 	client := pb.NewCryptoServiceClient(conn)
 	response, err := client.Encrypt(context.Background(), &req)
 	if err != nil {
-		log.Printf("grpcTest|Error while making encrypt request %v", err)
+		return fmt.Errorf("grpcTest|Error while making encrypt request:%w", err)
 	}
-	log.Printf("grpcTest|encrypted response %v\n", string(response.Value))
-
 	decryptedResponse, err := client.Decrypt(context.Background(), response)
 	if err != nil {
-		log.Printf("grpcTest|Error while making decrypt request %v\n", err)
+		return fmt.Errorf("grpcTest|Error while making decrypt request: %w", err)
 	}
 	log.Printf("grpcTest|Decrypted response %v\n", string(decryptedResponse.Value))
 	conn.Close()
+	return nil
 }
 
 func loadTLSCredentials() (credentials.TransportCredentials, error) {
@@ -98,7 +90,6 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 
 func grpcClient() {
 	targetURL := "localhost:8082"
-	// config := config.ConfigureAllInterfaces()
 	tlsserver := true
 	var grpcConn *grpc.ClientConn
 	var err error
@@ -109,11 +100,6 @@ func grpcClient() {
 			log.Println("Error while loading tls cred")
 			os.Exit(1)
 		}
-
-		// creds, err := credentials.NewTLS("../encryptiongrpc/cert/ca-cert.pem", nil)
-		// if err != nil {
-		// 	log.Printf("Error while loading creds %v", err)
-		// }
 		grpcConn, err = grpc.Dial(targetURL, grpc.WithTransportCredentials(creds))
 		if err != nil {
 			log.Printf("Test.Main|Error while connecting to grpc ")
@@ -128,11 +114,18 @@ func grpcClient() {
 		}
 	}
 	defer grpcConn.Close()
-	grpcTest(grpcConn)
+	err = grpcTest(grpcConn)
+	if err != nil {
+		log.Printf("Error while Running grpcTest %v", err)
+	}
 
 }
 func main() {
-	httpTest()
+	// err := httpTest()
+	// if err != nil {
+	// 	log.Printf("Error running httpTest %v", err)
+	// }
+	grpcClient()
 }
 
 //RequestByte request json to get the flying status

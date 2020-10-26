@@ -10,8 +10,8 @@ import (
 	"syscall"
 
 	"github.com/shifty21/scone/config"
-	"github.com/shifty21/scone/crypto"
 	pb "github.com/shifty21/scone/encryptiongrpc/proto"
+	"github.com/shifty21/scone/rsacrypto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -41,7 +41,7 @@ func SetConfig(c *config.Configuration) Option {
 }
 
 //CryptoService sets cryptoservice
-func CryptoService(c *crypto.Crypto) Option {
+func CryptoService(c *rsacrypto.Crypto) Option {
 	return func(o *GRPCServer) {
 		o.SconeCrypto = c
 	}
@@ -54,7 +54,7 @@ type GRPCServer struct {
 	EnableTLS   bool
 	TLSConfig   *tls.Config
 	Config      *config.Configuration
-	SconeCrypto *crypto.Crypto
+	SconeCrypto *rsacrypto.Crypto
 }
 
 //NewGRPCService creates new GRPCServer
@@ -74,21 +74,20 @@ func NewGRPCService(opts ...Option) (*GRPCServer, error) {
 		o(s)
 	}
 
-	sconecrypto, err := crypto.InitCrypto(s.Config.GetCryptoConfig())
+	sconecrypto, err := rsacrypto.InitCrypto(s.Config.GetCryptoConfig())
 	if err != nil {
-		log.Printf("Error while initializing crypto module, Exiting %v", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("%vError while initializing crypto module, Exiting %v", encryptionServiceLog, err)
 	}
 	s.SconeCrypto = sconecrypto
 	if s.EnableTLS {
-		log.Println("Loading tls cred")
+		log.Printf("%vLoading tls cred", encryptionServiceLog)
 		tlsconfig, err := LoadTLSCredentials(s.Config)
 		if err != nil {
-			return nil, fmt.Errorf("Error while generating certificate config %w", err)
+			return nil, fmt.Errorf("%vError while generating certificate config %w", encryptionServiceLog, err)
 		}
 		s.Server = grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsconfig)))
 	} else {
-		log.Println("Enabling grpc server")
+		log.Printf("%vEnabling grpc server", encryptionServiceLog)
 		s.Server = grpc.NewServer()
 	}
 	return s, nil
@@ -96,10 +95,10 @@ func NewGRPCService(opts ...Option) (*GRPCServer, error) {
 
 //Run start encryptionhttp
 func (s *GRPCServer) Run(opts ...Option) {
-	log.Println("Starting grpc server")
+	log.Printf("%vStarting grpc server", encryptionServiceLog)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Config.GetGRPCServiceConfig().Port()))
 	if err != nil {
-		log.Printf("grpcTest|failed to listen: %v", err)
+		log.Printf("%vfailed to listen: %v", encryptionServiceLog, err)
 		os.Exit(1)
 	}
 
@@ -108,7 +107,7 @@ func (s *GRPCServer) Run(opts ...Option) {
 	go func() {
 		select {
 		case <-s.SignalChan:
-			log.Printf("Exiting server")
+			log.Printf("%vExiting server", encryptionServiceLog)
 			s.Server.GracefulStop()
 		}
 	}()

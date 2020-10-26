@@ -2,6 +2,7 @@ package encryptionhttp
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -16,8 +17,7 @@ func EncryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-			log.Println("Error while decoding request body")
-			RespondWithCustomErrors(w, nil, http.StatusBadRequest)
+			RespondWithCustomErrors(w, fmt.Errorf("%vError while decoding request body: %w", handlerLog, err), http.StatusBadRequest)
 			return
 		}
 		data, err := service.EncryptData(r.Context(), request.Data)
@@ -26,8 +26,6 @@ func EncryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 			return
 		}
 		encryptedData := &Response{Data: *data}
-		// logger.Info.Printf("Encrypted Data %v", encryptedData)
-
 		marshalled, err := json.Marshal(encryptedData)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -42,20 +40,16 @@ func EncryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 //DecryptHandler handles encryption
 func DecryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var request Request
-
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-			log.Println("Error while decoding request body")
-			RespondWithCustomErrors(w, nil, http.StatusBadRequest)
+			RespondWithCustomErrors(w, fmt.Errorf("%vError while decoding request body: %w", handlerLog, err), http.StatusBadRequest)
 			return
 		}
-		log.Println("Decrypting response")
+		log.Printf("%vDecrypting response", handlerLog)
 		decryptedData, err := service.DecryptData(r.Context(), request.Data)
 		if err != nil {
-			log.Printf("Error while decrypting data %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			RespondWithCustomErrors(w, fmt.Errorf("%vError while decrypting data: %w", handlerLog, err), http.StatusInternalServerError)
 			return
 		}
 		var response Response
@@ -74,7 +68,7 @@ func DecryptHandler(conn *grpc.ClientConn, service Service) http.HandlerFunc {
 
 //NotFoundHandler not found
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("No such route")
+	log.Printf("%vNo such route", handlerLog)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNotFound)
 }

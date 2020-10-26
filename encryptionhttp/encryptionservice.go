@@ -12,14 +12,14 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/shifty21/scone/config"
-	"github.com/shifty21/scone/crypto"
+	"github.com/shifty21/scone/rsacrypto"
 	"github.com/urfave/negroni"
 )
 
 //HTTPServer server
 type HTTPServer struct {
 	Config      *config.Configuration
-	SconeCrypto *crypto.Crypto
+	SconeCrypto *rsacrypto.Crypto
 	SignalCh    chan os.Signal
 }
 
@@ -34,7 +34,7 @@ func SetConfig(config *config.Configuration) HTTPServerOption {
 }
 
 //SetSconeCrypto sets config
-func SetSconeCrypto(Crypto *crypto.Crypto) HTTPServerOption {
+func SetSconeCrypto(Crypto *rsacrypto.Crypto) HTTPServerOption {
 	return func(h *HTTPServer) {
 		h.SconeCrypto = Crypto
 	}
@@ -42,7 +42,7 @@ func SetSconeCrypto(Crypto *crypto.Crypto) HTTPServerOption {
 
 //Run start encryptionhttp
 func Run(option ...HTTPServerOption) {
-	log.Println("Starting http server")
+	log.Printf("%vStarting http server", encryptionserviceLog)
 	s := &HTTPServer{
 		SignalCh: make(chan os.Signal),
 	}
@@ -54,6 +54,12 @@ func Run(option ...HTTPServerOption) {
 	for _, o := range option {
 		o(s)
 	}
+	sconecrypto, err := rsacrypto.InitCrypto(s.Config.GetCryptoConfig())
+	if err != nil {
+		log.Printf("%vError while initializing crypto module, Exiting %v", encryptionserviceLog, err)
+		os.Exit(1)
+	}
+	s.SconeCrypto = sconecrypto
 	router := mux.NewRouter()
 	service := NewEncryptionhttp(s.SconeCrypto)
 	router.Handle("/ping", http.HandlerFunc(PingHandler)).Methods("GET")
@@ -78,10 +84,10 @@ func Run(option ...HTTPServerOption) {
 		}()
 		err := httpserver.Shutdown(ctxShutDown)
 		if err != nil {
-			log.Printf("Server Shutdown Failed:%+s", err)
+			log.Printf("%vServer Shutdown Failed:%v", encryptionserviceLog, err)
 		}
 		if err == http.ErrServerClosed {
-			log.Printf("Server closed successfully")
+			log.Printf("%vServer closed successfully", encryptionserviceLog)
 		}
 
 	}()

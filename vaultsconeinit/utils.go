@@ -1,7 +1,6 @@
-package vaultcryptoinit
+package vaultsconeinit
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/shifty21/scone/utils"
@@ -62,7 +61,7 @@ func EncryptInitResponse(initResponse *utils.InitResponse, vault *vaultinterface
 //DecryptInitResponse decrypts all the fields of json
 func DecryptInitResponse(encryptedResponse *utils.InitResponse, vault *vaultinterface.Vault) (*utils.InitResponse, error) {
 	if encryptedResponse == nil {
-		return nil, errors.New("No InitResponse found in memory")
+		return nil, fmt.Errorf("No InitResponse found in memory")
 	}
 	decryptedInitResponseJSON := &utils.InitResponse{
 		Keys:               make([]string, len(encryptedResponse.Keys)),

@@ -2,6 +2,7 @@ package encryptiongrpc
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	pb "github.com/shifty21/scone/encryptiongrpc/proto"
@@ -17,10 +18,9 @@ type SconeCryptoGRPC struct {
 func (s *SconeCryptoGRPC) Encrypt(ctx context.Context, request *pb.BytePacket) (*pb.BytePacket, error) {
 
 	encrypted, err := s.service.Encrypt(ctx, request.Value)
-	log.Printf("Encrypt|Plain text : %v\n", string(request.Value))
+	log.Printf("%vPlain text: %v\n", handlerLog, string(request.Value))
 	if err != nil {
-		log.Printf("Encrypt|Error while encrypting data %v", err)
-		return nil, err
+		return nil, fmt.Errorf("%vError while encrypting data %v", handlerLog, err)
 	}
 	return &pb.BytePacket{Value: encrypted}, nil
 }
@@ -29,9 +29,8 @@ func (s *SconeCryptoGRPC) Encrypt(ctx context.Context, request *pb.BytePacket) (
 func (s *SconeCryptoGRPC) Decrypt(ctx context.Context, request *pb.BytePacket) (*pb.BytePacket, error) {
 	decrypted, err := s.service.Decrypt(ctx, request.Value)
 	if err != nil {
-		log.Printf("Decrypt|Error while encrypting data %v", err)
-		return nil, err
+		return nil, fmt.Errorf("%vError while decrypting data %v", handlerLog, err)
 	}
-	log.Printf("Decrypt|Plain text : %v\n", string(decrypted))
+	log.Printf("%v|Plain text: %v\n", handlerLog, string(decrypted))
 	return &pb.BytePacket{Value: decrypted}, nil
 }

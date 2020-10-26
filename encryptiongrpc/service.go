@@ -4,7 +4,13 @@ import (
 	"context"
 	"log"
 
-	"github.com/shifty21/scone/crypto"
+	"github.com/shifty21/scone/rsacrypto"
+)
+
+const (
+	serviceLog           = "EncryptionGRPC.Service|"
+	handlerLog           = "EncryptionGRPC.Handler|"
+	encryptionServiceLog = "EncryptionGRPC.EncryptionSerice|"
 )
 
 //Service interface
@@ -15,11 +21,11 @@ type Service interface {
 
 //ServiceImpl struct
 type ServiceImpl struct {
-	crypto *crypto.Crypto
+	crypto *rsacrypto.Crypto
 }
 
 //NewEncryptionhttp for checking flying status in a particular location
-func NewEncryptionhttp(crypto *crypto.Crypto) Service {
+func NewEncryptionhttp(crypto *rsacrypto.Crypto) Service {
 	// log.Println("Newencryptionhttp")
 	return &ServiceImpl{
 		crypto: crypto,
@@ -30,7 +36,7 @@ func NewEncryptionhttp(crypto *crypto.Crypto) Service {
 func (s *ServiceImpl) Encrypt(ctx context.Context, data []byte) ([]byte, error) {
 	encryptedData, _ := s.crypto.EncryptBytes(data)
 	decryptedData, _ := s.crypto.DecryptByte(encryptedData)
-	log.Printf("EncryptHandler|Plain text :%v\n", string(decryptedData))
+	log.Printf("%vPlain text :%v\n", serviceLog, string(decryptedData))
 	return encryptedData, nil
 }
 

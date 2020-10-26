@@ -44,16 +44,21 @@ func (v *Vault) Unseal(processKeyFun ProcessKeyFun) error {
 	if err != nil {
 		return fmt.Errorf("Unseal|unable to read keys for vault unseal: %w", err)
 	}
+	if v.Opt.IsAutoInitilization {
+		log.Printf("Unseal|Auto-Initialization Enabled, no need to call unseal apis. InitResponse: [%v]", v.DecryptedInitResponse)
+		return nil
+	}
 	log.Println("Unseal|Starting the unsealing process with InitResponse")
 	var keysSet []string
-	if v.Opt.IsAutoInitilization {
-		keysSet = initResponse.RecoveryKeysBase64
+	if v.Opt.EnableGPGEncryption {
+		keysSet = initResponse.KeysBase64
 	} else {
 		keysSet = initResponse.Keys
 	}
 	for _, key := range keysSet {
 		done, err := v.UnsealPerKey(key)
 		if done {
+			log.Printf("Unseal|InitResponse after unsealing %v ", v.DecryptedInitResponse)
 			return nil
 		}
 		if err != nil {
@@ -95,12 +100,10 @@ func (v *Vault) UnsealPerKey(key string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("UnsealPerKey|Error while reading response body. %w", err)
 	}
-	fmt.Printf("unsealRequestResponseBody %v", string(unsealRequestResponseBody))
 	var unsealResponse utils.UnsealResponse
 	if err := json.Unmarshal(unsealRequestResponseBody, &unsealResponse); err != nil {
 		return false, fmt.Errorf("UnsealPerKey|Error while unmarshalling unsealResponse. %w", err)
 	}
-	fmt.Printf("unsealResponse %v", unsealResponse)
 
 	if !unsealResponse.Sealed {
 		return true, nil

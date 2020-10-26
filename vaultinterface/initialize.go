@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/shifty21/scone/config"
-	"github.com/shifty21/scone/crypto"
 	"github.com/shifty21/scone/gpgcrypto"
+	"github.com/shifty21/scone/rsacrypto"
 	"github.com/shifty21/scone/utils"
 )
 
@@ -48,7 +48,7 @@ func SetConfig(config *config.Vault) Option {
 }
 
 //Initialize reads config from env variables or set them to default values
-func Initialize() (*Vault, error) {
+func NewVaultInterface() (*Vault, error) {
 	log.Println("GetConfig|Starting the vault-init service...")
 	v := &Vault{
 		HTTPClient: http.Client{
@@ -99,7 +99,7 @@ func (v *Vault) Finalize(option ...Option) error {
 	}
 	if v.Opt.SconeCryptoConfig != nil {
 		log.Println("VaultInterface|Enabling SconeCrypto")
-		crypto, err := crypto.InitCrypto(v.Opt.SconeCryptoConfig)
+		crypto, err := rsacrypto.InitCrypto(v.Opt.SconeCryptoConfig)
 		if err != nil {
 			return fmt.Errorf("Error while initializing crypto module, Exiting %v", err)
 		}
@@ -157,14 +157,10 @@ func (v *Vault) ProcessInitVault(initRequest *utils.InitRequest) error {
 	if response.StatusCode != 200 {
 		return fmt.Errorf("ProcessInitVault|Non 200 status code %v with body %v: %w", response.StatusCode, string(initResponseBody), err)
 	}
-	fmt.Printf("initResponseBody %v", string(initResponseBody))
 	var initResponse *utils.InitResponse
 	if err := json.Unmarshal(initResponseBody, &initResponse); err != nil {
 		return fmt.Errorf("ProcessInitVault|Error while unmarshalling reponse %w", err)
 	}
-
-	log.Println("ProcessInitVault|Encrypting unseal keys and the root token...")
-
 	//encrypt root token
 	v.InitResponse = initResponse
 	err = v.EncryptKeyFun(v)

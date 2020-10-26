@@ -8,10 +8,10 @@ import (
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/encryptiongrpc"
 	"github.com/shifty21/scone/encryptionhttp"
-	"github.com/shifty21/scone/vaultcryptoinit"
-	"github.com/shifty21/scone/vaultgpginit"
+	"github.com/shifty21/scone/vaultautoinit"
 	"github.com/shifty21/scone/vaultinit"
 	"github.com/shifty21/scone/vaultinterface"
+	"github.com/shifty21/scone/vaultsconeinit"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 		}
 		grpcServer.Run()
 	default:
-		v, err := vaultinterface.Initialize()
+		v, err := vaultinterface.NewVaultInterface()
 		if err != nil {
 			fmt.Printf("Couldnt initialize vaultinterface %v", err)
 			os.Exit(0)
@@ -51,15 +51,15 @@ func main() {
 		switch args[0] {
 		case "scone":
 			log.Println("Initializing Vault with scone based encryption of vault initresponse")
-			v.EncryptKeyFun = vaultcryptoinit.EncryptKeyFun
-			v.ProcessKeyFun = vaultcryptoinit.ProcessKeyFun
-			options = append(options, vaultinterface.EnableGPGEncryption())
-			options = append(options, vaultinterface.SetGPGCryptoConfig(config.GetGPGCryptoConfig()))
+			v.EncryptKeyFun = vaultsconeinit.EncryptKeyFun
+			v.ProcessKeyFun = vaultsconeinit.ProcessKeyFun
+			// options = append(options, vaultinterface.EnableGPGEncryption())
+			// options = append(options, vaultinterface.SetGPGCryptoConfig(config.GetGPGCryptoConfig()))
 			options = append(options, vaultinterface.SconeCryptoConfig(config.GetCryptoConfig()))
 		case "auto":
 			log.Println("Initializing Vault with auto-seal")
-			v.EncryptKeyFun = vaultgpginit.EncryptKeyFun
-			v.ProcessKeyFun = vaultgpginit.ProcessKeyFun
+			v.EncryptKeyFun = vaultautoinit.EncryptKeyFun
+			v.ProcessKeyFun = vaultautoinit.ProcessKeyFun
 			options = append(options, vaultinterface.EnableGPGEncryption())
 			options = append(options, vaultinterface.SetGPGCryptoConfig(config.GetGPGCryptoConfig()))
 			options = append(options, vaultinterface.EnableAutoInitialization())

@@ -90,7 +90,7 @@ func GetEntities(pgpKeys []string) ([]*openpgp.Entity, error) {
 // to do useful thing with it (get it as a []byte, get it as a string, use it
 // as an io.Reader, etc), and also because this function doesn't know if what
 // comes out is binary data or a string, so let the caller decide.
-func DecryptBytes(encodedCrypt, privKey string) (*bytes.Buffer, error) {
+func DecryptBytes(encodedCrypt, privKey string, passphrasebyte []byte) (*bytes.Buffer, error) {
 	// fmt.Printf("DecryptBytes|encodedCrypt %v \n privKey %v\n", encodedCrypt, privKey)
 	privKeyBytes, err := base64.StdEncoding.DecodeString(privKey)
 	if err != nil {
@@ -108,21 +108,19 @@ func DecryptBytes(encodedCrypt, privKey string) (*bytes.Buffer, error) {
 	}
 	// fmt.Printf("Entities %v\n", entity.PrimaryKey)
 	entityList := &openpgp.EntityList{entity}
-
-	passphrasebyte := []byte("aquickbrownfoxjumpsoverthelazydog")
 	log.Printf("Decrypting private key using passphrase")
 	err = entity.PrivateKey.Decrypt(passphrasebyte)
 	if err != nil {
-		fmt.Printf("Error decrypting privatekey %v", err)
+		return nil, fmt.Errorf("Error decrypting privatekey: %w", err)
 	}
 	for _, subkey := range entity.Subkeys {
 		err := subkey.PrivateKey.Decrypt(passphrasebyte)
 		if err != nil {
-			fmt.Printf("Error decrypting sub privatekey %v", err)
+			return nil, fmt.Errorf("DecryptBytes|Error decrypting sub privatekey: %w", err)
 		}
 	}
 
-	log.Printf("Finished decrypting private key using passphrase")
+	log.Printf("DecryptBytes|Finished decrypting private key using passphrase")
 	md, err := openpgp.ReadMessage(bytes.NewBuffer(cryptBytes), entityList, nil, nil)
 	if err != nil {
 		return nil, fmt.Errorf("DecryptBytes|Error decrypting the messages: %w", err)
