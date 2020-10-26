@@ -31,5 +31,4 @@ func LoadGPGCryptoConfig() *GPGCrypto {
 		privateKeyPath: getStringOrPanic("gpgcrypto.private_key_path"),
 		passPhrase:     getStringOrPanic("gpgcrypto.pass_phrase"),
 	}
-
 }

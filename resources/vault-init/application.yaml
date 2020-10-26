@@ -18,3 +18,7 @@ grpc_encryption_server:
     key: /root/go/bin/resources/vault-init/grpc/cert/service.key
     client_cert: /root/go/bin/resources/vault-init/grpc/cert/ca-cert.pem
     port: 8082
+gpgcrypto:
+    public_key_path: /root/go/bin/resources/vault/vault-experiments/keys/public.asc
+    private_key_path: /root/go/bin/resources/vault/vault-experiments/keys/private.asc
+    pass_phrase: aquickbrownfoxjumpsoverthelazydog

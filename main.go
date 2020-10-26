@@ -53,8 +53,8 @@ func main() {
 			log.Println("Initializing Vault with scone based encryption of vault initresponse")
 			v.EncryptKeyFun = vaultsconeinit.EncryptKeyFun
 			v.ProcessKeyFun = vaultsconeinit.ProcessKeyFun
-			// options = append(options, vaultinterface.EnableGPGEncryption())
-			// options = append(options, vaultinterface.SetGPGCryptoConfig(config.GetGPGCryptoConfig()))
+			options = append(options, vaultinterface.EnableGPGEncryption())
+			options = append(options, vaultinterface.SetGPGCryptoConfig(config.GetGPGCryptoConfig()))
 			options = append(options, vaultinterface.SconeCryptoConfig(config.GetCryptoConfig()))
 		case "auto":
 			log.Println("Initializing Vault with auto-seal")
