@@ -9,12 +9,22 @@ services:
      pwd: /
      environment:
         SCONE_MODE: hw
+secrets:
+    - name: gpg_from_parent1
+      import:
+        session: demo-client
+        secret: gpg-private-key1
 
 images:
-   - name: sconecuratedimages/www2019:vault-1.5.0-alpine
-     injection_files:
-      - path: /resources/vault-init/mykey.pem
-        content: |
+    - name: sconecuratedimages/www2019:vault-1.5.0-alpine
+      injection_files:
+       - path: /root/go/bin/resources/vault/vault-experiments/keys/private.asc
+         content: |
+           $$SCONE::gpg_from_parent1$$
+    - name: sconecuratedimages/www2019:vault-1.5.0-alpine
+      injection_files:
+       - path: /resources/vault-init/mykey.pem
+         content: |
             -----BEGIN RSA PRIVATE KEY-----
             MIIEpgIBAAKCAQEA1OSWQCTN/hgtYEyqh5VgngUDI+qBtyTbiVTdMM+ebMdA6YiV
             +7pWuuR20D5xrx7w1c3RQdjwpzfQkt//kqTBJsQn1/rU2aSzm5XPhILiq1jui0rj

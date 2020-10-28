@@ -55,7 +55,7 @@ func readKeyFile(filename string) (string, error) {
 		return "", fmt.Errorf("GetRSAPublicKey|Error reading public key, path %w", err)
 
 	}
-	// fmt.Printf("ReadKeyFile| filename %v bytes read %v\n", filename, string(data))
+	fmt.Printf("ReadKeyFile| filename %v bytes read %v\n", filename, string(data))
 	return string(data), nil
 }
 

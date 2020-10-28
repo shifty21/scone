@@ -27,7 +27,8 @@ Other files
    export VAULT_ADDR=http://127.0.0.1:8200
    /root/go/bin/vault operator init -recovery-shares=1 -recovery-threshold=1
    /root/go/bin/vault login s.HEE6qF2teSZa0aNNgQYaHqMY
-   SCONE_CONFIG_ID=vault-init1/dev1 SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init cas
+   SCONE_CONFIG_ID=vault-init1/dev1 SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
+   SCONE_CONFIG_ID=vault-init1/dev1 SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
    ```
 5. Once vault have successfully initialied add key to vault
    ```

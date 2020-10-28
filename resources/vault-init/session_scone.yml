@@ -5,7 +5,7 @@ services:
    - name: dev1
      image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
      mrenclaves: [dc883ef08eeb0baa05b7fce488c57bfe8233d2d2eb50cb83e9b4d261239b0d04]
-     command: /root/go/bin/vault-init cas
+     command: /root/go/bin/vault-init scone
      pwd: /
      environment:
         SCONE_MODE: hw
