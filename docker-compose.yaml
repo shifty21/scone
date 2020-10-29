@@ -33,6 +33,12 @@ services:
         build: docker/vault_dockerfile/consul/
         #expose:
         #  - "8500"
+    benchmark:
+        command: ["/bin/bash"]
+        build: benchmarking/
+        tty: true
+        #expose:
+        #  - "8500"
     las:
         image: sconecuratedimages/services:las
         environment:

@@ -101,7 +101,7 @@ func (v *Vault) Finalize(option ...Option) error {
 		log.Println("VaultInterface|Enabling SconeCrypto")
 		crypto, err := rsacrypto.InitCrypto(v.Opt.SconeCryptoConfig)
 		if err != nil {
-			return fmt.Errorf("Error while initializing crypto module, Exiting %v", err)
+			return fmt.Errorf("Error while initializing crypto module: %w", err)
 		}
 		v.Opt.SconeCrypto = crypto
 	}

@@ -76,7 +76,7 @@ func NewGRPCService(opts ...Option) (*GRPCServer, error) {
 
 	sconecrypto, err := rsacrypto.InitCrypto(s.Config.GetCryptoConfig())
 	if err != nil {
-		return nil, fmt.Errorf("%vError while initializing crypto module, Exiting %v", encryptionServiceLog, err)
+		return nil, fmt.Errorf("%vError while initializing crypto module: %w", encryptionServiceLog, err)
 	}
 	s.SconeCrypto = sconecrypto
 	if s.EnableTLS {

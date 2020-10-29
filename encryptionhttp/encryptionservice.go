@@ -56,7 +56,7 @@ func Run(option ...HTTPServerOption) {
 	}
 	sconecrypto, err := rsacrypto.InitCrypto(s.Config.GetCryptoConfig())
 	if err != nil {
-		log.Printf("%vError while initializing crypto module, Exiting %v", encryptionserviceLog, err)
+		log.Printf("%vError while initializing crypto module: %v", encryptionserviceLog, err)
 		os.Exit(1)
 	}
 	s.SconeCrypto = sconecrypto
