@@ -11,7 +11,7 @@ make WITH_LUAJIT=/usr WITH_OPENSSL=/usr
 cp wrk /usr/local/bin
 
 
-libluajit-5.1-dev   luajit
+libluajit-5.1-dev luajit
 change make file according to https://github.com/gruebel/wrk/commit/e44b77d5369a6b25b201f14d3e52be9036b8ae87
 
 nohup wrk -t6 -c16 -d20s -H "X-Vault-Token: $VAULT_TOKEN" -s write-random-secrets.lua $VAULT_ADDR -- 10000 > prod-test-write-1000-random-secrets-t6-c16-20sec.log &

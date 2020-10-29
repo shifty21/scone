@@ -1,0 +1,10 @@
+32a33
+> LUAJIT_VER ?= luajit-2.1
+35c36
+< 	CFLAGS  += -I$(WITH_LUAJIT)/include
+---
+> 	CFLAGS  += -I$(WITH_LUAJIT)/include/$(LUAJIT_VER)
+38c39
+< 	CFLAGS  += -I$(ODIR)/include/luajit-2.1
+---
+> 	CFLAGS  += -I$(ODIR)/include/$(LUAJIT_VER)
