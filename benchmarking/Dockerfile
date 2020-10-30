@@ -8,3 +8,4 @@ RUN ls /home
 RUN cd /home && patch wrk/Makefile  patchfile 
 RUN cd /home/wrk && make WITH_LUAJIT=/usr WITH_OPENSSL=/usr
 RUN cp /home/wrk/wrk /usr/local/bin
+RUN cd /home && git clone https://github.com/hashicorp/vault-guides.git
