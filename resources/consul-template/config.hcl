@@ -11,10 +11,11 @@ vault {
     token = "s.HYTNTvxIQVHXb1Ma7asHqTMv"
     renew_token = false
 }
+
 cas {
 get_session_api = "https://cas:8081/session/"
 cert = "/root/go/bin/resources/demo-client/conf/client.crt"
-key = "/root/go/bin//resources/demo-client/conf/client-key.key"
+key = "/root/go/bin/resources/demo-client/conf/client-key.key"
 session_name = "demo-client"
 }
 

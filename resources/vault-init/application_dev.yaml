@@ -3,11 +3,13 @@ crypto:
     public_key_path: resources/vault-init/mykey.pub
     private_key_path: resources/vault-init/mykey.pem
 #cas vault authentication
-cas_vault:
-    session_name: vault
-    session_api: https://cas:8081/session
-    key: resources/vault/conf/client-key.key
-    certificate: resources/vault/conf/client.crt
+cas:
+    session_name: vault-init
+    url: https://127.0.0.1:8081/session/
+    key: resources/vault-init/conf/client-key.key
+    certificate: resources/vault-init/conf/client.crt
+    session_file: resources/vault-init/session.yml
+    predecessor_hash: ""
 #vault config
 vault_address: http://127.0.0.1:8200
 check_interval: 15

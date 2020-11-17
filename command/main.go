@@ -54,6 +54,11 @@ func Run(args []string) int {
 	// Commands is the mapping of all the available commands.
 	var Commands map[string]cli.CommandFactory
 	Commands = map[string]cli.CommandFactory{
+		"cas": func() (cli.Command, error) {
+			return &CAS{
+				RunOptions: runOpts,
+			}, nil
+		},
 		"grpc": func() (cli.Command, error) {
 			return &GRPC{
 				RunOptions: runOpts,

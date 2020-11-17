@@ -75,7 +75,7 @@ func LoadConfig() *Configuration {
 	viper.ReadInConfig()
 	Config = Configuration{}
 	Config["vault_config"] = LoadVaultConfig()
-	Config["cas_config"] = LoadVaultCASConfig()
+	Config["cas_config"] = LoadCASConfig()
 	Config["crypto_config"] = LoadCryptoConfig()
 	Config["encryption_service"] = LoadencryptionhttpConfig()
 	Config["grpc_service"] = LoadEncryptionGRPCConfig()
@@ -89,8 +89,8 @@ func (c *Configuration) GetVaultConfig() *Vault {
 }
 
 //GetCASConfig returns cas related config
-func (c *Configuration) GetCASConfig() *VaultCAS {
-	return Config["cas_config"].(*VaultCAS)
+func (c *Configuration) GetCASConfig() *CAS {
+	return Config["cas_config"].(*CAS)
 }
 
 //GetCryptoConfig returns cas related config

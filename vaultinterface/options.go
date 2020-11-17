@@ -11,7 +11,7 @@ import (
 //Options for vault interface
 type Options struct {
 	VaultConfig        *config.Vault
-	CASConfig          *config.VaultCAS
+	CASConfig          *config.CAS
 	InitializationType string
 	SconeCryptoConfig  *config.Crypto
 	SconeCrypto        *rsacrypto.Crypto
@@ -52,7 +52,7 @@ func SetGPGCryptoConfig(gpgCryptConfig *config.GPGCrypto) Option {
 }
 
 //SetCASConfig sets config that will verify the clients CAS config
-func SetCASConfig(casConfig *config.VaultCAS) Option {
+func SetCASConfig(casConfig *config.CAS) Option {
 	return func(o *Options) {
 		log.Println("Setting CASConfig")
 		o.CASConfig = casConfig
