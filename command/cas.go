@@ -12,14 +12,15 @@ type CAS struct {
 }
 
 //Run starts initialization process based on auto-unseal
-func (a *CAS) Run(args []string) int {
-	cas.GetSession(a.config.GetCASConfig())
-
+func (c *CAS) Run(args []string) int {
+	cas.GetSession(c.config.GetCASConfig())
+	// cas.PostSession(c.config.GetCASConfig())
+	// cas.GetUpdatedSession(c.config.GetCASConfig())
 	return 0
 }
 
 //Help provides help for auto initialization
-func (a *CAS) Help() string {
+func (c *CAS) Help() string {
 	helpText := `
 
 	Usage: vault_init cas
@@ -34,6 +35,6 @@ func (a *CAS) Help() string {
 }
 
 //Synopsis for auto
-func (a *CAS) Synopsis() string {
+func (c *CAS) Synopsis() string {
 	return "Perform CAS related operations"
 }

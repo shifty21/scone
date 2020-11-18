@@ -1,12 +1,15 @@
 package cas
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/shifty21/scone/config"
+	"gopkg.in/yaml.v2"
 )
 
 // GetSession authenticates application with CAS.
@@ -23,7 +26,7 @@ func GetSession(config *config.CAS) bool {
 			TLSClientConfig: tlsConfig,
 		},
 	}
-	var url = config.GetURL() + config.GetSessionName()
+	var url = config.GetURL() + "/" + config.GetSessionName()
 	resp, err := client.Get(url)
 	if err != nil {
 		log.Printf("[ERR] Error getting session information from CAS server, CAS get call [%s] %s \n", url, err)
@@ -54,7 +57,14 @@ func GetSession(config *config.CAS) bool {
 		log.Printf("[ERR] Unable to decode request body %v", err)
 		return false
 	}
-	log.Printf("[INFO] Value of response %v ", getRequest.Session)
+	// log.Printf("[INFO] Value of response %v ", getRequest.Session)
+	var sessionYAML SessionYAML
+	// sessionYAML := make(map[interface{}]interface{})
+	err = yaml.Unmarshal([]byte(getRequest.Session), &sessionYAML)
+	if err != nil {
+		log.Printf("Error while parsing session body %v", err)
+	}
+	log.Printf("Session %v", sessionYAML)
 	return true
 }
 
@@ -72,14 +82,29 @@ func PostSession(config *config.CAS) bool {
 			TLSClientConfig: tlsConfig,
 		},
 	}
-	var url = config.GetURL() + config.GetSessionName()
-	resp, err := client.Get(url)
+	session, err := GetUpdatedSession(config)
+	if err != nil {
+		log.Printf("Error while getting session %v", err)
+		return false
+	}
+	marshalled, err := yaml.Marshal(session)
+	if err != nil {
+		log.Printf("Error marshalling session %v", err)
+	}
+	var url = config.GetURL()
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(marshalled))
 	if err != nil {
 		log.Printf("[ERR] Error getting session information from CAS server, CAS get call [%s] %s \n", url, err)
 		return false
 	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error making post request %v", err)
+	}
+	defer resp.Body.Close()
 	if resp.StatusCode == 403 {
-		log.Printf("[ERR] Unable \n", url)
+		log.Printf("[ERR] Forbidden for %v \n", url)
 		return false
 	}
 
@@ -106,4 +131,26 @@ func PostSession(config *config.CAS) bool {
 	}
 	log.Printf("[INFO] Value of response %v ", getRequest.Session)
 	return true
+}
+
+//GetUpdatedSession updates session file
+func GetUpdatedSession(config *config.CAS) (*SessionYAML, error) {
+	log.Printf("Session file %v\n", config.GetSessionFile())
+	file, err := ioutil.ReadFile(config.GetSessionFile())
+	if err != nil {
+		log.Printf("[ERR] Unable to open file %v", err)
+		return nil, err
+	}
+	// log.Printf("Filecontent %v", file)
+	var sessionFile SessionYAML
+	err = yaml.Unmarshal(file, &sessionFile)
+	if err != nil {
+		log.Printf("Error whil unmarshalling session file %v", err)
+		return nil, err
+	}
+	sessionFile.Predecessor = "c1dc09fc823912c6340cc157aabe58f0848989bfbbfc02812044fd28be1f2a27"
+	secrets := Secrets{Name: "RootToken", Kind: "ascii", ExportPublic: true, Value: "2nM9epXhYKhrlMf6b5gFy41xmQNEqx5"}
+	sessionFile.Secrets = append(sessionFile.Secrets, secrets)
+	log.Printf("Updated Session %v", sessionFile)
+	return &sessionFile, nil
 }

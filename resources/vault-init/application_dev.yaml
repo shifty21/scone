@@ -5,11 +5,11 @@ crypto:
 #cas vault authentication
 cas:
     session_name: vault-init
-    url: https://127.0.0.1:8081/session/
+    url: https://127.0.0.1:8081/session
     key: resources/vault-init/conf/client-key.key
     certificate: resources/vault-init/conf/client.crt
     session_file: resources/vault-init/session.yml
-    predecessor_hash: ""
+    predecessor_hash: c1dc09fc823912c6340cc157aabe58f0848989bfbbfc02812044fd28be1f2a27
 #vault config
 vault_address: http://127.0.0.1:8200
 check_interval: 15

@@ -1,6 +1,5 @@
 version: "0.3"
 name: vault-init
-predecessor: 0c3f0e23ac899a59cd70883eb24401baa152e7070f324f8275b8d367af81adc3
 services:
    - name: dev
      image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
