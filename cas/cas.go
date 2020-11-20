@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,8 +13,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// GetSession authenticates application with CAS.
-func GetSession(config *config.CAS) bool {
+// GetCASSession authenticates application with CAS.
+func GetCASSession(config *config.CAS) bool {
 	log.Printf("Loading certificate from %v and key from %v", config.GetCertificate(), config.GetKey())
 	cer, err := tls.LoadX509KeyPair(config.GetCertificate(), config.GetKey())
 	if err != nil {
@@ -51,8 +52,8 @@ func GetSession(config *config.CAS) bool {
 		log.Printf("[ERR] Response code %v, response body [%s]\n", resp.StatusCode, errRequest.Message)
 		return false
 	}
-	var getRequest GetRequest
-	err = json.NewDecoder(resp.Body).Decode(&getRequest)
+	var response SessionResponse
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		log.Printf("[ERR] Unable to decode request body %v", err)
 		return false
@@ -60,7 +61,7 @@ func GetSession(config *config.CAS) bool {
 	// log.Printf("[INFO] Value of response %v ", getRequest.Session)
 	var sessionYAML SessionYAML
 	// sessionYAML := make(map[interface{}]interface{})
-	err = yaml.Unmarshal([]byte(getRequest.Session), &sessionYAML)
+	err = yaml.Unmarshal([]byte(response.Session), &sessionYAML)
 	if err != nil {
 		log.Printf("Error while parsing session body %v", err)
 	}
@@ -68,13 +69,12 @@ func GetSession(config *config.CAS) bool {
 	return true
 }
 
-//PostSession authenticates application with CAS.
-func PostSession(config *config.CAS) bool {
+//UpdateSession authenticates application with CAS.
+func UpdateSession(config *config.CAS, session *SessionYAML) (*string, error) {
 	log.Printf("Loading certificate from %v and key from %v", config.GetCertificate(), config.GetKey())
 	cer, err := tls.LoadX509KeyPair(config.GetCertificate(), config.GetKey())
 	if err != nil {
-		log.Printf("Error while loading keypair %s", err)
-		return false
+		return nil, fmt.Errorf("[Err] while loading keypair: %w", err)
 	}
 	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cer}, InsecureSkipVerify: true}
 	client := &http.Client{
@@ -82,75 +82,77 @@ func PostSession(config *config.CAS) bool {
 			TLSClientConfig: tlsConfig,
 		},
 	}
-	session, err := GetUpdatedSession(config)
-	if err != nil {
-		log.Printf("Error while getting session %v", err)
-		return false
-	}
+	//marshall session and send post request to CAS
 	marshalled, err := yaml.Marshal(session)
 	if err != nil {
-		log.Printf("Error marshalling session %v", err)
+		return nil, fmt.Errorf("[Err] marshalling session: %w", err)
+
 	}
 	var url = config.GetURL()
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(marshalled))
 	if err != nil {
-		log.Printf("[ERR] Error getting session information from CAS server, CAS get call [%s] %s \n", url, err)
-		return false
+		return nil, fmt.Errorf("[Err] getting session information from CAS server %s, error: %w", url, err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Printf("Error making post request %v", err)
+		return nil, fmt.Errorf("[Err] making post request: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 403 {
-		log.Printf("[ERR] Forbidden for %v \n", url)
-		return false
+		return nil, fmt.Errorf("[ERR] Forbidden for: %w", url)
 	}
 
 	if resp.StatusCode == 404 {
-		log.Printf("[ERR] No session named %v \n", config.GetSessionName())
-		return false
+		return nil, fmt.Errorf("[ERR] No session named: %w", config.GetSessionName())
 	}
-
-	if resp.StatusCode != 200 {
+	//Parse failure and sucess response individually
+	if resp.StatusCode != 201 && resp.StatusCode != 200 {
 		var errRequest FailRequest
 		err = json.NewDecoder(resp.Body).Decode(&errRequest)
 		if err != nil {
-			log.Printf("[ERR] Unable to decode request %v", err)
-			return false
+			return nil, fmt.Errorf("[ERR] Unable to decode FailRequest: %w", err)
 		}
-		log.Printf("[ERR] Response code %v, response body [%s]\n", resp.StatusCode, errRequest.Message)
-		return false
+		return nil, fmt.Errorf("[ERR] Response code [%v], Response body: %v", resp.StatusCode, errRequest.Message)
 	}
-	var getRequest GetRequest
-	err = json.NewDecoder(resp.Body).Decode(&getRequest)
+	var response PostResponse
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
-		log.Printf("[ERR] Unable to decode request body %v", err)
-		return false
+		return nil, fmt.Errorf("[ERR] Unable to decode request body: %w", err)
 	}
-	log.Printf("[INFO] Value of response %v ", getRequest.Session)
-	return true
+	//Update session file with updated hash
+	return &response.Hash, nil
 }
 
-//GetUpdatedSession updates session file
-func GetUpdatedSession(config *config.CAS) (*SessionYAML, error) {
+//GetSessionFromYaml updates session file
+func GetSessionFromYaml(config *config.CAS) (*SessionYAML, error) {
 	log.Printf("Session file %v\n", config.GetSessionFile())
 	file, err := ioutil.ReadFile(config.GetSessionFile())
 	if err != nil {
 		log.Printf("[ERR] Unable to open file %v", err)
 		return nil, err
 	}
-	// log.Printf("Filecontent %v", file)
 	var sessionFile SessionYAML
 	err = yaml.Unmarshal(file, &sessionFile)
 	if err != nil {
 		log.Printf("Error whil unmarshalling session file %v", err)
 		return nil, err
 	}
-	sessionFile.Predecessor = "c1dc09fc823912c6340cc157aabe58f0848989bfbbfc02812044fd28be1f2a27"
-	secrets := Secrets{Name: "RootToken", Kind: "ascii", ExportPublic: true, Value: "2nM9epXhYKhrlMf6b5gFy41xmQNEqx5"}
-	sessionFile.Secrets = append(sessionFile.Secrets, secrets)
-	log.Printf("Updated Session %v", sessionFile)
 	return &sessionFile, nil
+}
+
+//UpdateSessionFile writes session file back with updated session
+func UpdateSessionFile(config *config.CAS, session *SessionYAML) error {
+	marshalledSession, err := yaml.Marshal(session)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(config.GetSessionFile(), marshalledSession, 0644)
+	return err
+}
+
+//AddSecrets to session
+func AddSecrets(session *SessionYAML, secret Secret) *SessionYAML {
+	session.Secrets = append(session.Secrets, secret)
+	return session
 }

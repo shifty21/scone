@@ -5,17 +5,18 @@ type FailRequest struct {
 	Message []string `json:"msg,omitempty"`
 }
 
-//GetRequest gets session data
-type GetRequest struct {
+//SessionResponse gets session data
+type SessionResponse struct {
 	Session string `json:"session,omitempty"`
 }
 
-//PostRequest gets session data
-type PostRequest struct {
+//PostResponse gets session data
+type PostResponse struct {
+	Hash string `json:"hash,omitempty"`
 }
 
-//Services struct for session
-type Services struct {
+//Service struct for session
+type Service struct {
 	Name        string   `yaml:"name,omitempty"`
 	ImageName   string   `yaml:"image_name,omitempty"`
 	MREnclaves  []string `yaml:"mrenclaves,omitempty"`
@@ -35,8 +36,8 @@ type Security struct {
 	} `yaml:"attestation,omitempty"`
 }
 
-//Images struct for session
-type Images struct {
+//Image struct for session
+type Image struct {
 	Name           string `yaml:"name,omitempty"`
 	InjectionFiles []struct {
 		Path    string `yaml:"path,omitempty"`
@@ -44,16 +45,19 @@ type Images struct {
 	} `yaml:"injection_files,omitempty"`
 }
 
-//Secrets for secrets
-type Secrets struct {
-	Name         string `yaml:"name,omitempty"`
-	Kind         string `yaml:"kind,omitempty"`
-	ExportPublic bool   `yaml:"export_public,omitempty"`
-	Value        string `yaml:"value,omitempty"`
-	Export       []struct {
-		Session     string `yaml:"value,omitempty"`
-		SessionHash string `yaml:"session_hash,omitempty"`
-	} `yaml:"export,omitempty"`
+//ExportTo struct specifies session to which secrets are exposed
+type ExportTo struct {
+	Session     string `yaml:"session,omitempty"`
+	SessionHash string `yaml:"session_hash,omitempty"`
+}
+
+//Secret for secrets
+type Secret struct {
+	Name         string     `yaml:"name,omitempty"`
+	Kind         string     `yaml:"kind,omitempty"`
+	ExportPublic bool       `yaml:"export_public,omitempty"`
+	Value        string     `yaml:"value,omitempty"`
+	Export       []ExportTo `yaml:"export,omitempty"`
 }
 
 //AccessPolicy policies
@@ -67,10 +71,10 @@ type SessionYAML struct {
 	Version      string       `yaml:"version,omitempty"`
 	Name         string       `yaml:"name,omitempty"`
 	Predecessor  string       `yaml:"predecessor,omitempty"`
-	Services     []Services   `yaml:"services,omitempty"`
-	Images       []Images     `yaml:"images,omitempty"`
+	Services     []Service    `yaml:"services,omitempty"`
+	Images       []Image      `yaml:"images,omitempty"`
 	Security     Security     `yaml:"security,omitempty"`
-	Secrets      []Secrets    `yaml:"secrets,omitempty"`
+	Secrets      []Secret     `yaml:"secrets,omitempty"`
 	Creator      string       `yaml:"creator,omitempty"`
 	AccessPolicy AccessPolicy `yaml:"access_policy,omitempty"`
 }

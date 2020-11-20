@@ -1,48 +1,77 @@
 version: "0.3"
 name: vault-init
+predecessor: fb1492cae9471746a84841bb0c5f2c3478c4c25fc1b67a7e751c63f5a024e45f
 services:
-   - name: dev
-     image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
-     mrenclaves: [dc883ef08eeb0baa05b7fce488c57bfe8233d2d2eb50cb83e9b4d261239b0d04]
-     command: /root/go/bin/vault-init grpc
-     pwd: /
-     environment:
-        SCONE_MODE: hw
-
+- name: dev
+  image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+  mrenclaves:
+  - dc883ef08eeb0baa05b7fce488c57bfe8233d2d2eb50cb83e9b4d261239b0d04
+  command: /root/go/bin/vault-init grpc
+  pwd: /
+  environment:
+    SCONE_MODE: hw
 images:
-   - name: sconecuratedimages/www2019:vault-1.5.0-alpine
-     injection_files:
-      - path: /resources/vault-init/mykey.pem
-        content: |
-            -----BEGIN RSA PRIVATE KEY-----
-            MIIEpgIBAAKCAQEA1OSWQCTN/hgtYEyqh5VgngUDI+qBtyTbiVTdMM+ebMdA6YiV
-            +7pWuuR20D5xrx7w1c3RQdjwpzfQkt//kqTBJsQn1/rU2aSzm5XPhILiq1jui0rj
-            eyGk1IW+u0mjAEa7jA02m2ozp30qxlxADuLWKSIWz2xvl3WZJ4bEGS7q7gcdjv8Z
-            KG4QibivmzPrENQ8njF86jNIvv0iiyUVR81qzy33+nxfWV9mQpIakBeMPzVniOxF
-            yfPrSSh0Io4w9UAa62CCdXei+6P4aMGTOt8I+4DTyoEcRdHdnuQ9FKmrqdi2NqsJ
-            Jyr/zBQAlVX0Gzc3Adm49rQgA3vLX7gaXTIW9wIDAQABAoIBAQC53oEXq4p1Z6Jm
-            S0kvasmZ7QJa3yk1Pua1NfSP4xSMIEKaIffgeUWzkjfxhDM5E6hs4m7qMH+bXu2o
-            7gxyeYlxUR0AQiyHgHaXReqR5LwFoXVTA6UsIamJKuPlHFtFqHuhwP+GHOjQOEWa
-            PXxoAr+71dlYa3HaKH/4tH6NBhtyiAcHiaP23Ta44iSiuevyrANS+I3OeaH7DbjS
-            laotG6XFvs57fAMNUVuH5GnU5RqETFMjLE6+XBYZBVPQGugnytzubiwjPg/1lvUr
-            lm5NBEnLI7UZGAna78xwG8hlJnHsOJZXxznBU1BUoVT1mlJWuwRgCcJoHP1c6GDG
-            Uu6qq1ShAoGBAPuy2tiNeVsEVtQPm9sINB2YwJIYM5txm4YNkzVRklu05PdTGIXQ
-            behmKCfEqIZfB50MUjO2jq+Ib5gJ8xY8V1mHoC7JbdWgH8etPCXyYguMk3OS5iaV
-            IRvyCAV3mR1f+UEIhm0M1iCTqbQ2uJE3kChZBdA9B+4incgts8kNsAGZAoGBANiH
-            9mv3V1RTK3s4/YhXDEdK+CqUsB2+IV9a1KJb1rNb8diCw0DfQ92DEzAFhXxTfbE4
-            GwhtNIRmCMpj3cI0CEbdWlLJ7KuY7IqPtmIXZUYGILX27CJEFA7RgJN9ZKM3KzYB
-            C7xb2ICDNMEBcKeCMPiv1WkPuLc7/0iPFrg+b1cPAoGBAIgcABx65NVDU3D5v96C
-            YSxgHkLis4Wrud6UGLcMlYjiGa9lUC2MuOKj27Mltbx0Rzm2H/23CxIBRdeCCeJM
-            XzAbF5Q1eR+8p3LjS1N572svac1l8u+KVY03JP9P3Yz1CWURpx/xgRm8wFij/ssI
-            sPwgp/QkDNXKAmjtzfs7W6KBAoGBAJqoclAneI7YYORAjoZFdpWtbJgtX6W+2eNb
-            4yicZDvz3kgBDilVzwl2x8uzBecJU2uzYUuhhLNUlc7JieledNL447ziUVM3hSxq
-            /aAOid18Hv0ZgwvuiE0VQrsWAz249/o4wQMmrvsLvDBnMOnUSdo27T1/ZzYpemt/
-            GIE8xxXtAoGBAIB8pFxFa5/fyAiKEaRsmJM1rzb82kyC8LV4CwjKRa4h91VVOGlg
-            RDDFyHwa9GdPHBjqIn/+2nM9epXhYKhrlMf6b5gFy41xmQNEqx5+rkaiDvX5NIFC
-            XXBsjMK1c7q9mag23FqKlUkQUFZIxagFXm23NGhkaQOHTyyYtX/iXJVm
-            -----END RSA PRIVATE KEY-----
-
+- name: sconecuratedimages/www2019:vault-1.5.0-alpine
+  injection_files:
+  - path: /resources/vault-init/mykey.pem
+    content: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEpgIBAAKCAQEA1OSWQCTN/hgtYEyqh5VgngUDI+qBtyTbiVTdMM+ebMdA6YiV
+      +7pWuuR20D5xrx7w1c3RQdjwpzfQkt//kqTBJsQn1/rU2aSzm5XPhILiq1jui0rj
+      eyGk1IW+u0mjAEa7jA02m2ozp30qxlxADuLWKSIWz2xvl3WZJ4bEGS7q7gcdjv8Z
+      KG4QibivmzPrENQ8njF86jNIvv0iiyUVR81qzy33+nxfWV9mQpIakBeMPzVniOxF
+      yfPrSSh0Io4w9UAa62CCdXei+6P4aMGTOt8I+4DTyoEcRdHdnuQ9FKmrqdi2NqsJ
+      Jyr/zBQAlVX0Gzc3Adm49rQgA3vLX7gaXTIW9wIDAQABAoIBAQC53oEXq4p1Z6Jm
+      S0kvasmZ7QJa3yk1Pua1NfSP4xSMIEKaIffgeUWzkjfxhDM5E6hs4m7qMH+bXu2o
+      7gxyeYlxUR0AQiyHgHaXReqR5LwFoXVTA6UsIamJKuPlHFtFqHuhwP+GHOjQOEWa
+      PXxoAr+71dlYa3HaKH/4tH6NBhtyiAcHiaP23Ta44iSiuevyrANS+I3OeaH7DbjS
+      laotG6XFvs57fAMNUVuH5GnU5RqETFMjLE6+XBYZBVPQGugnytzubiwjPg/1lvUr
+      lm5NBEnLI7UZGAna78xwG8hlJnHsOJZXxznBU1BUoVT1mlJWuwRgCcJoHP1c6GDG
+      Uu6qq1ShAoGBAPuy2tiNeVsEVtQPm9sINB2YwJIYM5txm4YNkzVRklu05PdTGIXQ
+      behmKCfEqIZfB50MUjO2jq+Ib5gJ8xY8V1mHoC7JbdWgH8etPCXyYguMk3OS5iaV
+      IRvyCAV3mR1f+UEIhm0M1iCTqbQ2uJE3kChZBdA9B+4incgts8kNsAGZAoGBANiH
+      9mv3V1RTK3s4/YhXDEdK+CqUsB2+IV9a1KJb1rNb8diCw0DfQ92DEzAFhXxTfbE4
+      GwhtNIRmCMpj3cI0CEbdWlLJ7KuY7IqPtmIXZUYGILX27CJEFA7RgJN9ZKM3KzYB
+      C7xb2ICDNMEBcKeCMPiv1WkPuLc7/0iPFrg+b1cPAoGBAIgcABx65NVDU3D5v96C
+      YSxgHkLis4Wrud6UGLcMlYjiGa9lUC2MuOKj27Mltbx0Rzm2H/23CxIBRdeCCeJM
+      XzAbF5Q1eR+8p3LjS1N572svac1l8u+KVY03JP9P3Yz1CWURpx/xgRm8wFij/ssI
+      sPwgp/QkDNXKAmjtzfs7W6KBAoGBAJqoclAneI7YYORAjoZFdpWtbJgtX6W+2eNb
+      4yicZDvz3kgBDilVzwl2x8uzBecJU2uzYUuhhLNUlc7JieledNL447ziUVM3hSxq
+      /aAOid18Hv0ZgwvuiE0VQrsWAz249/o4wQMmrvsLvDBnMOnUSdo27T1/ZzYpemt/
+      GIE8xxXtAoGBAIB8pFxFa5/fyAiKEaRsmJM1rzb82kyC8LV4CwjKRa4h91VVOGlg
+      RDDFyHwa9GdPHBjqIn/+2nM9epXhYKhrlMf6b5gFy41xmQNEqx5+rkaiDvX5NIFC
+      XXBsjMK1c7q9mag23FqKlUkQUFZIxagFXm23NGhkaQOHTyyYtX/iXJVm
+      -----END RSA PRIVATE KEY-----
 security:
   attestation:
-    tolerate: [debug-mode, outdated-tcb]
-    ignore_advisories: "*"
+    tolerate:
+    - debug-mode
+    - outdated-tcb
+    ignore_advisories: '*'
+secrets:
+- name: RootToken1
+  kind: ascii
+  export_public: true
+  value: 2nM9epXhYKhrlMf6b5gFy41xmQNEqx5
+- name: RootToken2
+  kind: ascii
+  export_public: true
+  value: JackHammer
+- name: RootToken3
+  kind: ascii
+  value: 2nM9epXhYKhrlMf6b5gFy41xmQNEqx5
+  export:
+  - session: demo-client
+- name: RootToken4
+  kind: ascii
+  export_public: true
+  value: JackHammer
+- name: RootToken5
+  kind: ascii
+  value: 2nM9epXhYKhrlMf6b5gFy41xmQNEqx5
+  export:
+  - session: demo-client
+- name: RootToken6
+  kind: ascii
+  export_public: true
+  value: JackHammer
