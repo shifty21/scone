@@ -1,6 +1,6 @@
 version: "0.3"
 name: vault-init
-predecessor: fb1492cae9471746a84841bb0c5f2c3478c4c25fc1b67a7e751c63f5a024e45f
+predecessor: c1082eef8cc8be788cad415a3a848291cf23bca4eba9d384f1fdcb8cc6d47365
 services:
 - name: dev
   image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
@@ -49,29 +49,8 @@ security:
     - outdated-tcb
     ignore_advisories: '*'
 secrets:
-- name: RootToken1
+- name: ROOT_TOKEN
   kind: ascii
-  export_public: true
-  value: 2nM9epXhYKhrlMf6b5gFy41xmQNEqx5
-- name: RootToken2
-  kind: ascii
-  export_public: true
-  value: JackHammer
-- name: RootToken3
-  kind: ascii
-  value: 2nM9epXhYKhrlMf6b5gFy41xmQNEqx5
+  value: s.nBNlTDf7RFmUw78W3EMosbDo
   export:
-  - session: demo-client
-- name: RootToken4
-  kind: ascii
-  export_public: true
-  value: JackHammer
-- name: RootToken5
-  kind: ascii
-  value: 2nM9epXhYKhrlMf6b5gFy41xmQNEqx5
-  export:
-  - session: demo-client
-- name: RootToken6
-  kind: ascii
-  export_public: true
-  value: JackHammer
+  - session: consul-template

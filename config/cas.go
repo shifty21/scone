@@ -67,7 +67,7 @@ func LoadCASConfig() *CAS {
 		sessionName:         getStringOrPanic("cas.session_name"),
 		sessionFile:         getStringOrPanic("cas.session_file"),
 		predecessorHash:     getStringOrPanic("cas.predecessor_hash"),
-		exportToSessionName: getStringOrPanic("cas.export_To_Session"),
+		exportToSessionName: getStringOrPanic("cas.export_to_Session"),
 	}
 
 }

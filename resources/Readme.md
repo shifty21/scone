@@ -78,3 +78,7 @@ Recover keys can be used to unseal only for rekeying and generating root token a
 https://www.vaultproject.io/api-docs/system/init#recovery_shares
 
 Rekeying process
+
+### Consul-template
+
+rederere.go contains rending code - for every template update the cas session, check for duplicate secret

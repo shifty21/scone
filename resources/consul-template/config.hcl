@@ -13,7 +13,7 @@ vault {
 }
 
 cas {
-get_session_api = "https://cas:8081/session/"
+get_session_api = "https://cas:8081/session"
 cert = "/root/go/bin/resources/demo-client/conf/client.crt"
 key = "/root/go/bin/resources/demo-client/conf/client-key.key"
 session_name = "demo-client"

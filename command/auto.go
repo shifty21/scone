@@ -22,6 +22,7 @@ func (a *Auto) Run(args []string) int {
 	a.options = append(a.options, vaultinterface.SetGPGCryptoConfig(a.config.GetGPGCryptoConfig()))
 	a.options = append(a.options, vaultinterface.EnableAutoInitialization())
 	a.options = append(a.options, vaultinterface.SetConfig(a.config.GetVaultConfig()))
+	a.options = append(a.options, vaultinterface.SetCASConfig(a.config.GetCASConfig()))
 	err := a.Vault.Finalize(a.options...)
 	if err != nil {
 		log.Printf("Error finalizing vaultinterface %v", err)

@@ -100,11 +100,11 @@ func UpdateSession(config *config.CAS, session *SessionYAML) (*string, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 403 {
-		return nil, fmt.Errorf("[ERR] Forbidden for: %w", url)
+		return nil, fmt.Errorf("[ERR] Forbidden for: %v", url)
 	}
 
 	if resp.StatusCode == 404 {
-		return nil, fmt.Errorf("[ERR] No session named: %w", config.GetSessionName())
+		return nil, fmt.Errorf("[ERR] No session named: %v", config.GetSessionName())
 	}
 	//Parse failure and sucess response individually
 	if resp.StatusCode != 201 && resp.StatusCode != 200 {
@@ -151,8 +151,58 @@ func UpdateSessionFile(config *config.CAS, session *SessionYAML) error {
 	return err
 }
 
-//AddSecrets to session
-func AddSecrets(session *SessionYAML, secret Secret) *SessionYAML {
-	session.Secrets = append(session.Secrets, secret)
-	return session
+//PostCASSession reads secret from sessionfile add secrets and post it to CAS and update session file with udpated hash
+func PostCASSession(config *config.CAS, secrets []Secret) error {
+	session, err := GetSessionFromYaml(config)
+	if err != nil {
+		log.Printf("Error while getting session %v", err)
+		return err
+	}
+
+	//add predecessor hash and secrets to session
+	if config.GetPredecessorHash() == "empty" {
+		log.Println("No Predecessof hash provided registring for first time")
+		updateHash, err := UpdateSession(config, session)
+		if err != nil {
+			log.Printf("Error Updating cas session %v", err)
+			return err
+		}
+		session.Predecessor = *updateHash
+		err = UpdateSessionFile(config, session)
+		if err != nil {
+			log.Printf("Error wwriting updated session %v", err)
+			return err
+		}
+		log.Println("CAS session updated successfully")
+		return nil
+	}
+	// session.Predecessor = config.GetPredecessorHash()
+	if secrets != nil {
+		for _, v := range secrets {
+			log.Printf("Adding secret %v", v)
+			session.Secrets = append(session.Secrets, v)
+		}
+	}
+
+	// session.Secrets = append(session.Secrets, Secret{
+	// 	Name: "RootToken5", Kind: "ascii",
+	// 	Value: "2nM9epXhYKhrlMf6b5gFy41xmQNEqx5", Export: []ExportTo{{Session: config.GetExportToSessionName()}}})
+	// session.Secrets = append(session.Secrets, Secret{Name: "RootToken6", Kind: "ascii", ExportPublic: true, Value: "JackHammer"})
+	// log.Printf("Updated Session %v", session)
+	// cas.GetSession(c.config.GetCASConfig())
+	updateHash, err := UpdateSession(config, session)
+	if err != nil {
+		log.Printf("Error Updating cas session %v", err)
+		return err
+	}
+	//Update config file instead
+	// c.config.GetCASConfig().SetPredecessorHash(*updateHash)
+	session.Predecessor = *updateHash
+	err = UpdateSessionFile(config, session)
+	if err != nil {
+		log.Printf("Error wwriting updated session %v", err)
+		return err
+	}
+	log.Println("CAS session updated successfully")
+	return nil
 }
