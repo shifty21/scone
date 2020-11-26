@@ -160,6 +160,9 @@ func PostCASSession(config *config.CAS, secrets []Secret) error {
 	}
 
 	//add predecessor hash and secrets to session
+	//Only for development purpose in prod or demo,
+	//we will need to register the session first and
+	//supply the hash, so this block wont get executed
 	if config.GetPredecessorHash() == "empty" {
 		log.Println("No Predecessof hash provided registring for first time")
 		updateHash, err := UpdateSession(config, session)
@@ -183,13 +186,6 @@ func PostCASSession(config *config.CAS, secrets []Secret) error {
 			session.Secrets = append(session.Secrets, v)
 		}
 	}
-
-	// session.Secrets = append(session.Secrets, Secret{
-	// 	Name: "RootToken5", Kind: "ascii",
-	// 	Value: "2nM9epXhYKhrlMf6b5gFy41xmQNEqx5", Export: []ExportTo{{Session: config.GetExportToSessionName()}}})
-	// session.Secrets = append(session.Secrets, Secret{Name: "RootToken6", Kind: "ascii", ExportPublic: true, Value: "JackHammer"})
-	// log.Printf("Updated Session %v", session)
-	// cas.GetSession(c.config.GetCASConfig())
 	updateHash, err := UpdateSession(config, session)
 	if err != nil {
 		log.Printf("Error Updating cas session %v", err)

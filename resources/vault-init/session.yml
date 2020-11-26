@@ -1,6 +1,6 @@
 version: "0.3"
 name: vault-init
-predecessor: c1082eef8cc8be788cad415a3a848291cf23bca4eba9d384f1fdcb8cc6d47365
+predecessor: 1ece7dd020eca18d271510837963689c7487941d710e17a26636c742a351bbc8
 services:
 - name: dev
   image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
@@ -49,8 +49,11 @@ security:
     - outdated-tcb
     ignore_advisories: '*'
 secrets:
-- name: ROOT_TOKEN
+- name: VAULT_TOKEN
   kind: ascii
-  value: s.nBNlTDf7RFmUw78W3EMosbDo
+  value: s.7zSPWje7WxrfYo4WPspmuIlT
   export:
-  - session: consul-template
+  - session: demo-client
+- name: VAULT_RESPONSE
+  kind: ascii
+  value: '&CASConfig{Keys:[], KeysBase64:[], RootToken:s.7zSPWje7WxrfYo4WPspmuIlT,RecoveryKeys:[], RecoveryKeysBase64:[6fa763a30c82478dabd3e72a1914b28982ec7ea3604165dafa65c2f90e806643], }'

@@ -13,9 +13,9 @@ type CAS struct {
 
 //Run starts initialization process based on auto-unseal
 func (c *CAS) Run(args []string) int {
-	cas.GetCASSession(c.config.GetCASConfig())
+	// cas.GetCASSession(c.config.GetCASConfig())
 	// return 0
-	// cas.PostCASSession(c.config.GetCASConfig(), nil)
+	cas.PostCASSession(c.config.GetCASConfig(), nil)
 	return 0
 }
 

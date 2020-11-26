@@ -82,3 +82,25 @@ Rekeying process
 ### Consul-template
 
 rederere.go contains rending code - for every template update the cas session, check for duplicate secret
+
+
+LifetimeWatcher is a process for watching lifetime of a secret.
+Please note that Vault does not support blocking queries. As a result, Consul Template will not immediately reload in the event a secret is changed as it does with Consul's key-value store. Consul Template will renew the secret with Vault's Renewer API. The Renew API tries to use most of the time the secret is good, renewing at around 90% of the lease time (as set by Vault).
+
+To specify ttl for a specifiy secret 
+vault kv put kv/my-secret ttl=30m my-value=s3cr3t
+To update ttl of secret engine
+vault secrets tune -default-lease-ttl=2m secret
+
+
+
+Vault optimization
+https://www.vaultproject.io/docs/configuration/storage/consul#consistency_mode
+
+consul optimization
+Consul is write limited by disk I/O and read limited by CPU.
+https://www.consul.io/docs/install/performance
+For a read-heavy workload, configure all Consul server agents with the allow_stale DNS option, or query the API with the stale consistency mode. By default, all queries made to the server are RPC forwarded to and serviced by the leader. By enabling stale reads, any server will respond to any query, thereby reducing overhead on the leader. Typically, the stale response is 100ms or less from consistent mode but it drastically improves performance and reduces latency under high load.
+
+Enterprise
+Read-heavy clusters may take advantage of the enhanced reading feature (Enterprise) for better scalability. This feature allows additional servers to be introduced as non-voters. Being a non-voter, the server will still participate in data replication, but it will not block the leader from committing log entries.

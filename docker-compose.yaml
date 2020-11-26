@@ -1,67 +1,67 @@
 version: '3.2'
 services:
-    cas:
-        command: sh -c "SCONE_HEAP=1G cas -c /etc/cas/cas.toml"
-        environment:
-         - SCONE_LOG=7
-         - SCONE_MODE=sim
-        image: sconecuratedimages/services:cas.trust.group-out-of-date-scone4.2.1
-        # devices:
-        #     - "/dev/isgx"
-        ports:
-            - target: 8081
-              published: 8081
-              protocol: tcp
-              mode: host
-            - target: 18765
-              published: 18765
-              protocol: tcp
-              mode: host
-    vault1:
-        command: sh
-        image : vault_alpine_ykhedar
-        tty: true
-        devices:
-            - "/dev/isgx"
-        environment: 
-          - SCONE_LOG=7
-          - SCONE_MODE=hw
-          - SCONE_CAS_ADDR=cas
-          - SCONE_LAS_ADDR=las
-    vault2:
-        command: sh
-        image : vault_alpine_ykhedar
-        tty: true
-        devices:
-            - "/dev/isgx"
-        environment: 
-          - SCONE_LOG=7
-          - SCONE_MODE=hw
-          - SCONE_CAS_ADDR=cas
-          - SCONE_LAS_ADDR=las
-    consul:
-        command: consul agent -dev -ui -client 0.0.0.0
-        build: docker/vault_dockerfile/consul/
+    # cas:
+    #     command: sh -c "SCONE_HEAP=1G cas -c /etc/cas/cas.toml"
+    #     environment:
+    #      - SCONE_LOG=7
+    #      - SCONE_MODE=sim
+    #     image: sconecuratedimages/services:cas.trust.group-out-of-date-scone4.2.1
+    #     # devices:
+    #     #     - "/dev/isgx"
+    #     ports:
+    #         - target: 8081
+    #           published: 8081
+    #           protocol: tcp
+    #           mode: host
+    #         - target: 18765
+    #           published: 18765
+    #           protocol: tcp
+    #           mode: host
+    # vault1:
+    #     command: sh
+    #     image : vault_alpine_ykhedar
+    #     tty: true
+    #     devices:
+    #         - "/dev/isgx"
+    #     environment: 
+    #       - SCONE_LOG=7
+    #       - SCONE_MODE=hw
+    #       - SCONE_CAS_ADDR=cas
+    #       - SCONE_LAS_ADDR=las
+    # vault2:
+    #     command: sh
+    #     image : vault_alpine_ykhedar
+    #     tty: true
+    #     devices:
+    #         - "/dev/isgx"
+    #     environment: 
+    #       - SCONE_LOG=7
+    #       - SCONE_MODE=hw
+    #       - SCONE_CAS_ADDR=cas
+    #       - SCONE_LAS_ADDR=las
+    # consul:
+    #     command: consul agent -dev -ui -client 0.0.0.0
+    #     build: docker/vault_dockerfile/consul/
         #expose:
         #  - "8500"
-    benchmark:
-        command: ["/bin/bash"]
-        build: benchmarking/
-        tty: true
-        #expose:
-        #  - "8500"
-    las:
-        image: sconecuratedimages/services:las-scone4.2.1
-        environment:
-          - SCONE_LOG=7
-          - SCONE_MODE=hw
-        devices:
-          - "/dev/isgx"
-            #ports:
-            #- target: 18766
-            #published: 18766
-            #protocol: tcp
-            #mode: host
+    # benchmark:
+    #     command: ["/bin/bash"]
+    #     build: benchmarking/
+    #     tty: true
+    #     #expose:
+    #     #  - "8500"
+    # las:
+    #     image: sconecuratedimages/services:las-scone4.2.1
+    #     environment:
+    #       - SCONE_LOG=7
+    #       - SCONE_MODE=hw
+    #     devices:
+    #       - "/dev/isgx"
+    #         #ports:
+    #         #- target: 18766
+    #         #published: 18766
+    #         #protocol: tcp
+    #         #mode: host
     consul1:
       image: consul:latest
       hostname: "consul1"
@@ -88,18 +88,18 @@ services:
       command: "agent -join consul1 -disable-host-node-id"
       depends_on:
         - consul1
-    consul5:
-      image: consul:latest
-      hostname: "consul5"
-      command: "agent -server -join consul1 -disable-host-node-id"
-      depends_on:
-        - consul1
-    consul6:
-      image: consul:latest
-      hostname: "consul6"
-      command: "agent -join consul1 -disable-host-node-id"
-      depends_on:
-        - consul1
+    # consul5:
+    #   image: consul:latest
+    #   hostname: "consul5"
+    #   command: "agent -server -join consul1 -disable-host-node-id"
+    #   depends_on:
+    #     - consul1
+    # consul6:
+    #   image: consul:latest
+    #   hostname: "consul6"
+    #   command: "agent -join consul1 -disable-host-node-id"
+    #   depends_on:
+    #     - consul1
     # consul7:
     #   image: consul:latest
     #   hostname: "consul7"
