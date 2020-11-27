@@ -44,10 +44,14 @@ func (i *InitResponse) GoString() string {
 		"Keys:%v, "+
 		"KeysBase64:%v, "+
 		"RootToken:%v,"+
+		"RecoveryKeys:%v, "+
+		"RecoveryKeysBase64:%v, "+
 		"}",
 		i.Keys,
 		i.KeysBase64,
 		i.RootToken,
+		i.RecoveryKeys,
+		i.RecoveryKeysBase64,
 	)
 }
 

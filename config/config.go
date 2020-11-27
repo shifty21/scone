@@ -51,6 +51,11 @@ func getStringOrPanic(key string) string {
 	return viper.GetString(key)
 }
 
+func getObjectOrPanic(key string, object interface{}) error {
+	checkKey(key)
+	return viper.UnmarshalKey(key, &object)
+}
+
 func getIntOrPanic(key string) int {
 	checkKey(key)
 	v, err := strconv.Atoi(viper.GetString(key))
@@ -64,9 +69,9 @@ func panicIfErrorForKey(err error, key string) {
 	}
 }
 
-//ConfigureAllInterfaces configures vaultinitcas, vaultinitshamir configurations
-func ConfigureAllInterfaces() *Configuration {
-	viper.SetConfigName("application.yaml")
+//LoadConfig configures vaultinitcas, vaultinitshamir configurations
+func LoadConfig() *Configuration {
+	viper.SetConfigName("application_dev.yaml")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("resources/vault-init/")
 	viper.AddConfigPath("/resources/vault-init/")
@@ -75,9 +80,8 @@ func ConfigureAllInterfaces() *Configuration {
 	viper.ReadInConfig()
 	Config = Configuration{}
 	Config["vault_config"] = LoadVaultConfig()
-	Config["cas_config"] = LoadVaultCASConfig()
+	Config["cas_config"] = LoadCASConfig()
 	Config["crypto_config"] = LoadCryptoConfig()
-	Config["encryption_service"] = LoadencryptionhttpConfig()
 	Config["grpc_service"] = LoadEncryptionGRPCConfig()
 	Config["gpg_crypto_Config"] = LoadGPGCryptoConfig()
 	return &Config
@@ -89,18 +93,13 @@ func (c *Configuration) GetVaultConfig() *Vault {
 }
 
 //GetCASConfig returns cas related config
-func (c *Configuration) GetCASConfig() *VaultCAS {
-	return Config["cas_config"].(*VaultCAS)
+func (c *Configuration) GetCASConfig() *CAS {
+	return Config["cas_config"].(*CAS)
 }
 
 //GetCryptoConfig returns cas related config
 func (c *Configuration) GetCryptoConfig() *Crypto {
 	return Config["crypto_config"].(*Crypto)
-}
-
-//GetencryptionhttpConfig returns cas related config
-func (c *Configuration) GetencryptionhttpConfig() *encryptionhttp {
-	return Config["encryption_service"].(*encryptionhttp)
 }
 
 //GetGRPCServiceConfig returns cas related config

@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/shifty21/scone/cas"
 	"github.com/shifty21/scone/config"
 	"github.com/shifty21/scone/gpgcrypto"
 	"github.com/shifty21/scone/rsacrypto"
@@ -47,7 +48,7 @@ func SetConfig(config *config.Vault) Option {
 	}
 }
 
-//Initialize reads config from env variables or set them to default values
+//NewVaultInterface reads config from env variables or set them to default values
 func NewVaultInterface() (*Vault, error) {
 	log.Println("GetConfig|Starting the vault-init service...")
 	v := &Vault{
@@ -101,30 +102,36 @@ func (v *Vault) Finalize(option ...Option) error {
 		log.Println("VaultInterface|Enabling SconeCrypto")
 		crypto, err := rsacrypto.InitCrypto(v.Opt.SconeCryptoConfig)
 		if err != nil {
-			return fmt.Errorf("Error while initializing crypto module, Exiting %v", err)
+			return fmt.Errorf("Error while initializing crypto module: %w", err)
 		}
 		v.Opt.SconeCrypto = crypto
 	}
 	log.Printf("Finalize|v.Opt.IsAutoInitilization %v", v.Opt.IsAutoInitilization)
 	if v.Opt.IsAutoInitilization {
 		log.Println("Setting Recover shares")
-		v.InitRequest.RecoveryShares = 1
-		v.InitRequest.RecoveryThreshold = 1
-		if v.Opt.EnableGPGEncryption {
+		v.InitRequest.RecoveryShares = v.Opt.VaultConfig.Shares.RecoveryShares
+		v.InitRequest.RecoveryThreshold = v.Opt.VaultConfig.Shares.RecoveryThreshold
+		if v.Opt.EnableGPGEncryption && v.InitRequest.RecoveryShares == len(v.Opt.GPGCrypto) {
 			v.InitRequest.RecoveryPGPKeys = make([]string, v.InitRequest.RecoveryShares)
-			v.InitRequest.RecoveryPGPKeys[0] = v.Opt.GPGCrypto.PublicKey[0]
-			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto.PublicKey[0]
+			for x := 0; x < v.InitRequest.RecoveryShares; x++ {
+				v.InitRequest.RecoveryPGPKeys[x] = v.Opt.GPGCrypto[x].PublicKey
+			}
+			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto[0].PublicKey
+		} else {
+			return fmt.Errorf("Recover shares %v doesnt match with number of gpg keys %v", v.InitRequest.RecoveryShares, len(v.Opt.GPGCrypto))
 		}
 	} else {
 		log.Println("Setting shamir shares")
-		v.InitRequest.SecretShares = 5
-		v.InitRequest.SecretThreshold = 3
-		if v.Opt.EnableGPGEncryption {
-			v.InitRequest.PGPKeys = make([]string, v.InitRequest.RecoveryShares)
-			for x := 0; x < v.InitRequest.RecoveryShares; x++ {
-				v.InitRequest.PGPKeys[x] = v.Opt.GPGCrypto.PublicKey[0]
+		v.InitRequest.SecretShares = v.Opt.VaultConfig.Shares.SecretShares
+		v.InitRequest.SecretThreshold = v.Opt.VaultConfig.Shares.SecretThreshold
+		if v.Opt.EnableGPGEncryption && v.InitRequest.SecretShares == len(v.Opt.GPGCrypto) {
+			v.InitRequest.PGPKeys = make([]string, v.InitRequest.SecretShares)
+			for x := 0; x < v.InitRequest.SecretShares; x++ {
+				v.InitRequest.PGPKeys[x] = v.Opt.GPGCrypto[x].PublicKey
 			}
-			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto.PublicKey[0]
+			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto[0].PublicKey
+		} else {
+			return fmt.Errorf("Secret shares %v doesnt match with number of gpg keys %v", v.InitRequest.SecretShares, len(v.Opt.GPGCrypto))
 		}
 	}
 	return nil
@@ -166,6 +173,33 @@ func (v *Vault) ProcessInitVault(initRequest *utils.InitRequest) error {
 	err = v.EncryptKeyFun(v)
 	if err != nil {
 		return fmt.Errorf("ProcessInitVault|Error while saving InitResponse %w", err)
+	}
+	return nil
+}
+
+//StoreSecrets stores the decrypted response in cas session for future use
+func (v *Vault) StoreSecrets() error {
+	//Export to session specified in config files
+	//Export to session specified in config files
+	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
+	responseSecret := cas.Secret{Kind: "ascii", ExportPublic: false, Name: "VAULT_RESPONSE_ENCRYPTED", Value: v.InitResponse.GoString()}
+	secrets := []cas.Secret{rootSecret, responseSecret}
+	err := cas.PostCASSession(v.Opt.CASConfig, secrets)
+	if err != nil {
+		log.Printf("Error while posting root token to ")
+	}
+	return nil
+}
+
+//StoreRootToken stores the decrypted response in cas session for future use
+func (v *Vault) StoreRootToken() error {
+	//Export to session specified in config files
+	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
+	responseSecret := cas.Secret{Kind: "ascii", ExportPublic: false, Name: "VAULT_RESPONSE", Value: v.DecryptedInitResponse.GoString()}
+	secrets := []cas.Secret{rootSecret, responseSecret}
+	err := cas.PostCASSession(v.Opt.CASConfig, secrets)
+	if err != nil {
+		log.Printf("Error while posting root token to ")
 	}
 	return nil
 }
@@ -213,13 +247,25 @@ func (v *Vault) Run() {
 				log.Printf("Run|Error with initprocess: %v", err)
 				os.Exit(1)
 			}
+			//Store keys in memory in case vault is not initialized or for future use the keys can be used
+			//At this stage only encrypted vault response is there.
+			//Should we store it as ascii secret of injection_files
+			// v.StoreSecrets()
 			err = v.Unseal(v.ProcessKeyFun)
 			if err != nil {
 				log.Printf("Run|Error unsealing: %v", err)
 				os.Exit(1)
 			}
+			// if !v.Opt.IsVanillaInitialization {
+			// 	err = v.StoreRootToken()
+			// 	if err != nil {
+			// 		log.Printf("Run|Error while exporting secrets to cas: %v", err)
+			// 		os.Exit(1)
+			// 	}
+			// }
 		case 503:
 			log.Println("Run|Vault is initialized but in sealed state. Unsealing...")
+			//Read the keys in memory from CAS session
 			err := v.Unseal(v.ProcessKeyFun)
 			if err != nil {
 				log.Printf("Run|Error Unsealing: %v", err)

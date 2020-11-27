@@ -8,17 +8,25 @@ wait {
 }
 vault {
     address = "http://127.0.0.1:8200"
-    token = "s.HYTNTvxIQVHXb1Ma7asHqTMv"
+    token = "s.7zSPWje7WxrfYo4WPspmuIlT"
     renew_token = false
 }
 cas {
-get_session_api = "https://cas:8081/session/"
-cert = "/root/go/bin/resources/demo-client/conf/client.crt"
-key = "/root/go/bin/resources/demo-client/conf/client-key.key"
+get_session_api = "https://localhost:8081/session"
+cert = "resources/demo-client/conf/client.crt"
+key = "resources/demo-client/conf/client-key.key"
 session_name = "demo-client"
+session_file = "resources/demo-client/session.yml"
+export_to_session = "demo-client"
+predecessor_hash_file = "resources/demo-client/predecessor_hash.yaml"
 }
 
 template {
-    source      = "/root/go/bin/resources/consul-template/find_address.tpl"
-    destination = "/root/go/bin/resources/consul-template/hashicorp_address.txt"
+    source      = "resources/consul-template/find_address.tpl"
+    destination = "resources/consul-template/hashicorp_address1.txt"
+    wait {
+    min = "2s"
+    max = "10s"
+  }
+  error_on_missing_key = true
 }

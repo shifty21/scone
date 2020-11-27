@@ -19,8 +19,17 @@ nohup wrk -t6 -c16 -d20s -H "X-Vault-Token: $VAULT_TOKEN" -s write-random-secret
 
 # Update write-random-secrets.lua to the path "secret2"
 sed -i -e 's+/v1/secret/+/v1/secret2/+g' write-random-secrets.lua
+export VAULT_ADDR=http://vault:8200
+export VAULT_TOKEN=
 vault secrets enable -path secret2 -version 1 kv
+vault auth enable userpass
+vault write auth/userpass/users/loadtester password=benchmark policies=default
+
 nohup wrk -t1 -c1 -d20s -H "X-Vault-Token: $VAULT_TOKEN" -s write-random-secrets.lua $VAULT_ADDR -- 10000 > prod-test-write-1000-random-secrets-t6-c16-20sec.log &
 
 Luascript
 https://github.com/wg/wrk/blob/master/SCRIPTING
+
+curl --header "X-Vault-Token: $VAULT_TOKEN" --request POST --data @payload.json http://127.0.0.1:8200/v1/secret/hello
+
+curl --header "X-Vault-Token: $VAULT_TOKEN" http://vault:8200/v1/secret/hello

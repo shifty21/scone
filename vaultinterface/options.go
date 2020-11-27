@@ -11,16 +11,17 @@ import (
 //Options for vault interface
 type Options struct {
 	VaultConfig        *config.Vault
-	CASConfig          *config.VaultCAS
+	CASConfig          *config.CAS
 	InitializationType string
 	SconeCryptoConfig  *config.Crypto
 	SconeCrypto        *rsacrypto.Crypto
 
 	EnableGPGEncryption bool
 	GPGCryptoConfig     *config.GPGCrypto
-	GPGCrypto           *gpgcrypto.Crypto
+	GPGCrypto           []*gpgcrypto.Crypto
 
-	IsAutoInitilization bool
+	IsAutoInitilization     bool
+	IsVanillaInitialization bool
 }
 
 //Option function interface
@@ -31,6 +32,14 @@ func EnableAutoInitialization() Option {
 	return func(o *Options) {
 		log.Println("Enable autoinitialization")
 		o.IsAutoInitilization = true
+	}
+}
+
+//EnableVanillaInitialization enable in case one needs to initialize vault via recovery keys
+func EnableVanillaInitialization() Option {
+	return func(o *Options) {
+		log.Println("Enable vanillaInitialization")
+		o.IsVanillaInitialization = true
 	}
 }
 
@@ -52,7 +61,7 @@ func SetGPGCryptoConfig(gpgCryptConfig *config.GPGCrypto) Option {
 }
 
 //SetCASConfig sets config that will verify the clients CAS config
-func SetCASConfig(casConfig *config.VaultCAS) Option {
+func SetCASConfig(casConfig *config.CAS) Option {
 	return func(o *Options) {
 		log.Println("Setting CASConfig")
 		o.CASConfig = casConfig

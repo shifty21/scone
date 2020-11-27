@@ -1,6 +1,8 @@
-package vaultinit
+package vaultvanillainit
 
 import (
+	"fmt"
+
 	"github.com/shifty21/scone/utils"
 	"github.com/shifty21/scone/vaultinterface"
 )
@@ -12,6 +14,6 @@ var EncryptKeyFun = func(vault *vaultinterface.Vault) error {
 
 //ProcessKeyFun stores keys as required by cas unseal process
 var ProcessKeyFun = func(vault *vaultinterface.Vault) (*utils.InitResponse, error) {
-	// fmt.Printf("decryptedInitResponse|Response %v", initResponseJSON)
+	fmt.Printf("decryptedInitResponse|Response %v", vault.InitResponse)
 	return vault.InitResponse, nil
 }

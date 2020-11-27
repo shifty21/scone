@@ -3,14 +3,22 @@ crypto:
     public_key_path: resources/vault-init/mykey.pub
     private_key_path: resources/vault-init/mykey.pem
 #cas vault authentication
-cas_vault:
-    session_name: vault
-    session_api: https://cas:8081/session
-    key: resources/vault/conf/client-key.key
-    certificate: resources/vault/conf/client.crt
+cas:
+    session_name: vault-init
+    export_to_Session: demo-client
+    url: https://127.0.0.1:8081/session
+    key: resources/vault-init/conf/client-key.key
+    certificate: resources/vault-init/conf/client.crt
+    session_file: resources/vault-init/session.yml
+    predecessor_hash: "96042137cf4ec11ea1725ea95e2340e7e61bee1157f451d2c1f3744a237302af"
 #vault config
 vault_address: http://127.0.0.1:8200
 check_interval: 15
+shares:
+    recovery_shares: 2
+    recovery_threshold: 2
+    secret_shares: 1
+    secret_threshold: 1
 http_encryption_server:
     port: 8083
 grpc_encryption_server:
@@ -19,6 +27,6 @@ grpc_encryption_server:
     client_cert: resources/vault-init/grpc/cert/ca-cert.pem
     port: 8082
 gpgcrypto:
-    public_key_path: resources/vault/vault-experiments/keys/public.asc
-    private_key_path: resources/vault/vault-experiments/keys/private.asc
-    pass_phrase: aquickbrownfoxjumpsoverthelazydog
+    - public_key_path: resources/vault/vault-experiments/keys/public.asc
+      private_key_path: resources/vault/vault-experiments/keys/private.asc
+      pass_phrase: aquickbrownfoxjumpsoverthelazydog
