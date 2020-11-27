@@ -107,7 +107,7 @@ func (v *Vault) Finalize(option ...Option) error {
 		v.Opt.SconeCrypto = crypto
 	}
 	log.Printf("Finalize|v.Opt.IsAutoInitilization %v", v.Opt.IsAutoInitilization)
-	if v.Opt.IsAutoInitilization {
+	if v.Opt.IsAutoInitilization && !v.Opt.IsVanillaInitialization {
 		log.Println("Setting Recover shares")
 		v.InitRequest.RecoveryShares = v.Opt.VaultConfig.Shares.RecoveryShares
 		v.InitRequest.RecoveryThreshold = v.Opt.VaultConfig.Shares.RecoveryThreshold
@@ -120,7 +120,7 @@ func (v *Vault) Finalize(option ...Option) error {
 		} else {
 			return fmt.Errorf("Recover shares %v doesnt match with number of gpg keys %v", v.InitRequest.RecoveryShares, len(v.Opt.GPGCrypto))
 		}
-	} else {
+	} else if !v.Opt.IsVanillaInitialization {
 		log.Println("Setting shamir shares")
 		v.InitRequest.SecretShares = v.Opt.VaultConfig.Shares.SecretShares
 		v.InitRequest.SecretThreshold = v.Opt.VaultConfig.Shares.SecretThreshold
@@ -133,6 +133,9 @@ func (v *Vault) Finalize(option ...Option) error {
 		} else {
 			return fmt.Errorf("Secret shares %v doesnt match with number of gpg keys %v", v.InitRequest.SecretShares, len(v.Opt.GPGCrypto))
 		}
+	} else {
+		v.InitRequest.SecretShares = 1
+		v.InitRequest.SecretThreshold = 1
 	}
 	return nil
 }

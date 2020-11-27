@@ -114,7 +114,7 @@ func (s *GRPCServer) Run(opts ...Option) {
 	s.Server.Serve(lis)
 }
 
-//LoadTLSCredentials loads tls cert and key
+//LoadTLSCredentials loads tls cert and key for grpc service
 func LoadTLSCredentials(config *config.Configuration) (*tls.Config, error) {
 	// Load server's certificate and private key
 	serverCert, err := tls.LoadX509KeyPair(config.GetGRPCServiceConfig().Certificate(), config.GetGRPCServiceConfig().Key())
