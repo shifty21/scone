@@ -82,7 +82,6 @@ func LoadConfig() *Configuration {
 	Config["vault_config"] = LoadVaultConfig()
 	Config["cas_config"] = LoadCASConfig()
 	Config["crypto_config"] = LoadCryptoConfig()
-	Config["encryption_service"] = LoadencryptionhttpConfig()
 	Config["grpc_service"] = LoadEncryptionGRPCConfig()
 	Config["gpg_crypto_Config"] = LoadGPGCryptoConfig()
 	return &Config
@@ -101,11 +100,6 @@ func (c *Configuration) GetCASConfig() *CAS {
 //GetCryptoConfig returns cas related config
 func (c *Configuration) GetCryptoConfig() *Crypto {
 	return Config["crypto_config"].(*Crypto)
-}
-
-//GetencryptionhttpConfig returns cas related config
-func (c *Configuration) GetencryptionhttpConfig() *encryptionhttp {
-	return Config["encryption_service"].(*encryptionhttp)
 }
 
 //GetGRPCServiceConfig returns cas related config

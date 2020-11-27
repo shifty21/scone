@@ -40,9 +40,9 @@ func getKeySet(config *config.GPGCrypto, index int) (*Crypto, error) {
 
 //InitGPGCrypto initializes variables need to shamir key based vault initialization
 func InitGPGCrypto(config *config.GPGCrypto) ([]*Crypto, error) {
-	log.Printf("InitGPGCrypt package, with %v keysets", config.NumberOfKeySets)
+	log.Printf("InitGPGCrypt package, with %v keysets", config.GetTotalKeySets())
 	var cryptoSet []*Crypto
-	for i := 0; i < config.NumberOfKeySets; i++ {
+	for i := 0; i < config.GetTotalKeySets(); i++ {
 		keyset, err := getKeySet(config, i)
 		if err != nil {
 			return nil, fmt.Errorf("Error getting keyset number %v Error: %w", i, err)

@@ -1,58 +1,18 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 
 	pb "github.com/shifty21/scone/encryptiongrpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
-
-func httpTest() error {
-	message := &RequestByte{
-		Data: "jackhammer",
-	}
-
-	marshalledmessage, err := json.Marshal(message)
-	if err != nil {
-		return fmt.Errorf("httpTest|Error while marshalling request: %w", err)
-	}
-	resp, err := http.Post("http://localhost:8083/encrypt", "application/json", bytes.NewBuffer(marshalledmessage))
-	if err != nil {
-		return fmt.Errorf("httpTest|Error while making post request: %w", err)
-	}
-
-	var responsebody RequestByte
-	err = json.NewDecoder(resp.Body).Decode(&responsebody)
-	if err != nil {
-		return fmt.Errorf("httpTest|Error while decoding request body: %w", err)
-	}
-	marshalledmessage, err = json.Marshal(responsebody)
-	if err != nil {
-		return fmt.Errorf("httpTest|Error while marshalling decryption request body: %w", err)
-	}
-	respdecrypt, err := http.Post("http://localhost:8083/decrypt", "application/json", bytes.NewBuffer(marshalledmessage))
-	if err != nil {
-		return fmt.Errorf("httpTest|Error while making decryption request: %w", err)
-	}
-
-	var resultdecrypt RequestByte
-	err = json.NewDecoder(respdecrypt.Body).Decode(&resultdecrypt)
-	if err != nil {
-		return fmt.Errorf("httpTest|Error while decoding decrypted request body: %w", err)
-	}
-	log.Printf("httpTest|Decrypted Response %v", resultdecrypt.Data)
-	return nil
-}
 
 func grpcTest(conn *grpc.ClientConn) error {
 	req := pb.BytePacket{Value: []byte("jackhammer")}
@@ -69,7 +29,6 @@ func grpcTest(conn *grpc.ClientConn) error {
 	conn.Close()
 	return nil
 }
-
 func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	// Load certificate of the CA who signed server's certificate
 	pemServerCA, err := ioutil.ReadFile("../encryptiongrpc/cert/ca.cert")

@@ -18,7 +18,7 @@ type KeySet struct {
 //GPGCrypto configration
 type GPGCrypto struct {
 	keySet          []*KeySet
-	NumberOfKeySets int
+	numberOfKeySets int
 }
 
 //GetPublicKeyPath gives vault address
@@ -43,7 +43,7 @@ func (g *GPGCrypto) GetGPGCrypto(i int) *KeySet {
 
 //GetTotalKeySets gets particular keyset
 func (g *GPGCrypto) GetTotalKeySets() int {
-	return g.NumberOfKeySets
+	return g.numberOfKeySets
 }
 
 //LoadGPGCryptoConfig loads values from viper
@@ -54,6 +54,6 @@ func LoadGPGCryptoConfig() *GPGCrypto {
 		log.Fatalf("Error getting gpgcrypto config %v", err)
 	}
 	log.Printf("gpgcrypt object %v", len(keysetslice))
-	gpgcrypto := &GPGCrypto{keySet: keysetslice, NumberOfKeySets: len(keysetslice)}
+	gpgcrypto := &GPGCrypto{keySet: keysetslice, numberOfKeySets: len(keysetslice)}
 	return gpgcrypto
 }

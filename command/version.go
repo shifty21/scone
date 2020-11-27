@@ -12,7 +12,7 @@ type Version struct {
 
 //Run starts a scone based intialization
 func (v *Version) Run(args []string) int {
-	fmt.Fprint(v.Stdout, "Vault Initializer Version - 0.01")
+	fmt.Fprint(v.Stdout, "Vault Initializer Version - 0.01\n")
 	return 0
 }
 
