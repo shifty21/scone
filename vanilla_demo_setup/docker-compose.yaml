@@ -4,7 +4,7 @@ services:
       command: sh
       build : 
         context: ../
-        dockerfile: vault_demo_setup/Dockerfile
+        dockerfile: vanilla_demo_setup/Dockerfile
       tty: true
       depends_on: 
         - consul
@@ -14,6 +14,8 @@ services:
         context: ../benchmarking
         dockerfile: Dockerfile
       tty: true
+      volumes: 
+        - ./logfiles:/home/logfiles
       depends_on: 
         - consul
     consul:

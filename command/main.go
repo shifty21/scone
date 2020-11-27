@@ -74,6 +74,11 @@ func Run(args []string) int {
 				RunOptions: runOpts,
 			}, nil
 		},
+		"vanilla": func() (cli.Command, error) {
+			return &Vanilla{
+				RunOptions: runOpts,
+			}, nil
+		},
 		"version": func() (cli.Command, error) {
 			return &Version{
 				RunOptions: runOpts,

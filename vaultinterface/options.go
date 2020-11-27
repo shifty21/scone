@@ -20,7 +20,8 @@ type Options struct {
 	GPGCryptoConfig     *config.GPGCrypto
 	GPGCrypto           *gpgcrypto.Crypto
 
-	IsAutoInitilization bool
+	IsAutoInitilization     bool
+	IsVanillaInitialization bool
 }
 
 //Option function interface
@@ -31,6 +32,14 @@ func EnableAutoInitialization() Option {
 	return func(o *Options) {
 		log.Println("Enable autoinitialization")
 		o.IsAutoInitilization = true
+	}
+}
+
+//EnableVanillaInitialization enable in case one needs to initialize vault via recovery keys
+func EnableVanillaInitialization() Option {
+	return func(o *Options) {
+		log.Println("Enable vanillaInitialization")
+		o.IsVanillaInitialization = true
 	}
 }
 

@@ -111,21 +111,27 @@ func (v *Vault) Finalize(option ...Option) error {
 		log.Println("Setting Recover shares")
 		v.InitRequest.RecoveryShares = 1
 		v.InitRequest.RecoveryThreshold = 1
-		if v.Opt.EnableGPGEncryption {
+		if v.Opt.EnableGPGEncryption && v.InitRequest.RecoveryShares == len(v.Opt.GPGCrypto.PublicKey) {
 			v.InitRequest.RecoveryPGPKeys = make([]string, v.InitRequest.RecoveryShares)
-			v.InitRequest.RecoveryPGPKeys[0] = v.Opt.GPGCrypto.PublicKey[0]
+			for x := 0; x < v.InitRequest.RecoveryShares; x++ {
+				v.InitRequest.RecoveryPGPKeys[x] = v.Opt.GPGCrypto.PublicKey[x]
+			}
 			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto.PublicKey[0]
+		} else {
+			return fmt.Errorf("Recover shares %v doesnt match with number of gpg keys %v", v.InitRequest.RecoveryShares, len(v.Opt.GPGCrypto.PublicKey))
 		}
 	} else {
 		log.Println("Setting shamir shares")
-		v.InitRequest.SecretShares = 5
-		v.InitRequest.SecretThreshold = 3
-		if v.Opt.EnableGPGEncryption {
-			v.InitRequest.PGPKeys = make([]string, v.InitRequest.RecoveryShares)
-			for x := 0; x < v.InitRequest.RecoveryShares; x++ {
-				v.InitRequest.PGPKeys[x] = v.Opt.GPGCrypto.PublicKey[0]
+		v.InitRequest.SecretShares = 1
+		v.InitRequest.SecretThreshold = 1
+		if v.Opt.EnableGPGEncryption && v.InitRequest.SecretShares == len(v.Opt.GPGCrypto.PublicKey) {
+			v.InitRequest.PGPKeys = make([]string, v.InitRequest.SecretShares)
+			for x := 0; x < v.InitRequest.SecretShares; x++ {
+				v.InitRequest.PGPKeys[x] = v.Opt.GPGCrypto.PublicKey[x]
 			}
 			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto.PublicKey[0]
+		} else {
+			return fmt.Errorf("Secret shares %v doesnt match with number of gpg keys %v", v.InitRequest.SecretShares, len(v.Opt.GPGCrypto.PublicKey))
 		}
 	}
 	return nil
@@ -250,11 +256,13 @@ func (v *Vault) Run() {
 				log.Printf("Run|Error unsealing: %v", err)
 				os.Exit(1)
 			}
-			err = v.StoreRootToken()
-			if err != nil {
-				log.Printf("Run|Error while exporting secrets to cas: %v", err)
-				os.Exit(1)
-			}
+			// if !v.Opt.IsVanillaInitialization {
+			// 	err = v.StoreRootToken()
+			// 	if err != nil {
+			// 		log.Printf("Run|Error while exporting secrets to cas: %v", err)
+			// 		os.Exit(1)
+			// 	}
+			// }
 		case 503:
 			log.Println("Run|Vault is initialized but in sealed state. Unsealing...")
 			//Read the keys in memory from CAS session

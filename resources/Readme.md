@@ -96,6 +96,7 @@ vault secrets tune -default-lease-ttl=2m secret
 
 Vault optimization
 https://www.vaultproject.io/docs/configuration/storage/consul#consistency_mode
+Vault supports using 2 of the 3 Consul Consistency Modes.
 
 consul optimization
 Consul is write limited by disk I/O and read limited by CPU.
@@ -104,3 +105,5 @@ For a read-heavy workload, configure all Consul server agents with the allow_sta
 
 Enterprise
 Read-heavy clusters may take advantage of the enhanced reading feature (Enterprise) for better scalability. This feature allows additional servers to be introduced as non-voters. Being a non-voter, the server will still participate in data replication, but it will not block the leader from committing log entries.
+
+{VAULT_RESPONSE ascii false &CASConfig{Keys:[], KeysBase64:[], RootToken:s.mRjtMGHtEuLImtE4iAZjFLdE,RecoveryKeys:[], RecoveryKeysBase64:[24934bd764ab9e973cfb888a2e65d0fcd208d3c9217d2dda8f8dd75baa756c24], } []}

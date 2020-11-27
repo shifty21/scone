@@ -19,7 +19,6 @@ var EncryptKeyFun = func(vault *vaultinterface.Vault) error {
 		if err != nil {
 			return fmt.Errorf("EncryptKeyFun|Error while encrypting initresponse %v", err)
 		}
-		// fmt.Printf("EncryptedInitResponse %v", encryptedInitResponse)
 		vault.EncryptedResponse = encryptedInitResponse
 	} else {
 		vault.EncryptedResponse = vault.InitResponse
@@ -33,15 +32,15 @@ var ProcessKeyFun = func(vault *vaultinterface.Vault) (*utils.InitResponse, erro
 	//verification we can use the provided privated key by CAS to decrypt the unseal keys
 	var err error
 	var decryptedInitResponse *utils.InitResponse
-	if vault.Opt.EnableGPGEncryption {
-		log.Println("GPGDecryption")
-		decryptedInitResponse, err = vaultautoinit.DecryptPGPInitResponse(vault.EncryptedResponse, vault)
+	if !vault.Opt.EnableGPGEncryption {
+		log.Println("RSADecryption")
+		decryptedInitResponse, err = DecryptInitResponse(vault.EncryptedResponse, vault)
 		if err != nil {
 			return nil, fmt.Errorf("ProcessKeyFun|Error while decrypting initResponse: %w", err)
 		}
 	} else {
-		log.Println("RSADecryption")
-		decryptedInitResponse, err = DecryptInitResponse(vault.EncryptedResponse, vault)
+		log.Printf("GPGDecryption %v", vault.EncryptedResponse)
+		decryptedInitResponse, err = vaultautoinit.DecryptPGPInitResponse(vault.EncryptedResponse, vault)
 		if err != nil {
 			return nil, fmt.Errorf("ProcessKeyFun|Error while decrypting initResponse: %w", err)
 		}

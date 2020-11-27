@@ -21,24 +21,27 @@ func DecryptPGPInitResponse(encryptedResponse *utils.InitResponse, vault *vaulti
 		RootToken:          encryptedResponse.RootToken,
 	}
 
-	//decrypt recoverKeys
-	// for key, value := range encryptedResponse.RecoveryKeys {
-	// 	encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
-	// 	if err != nil {
-	// 		return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the recoveryKeys %w", err)
-	// 	}
-	// 	decryptedInitResponseJSON.KeysBase64[key] = encryptedText.String()
-	// }
-	//decrypt RecoveryKeybase64
-	for key, value := range encryptedResponse.RecoveryKeysBase64 {
-		encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
-		if err != nil {
-			return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
-		}
-		decryptedInitResponseJSON.RecoveryKeysBase64[key] = encryptedText.String()
-	}
+	//Decrypt KeysBase64
+	if !vault.Opt.IsAutoInitilization {
 
-	// // roottoken
+		for key, value := range encryptedResponse.KeysBase64 {
+			encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
+			if err != nil {
+				return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w value %v", err, value)
+			}
+			decryptedInitResponseJSON.KeysBase64[key] = encryptedText.String()
+		}
+	} else {
+		//Decrypt RecoveryKeybase64
+		for key, value := range encryptedResponse.RecoveryKeysBase64 {
+			encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
+			if err != nil {
+				return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
+			}
+			decryptedInitResponseJSON.RecoveryKeysBase64[key] = encryptedText.String()
+		}
+	}
+	//Decrypt RootToken
 	encryptedText, err := gpgcrypto.DecryptBytes(encryptedResponse.RootToken, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
 	if err != nil {
 		return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt RootToken %w ", err)

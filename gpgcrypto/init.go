@@ -19,6 +19,7 @@ type Crypto struct {
 
 //InitGPGCrypto initializes variables need to shamir key based vault initialization
 func InitGPGCrypto(config *config.GPGCrypto) (*Crypto, error) {
+	log.Println("InitGPGCrypt package")
 	crypto := &Crypto{
 		PublicKey:  make([]string, 1),
 		PrivateKey: make([]string, 1),
@@ -55,7 +56,7 @@ func readKeyFile(filename string) (string, error) {
 		return "", fmt.Errorf("GetRSAPublicKey|Error reading public key, path %w", err)
 
 	}
-	fmt.Printf("ReadKeyFile| filename %v bytes read %v\n", filename, string(data))
+	// fmt.Printf("ReadKeyFile| filename %v bytes read %v\n", filename, string(data))
 	return string(data), nil
 }
 
