@@ -109,29 +109,29 @@ func (v *Vault) Finalize(option ...Option) error {
 	log.Printf("Finalize|v.Opt.IsAutoInitilization %v", v.Opt.IsAutoInitilization)
 	if v.Opt.IsAutoInitilization {
 		log.Println("Setting Recover shares")
-		v.InitRequest.RecoveryShares = 1
-		v.InitRequest.RecoveryThreshold = 1
-		if v.Opt.EnableGPGEncryption && v.InitRequest.RecoveryShares == len(v.Opt.GPGCrypto.PublicKey) {
+		v.InitRequest.RecoveryShares = v.Opt.VaultConfig.Shares.RecoveryShares
+		v.InitRequest.RecoveryThreshold = v.Opt.VaultConfig.Shares.RecoveryThreshold
+		if v.Opt.EnableGPGEncryption && v.InitRequest.RecoveryShares == len(v.Opt.GPGCrypto) {
 			v.InitRequest.RecoveryPGPKeys = make([]string, v.InitRequest.RecoveryShares)
 			for x := 0; x < v.InitRequest.RecoveryShares; x++ {
-				v.InitRequest.RecoveryPGPKeys[x] = v.Opt.GPGCrypto.PublicKey[x]
+				v.InitRequest.RecoveryPGPKeys[x] = v.Opt.GPGCrypto[x].PublicKey
 			}
-			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto.PublicKey[0]
+			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto[0].PublicKey
 		} else {
-			return fmt.Errorf("Recover shares %v doesnt match with number of gpg keys %v", v.InitRequest.RecoveryShares, len(v.Opt.GPGCrypto.PublicKey))
+			return fmt.Errorf("Recover shares %v doesnt match with number of gpg keys %v", v.InitRequest.RecoveryShares, len(v.Opt.GPGCrypto))
 		}
 	} else {
 		log.Println("Setting shamir shares")
-		v.InitRequest.SecretShares = 1
-		v.InitRequest.SecretThreshold = 1
-		if v.Opt.EnableGPGEncryption && v.InitRequest.SecretShares == len(v.Opt.GPGCrypto.PublicKey) {
+		v.InitRequest.SecretShares = v.Opt.VaultConfig.Shares.SecretShares
+		v.InitRequest.SecretThreshold = v.Opt.VaultConfig.Shares.SecretThreshold
+		if v.Opt.EnableGPGEncryption && v.InitRequest.SecretShares == len(v.Opt.GPGCrypto) {
 			v.InitRequest.PGPKeys = make([]string, v.InitRequest.SecretShares)
 			for x := 0; x < v.InitRequest.SecretShares; x++ {
-				v.InitRequest.PGPKeys[x] = v.Opt.GPGCrypto.PublicKey[x]
+				v.InitRequest.PGPKeys[x] = v.Opt.GPGCrypto[x].PublicKey
 			}
-			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto.PublicKey[0]
+			v.InitRequest.RootTokenPGPKey = v.Opt.GPGCrypto[0].PublicKey
 		} else {
-			return fmt.Errorf("Secret shares %v doesnt match with number of gpg keys %v", v.InitRequest.SecretShares, len(v.Opt.GPGCrypto.PublicKey))
+			return fmt.Errorf("Secret shares %v doesnt match with number of gpg keys %v", v.InitRequest.SecretShares, len(v.Opt.GPGCrypto))
 		}
 	}
 	return nil

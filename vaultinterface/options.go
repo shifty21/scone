@@ -18,7 +18,7 @@ type Options struct {
 
 	EnableGPGEncryption bool
 	GPGCryptoConfig     *config.GPGCrypto
-	GPGCrypto           *gpgcrypto.Crypto
+	GPGCrypto           []*gpgcrypto.Crypto
 
 	IsAutoInitilization     bool
 	IsVanillaInitialization bool

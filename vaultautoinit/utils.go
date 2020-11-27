@@ -25,7 +25,7 @@ func DecryptPGPInitResponse(encryptedResponse *utils.InitResponse, vault *vaulti
 	if !vault.Opt.IsAutoInitilization {
 
 		for key, value := range encryptedResponse.KeysBase64 {
-			encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
+			encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto[key].PrivateKey, vault.Opt.GPGCrypto[key].PassPhrase)
 			if err != nil {
 				return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w value %v", err, value)
 			}
@@ -34,7 +34,7 @@ func DecryptPGPInitResponse(encryptedResponse *utils.InitResponse, vault *vaulti
 	} else {
 		//Decrypt RecoveryKeybase64
 		for key, value := range encryptedResponse.RecoveryKeysBase64 {
-			encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
+			encryptedText, err := gpgcrypto.DecryptBytes(value, vault.Opt.GPGCrypto[key].PrivateKey, vault.Opt.GPGCrypto[key].PassPhrase)
 			if err != nil {
 				return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt one of the KeysBase64 %w", err)
 			}
@@ -42,7 +42,7 @@ func DecryptPGPInitResponse(encryptedResponse *utils.InitResponse, vault *vaulti
 		}
 	}
 	//Decrypt RootToken
-	encryptedText, err := gpgcrypto.DecryptBytes(encryptedResponse.RootToken, vault.Opt.GPGCrypto.PrivateKey[0], vault.Opt.GPGCrypto.PassPhrase)
+	encryptedText, err := gpgcrypto.DecryptBytes(encryptedResponse.RootToken, vault.Opt.GPGCrypto[0].PrivateKey, vault.Opt.GPGCrypto[0].PassPhrase)
 	if err != nil {
 		return nil, fmt.Errorf("DecryptInitResponse|Unable to decrypt RootToken %w ", err)
 	}

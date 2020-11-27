@@ -51,6 +51,11 @@ func getStringOrPanic(key string) string {
 	return viper.GetString(key)
 }
 
+func getObjectOrPanic(key string, object interface{}) error {
+	checkKey(key)
+	return viper.UnmarshalKey(key, &object)
+}
+
 func getIntOrPanic(key string) int {
 	checkKey(key)
 	v, err := strconv.Atoi(viper.GetString(key))
