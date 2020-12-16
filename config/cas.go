@@ -12,10 +12,10 @@ type CAS struct {
 	sessionName string
 	//sessionFile file
 	sessionFile string
-	//hash for cas session
-	predecessorHash string
-	//name of session to which secret will be exposed
-	exportToSessionName string
+	//exportToSession exports secret to particular session
+	exportToSession string
+	//predecessorHashFile for predecessor cas hash
+	predecessorHashFile string
 }
 
 //GetKey return session api
@@ -38,9 +38,9 @@ func (v *CAS) GetSessionName() string {
 	return v.sessionName
 }
 
-//GetExportToSessionName return session api
-func (v *CAS) GetExportToSessionName() string {
-	return v.exportToSessionName
+//GetPredecessorHashFile return session api
+func (v *CAS) GetPredecessorHashFile() string {
+	return v.predecessorHashFile
 }
 
 //GetSessionFile return session api
@@ -48,14 +48,9 @@ func (v *CAS) GetSessionFile() string {
 	return v.sessionFile
 }
 
-//GetPredecessorHash return session api
-func (v *CAS) GetPredecessorHash() string {
-	return v.predecessorHash
-}
-
-//SetPredecessorHash return session api
-func (v *CAS) SetPredecessorHash(hash string) {
-	v.predecessorHash = hash
+//GetExportToSessionName export secret to particular session
+func (v *CAS) GetExportToSessionName() string {
+	return v.exportToSession
 }
 
 //LoadCASConfig loads values from viper
@@ -66,8 +61,8 @@ func LoadCASConfig() *CAS {
 		certificate:         getStringOrPanic("cas.certificate"),
 		sessionName:         getStringOrPanic("cas.session_name"),
 		sessionFile:         getStringOrPanic("cas.session_file"),
-		predecessorHash:     getStringOrPanic("cas.predecessor_hash"),
-		exportToSessionName: getStringOrPanic("cas.export_to_Session"),
+		exportToSession:     getStringOrPanic("cas.export_to_session"),
+		predecessorHashFile: getStringOrPanic("cas.predecessor_hash_file"),
 	}
 
 }

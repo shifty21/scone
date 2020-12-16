@@ -71,39 +71,88 @@ openssl rsa -in mykey.pem -pubout > mykey.pub
 openssl rsa -in mykey.pem -pubout -out pubkey.pem
 ```
 
-* If you dont have a root token but the keys are available 
-   https://learn.hashicorp.com/tutorials/vault/generate-root
-   vault operator unseal and provide unseal keys
-Recover keys can be used to unseal only for rekeying and generating root token again
-https://www.vaultproject.io/api-docs/system/init#recovery_shares
-
-Rekeying process
-
-### Consul-template
-
-rederere.go contains rending code - for every template update the cas session, check for duplicate secret
-
-
-LifetimeWatcher is a process for watching lifetime of a secret.
-Please note that Vault does not support blocking queries. As a result, Consul Template will not immediately reload in the event a secret is changed as it does with Consul's key-value store. Consul Template will renew the secret with Vault's Renewer API. The Renew API tries to use most of the time the secret is good, renewing at around 90% of the lease time (as set by Vault).
-
-To specify ttl for a specifiy secret 
-vault kv put kv/my-secret ttl=30m my-value=s3cr3t
-To update ttl of secret engine
-vault secrets tune -default-lease-ttl=2m secret
-
-
-
-Vault optimization
+### Optimizations
+#### Vault optimization
 https://www.vaultproject.io/docs/configuration/storage/consul#consistency_mode
 Vault supports using 2 of the 3 Consul Consistency Modes.
 
-consul optimization
+#### consul optimization
 Consul is write limited by disk I/O and read limited by CPU.
 https://www.consul.io/docs/install/performance
 For a read-heavy workload, configure all Consul server agents with the allow_stale DNS option, or query the API with the stale consistency mode. By default, all queries made to the server are RPC forwarded to and serviced by the leader. By enabling stale reads, any server will respond to any query, thereby reducing overhead on the leader. Typically, the stale response is 100ms or less from consistent mode but it drastically improves performance and reduces latency under high load.
 
-Enterprise
+#### Enterprise
 Read-heavy clusters may take advantage of the enhanced reading feature (Enterprise) for better scalability. This feature allows additional servers to be introduced as non-voters. Being a non-voter, the server will still participate in data replication, but it will not block the leader from committing log entries.
 
-{VAULT_RESPONSE ascii false &CASConfig{Keys:[], KeysBase64:[], RootToken:s.mRjtMGHtEuLImtE4iAZjFLdE,RecoveryKeys:[], RecoveryKeysBase64:[24934bd764ab9e973cfb888a2e65d0fcd208d3c9217d2dda8f8dd75baa756c24], } []}
+### Transit backend
+The primary use case for transit is to encrypt data from applications while still storing that encrypted data in some primary data store. This relieves the burden of proper encryption/decryption from application developers and pushes the burden onto the operators of Vault.
+https://www.vaultproject.io/docs/secrets/transit
+vault secrets enable transit
+create enc key
+vault write -f transit/keys/my-key
+write secret 
+vault write transit/encrypt/my-key plaintext=$(base64 <<< "my secret data")
+decrypt
+vault write transit/decrypt/my-key ciphertext=vault:v1:8SDd3WHDOjf7mq69CyCqYjBXAiQQAVZRkFM13ok481zoCmHnSeDX9vyf7w==
+base64 --decode <<< "bXkgc2VjcmV0IGRhdGEK"
+
+### Rotate Key 
+vault write -f transit/keys/my-key/rotate
+future enc uses new key, older ones are used to decrypt old data
+rewrap with new key
+vault write transit/rewrap/my-key ciphertext=vault:v1:8SDd3WHDOjf7mq69CyCqYjBXAiQQAVZRkFM13ok481zoCmHnSeDX9vyf7w==
+
+creating tokens via api - initialize vault and generate this token which will be used by others
+https://www.vaultproject.io/api-docs/auth/token
+
+### Dynamic Secrets
+For creating dynamic secrets you need to consider 3 things secrets (the dynamically created secret), Authentication (A token other than root token to access the secret), Policy(Ties together secret and authenticated users capability)
+https://www.vaultproject.io/docs/secrets/databases
+Policies types
+* Roles - Controls the tables to which user has access  - database/roles/<role name>
+   Paramters 
+   * db_name
+   * creation_statements - defines templated role statement that will be filled upon user request with credentials
+   * revocation_statements - revokes access after ttl
+   * default_ttl
+   * max_ttl
+   usage - vault write database/roles/<dbrole name>
+ * Connection - databse/config/<wizard> - manages root access to database
+   * plugin_name
+   * allowed_roles
+   * connection_url - ex -"{{username}}:{{password}}@tcp(127.0.0.1:3306)/"
+   * username -  initial credential 
+   * password
+   Usage - vault write database/config/wizard <rest of paratmers>
+   vault read database/creds/db-app
+* Read policy
+  * database/creds/db-app
+* Password policy - sys/policies/password/example - https://learn.hashicorp.com/tutorials/vault/database-secrets
+  * Set of rules to which password should adher to 
+
+
+#### Extras
+
+https://www.vaultproject.io/docs/configuration/listener/tcp
+
+telemetry configuration
+https://www.vaultproject.io/docs/configuration/telemetry.html
+
+#### statis roles
+   Creates static roles where only the password is rotated
+
+#### Mongodb dynamic role
+   https://www.vaultproject.io/docs/secrets/databases/mongodb
+   https://www.vaultproject.io/api-docs/secret/databases/mongodb#revocation_statements
+   Integration - https://learn.hashicorp.com/tutorials/vault/application-integration
+
+#### Create token for access
+https://www.vaultproject.io/api/auth/token
+Token is a auth method in vault which is enabled by default
+curl \
+    --header "X-Vault-Token: ..." \
+    --request POST \
+    --data @payload.json \
+    http://127.0.0.1:8200/v1/auth/token/create
+    
+

@@ -17,8 +17,12 @@
 #### [Initialize vault with http](vault_init/README.md)
 #### [Vault codebase working](codebase/Readme.md)
 
-
 ### Vault get root token with unseal keys
+https://learn.hashicorp.com/tutorials/vault/generate-root
+vault operator unseal and provide unseal keys
+Recover keys can be used to unseal only for rekeying and generating root token again
+https://www.vaultproject.io/api-docs/system/init#recovery_shares
+
 ```
 export VAULT_ADDR=http://127.0.0.1:8200
 /root/go/bin/vault operator generate-root -init -> this will give OTP for decoding root token

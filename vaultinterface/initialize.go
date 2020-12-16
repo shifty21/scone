@@ -180,8 +180,8 @@ func (v *Vault) ProcessInitVault(initRequest *utils.InitRequest) error {
 	return nil
 }
 
-//StoreSecrets stores the decrypted response in cas session for future use
-func (v *Vault) StoreSecrets() error {
+//StoreEncryptedResponse stores the encrypted response in case of failure
+func (v *Vault) StoreEncryptedResponse() error {
 	//Export to session specified in config files
 	//Export to session specified in config files
 	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
@@ -194,8 +194,8 @@ func (v *Vault) StoreSecrets() error {
 	return nil
 }
 
-//StoreRootToken stores the decrypted response in cas session for future use
-func (v *Vault) StoreRootToken() error {
+//StoreDecryptedResponse stores the decrypted response in cas session for future use
+func (v *Vault) StoreDecryptedResponse() error {
 	//Export to session specified in config files
 	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
 	responseSecret := cas.Secret{Kind: "ascii", ExportPublic: false, Name: "VAULT_RESPONSE", Value: v.DecryptedInitResponse.GoString()}
@@ -253,19 +253,23 @@ func (v *Vault) Run() {
 			//Store keys in memory in case vault is not initialized or for future use the keys can be used
 			//At this stage only encrypted vault response is there.
 			//Should we store it as ascii secret of injection_files
-			// v.StoreSecrets()
+			// err = v.StoreEncryptedResponse()
+			// if err != nil {
+			// 	log.Println("Run|Error while storing intermediate response")
+			// }
 			err = v.Unseal(v.ProcessKeyFun)
 			if err != nil {
 				log.Printf("Run|Error unsealing: %v", err)
 				os.Exit(1)
 			}
-			// if !v.Opt.IsVanillaInitialization {
-			// 	err = v.StoreRootToken()
-			// 	if err != nil {
-			// 		log.Printf("Run|Error while exporting secrets to cas: %v", err)
-			// 		os.Exit(1)
-			// 	}
-			// }
+			// Dont store in case of vanilla initialization
+			if !v.Opt.IsVanillaInitialization {
+				err = v.StoreDecryptedResponse()
+				if err != nil {
+					log.Printf("Run|Error while exporting secrets to cas: %v", err)
+					os.Exit(1)
+				}
+			}
 		case 503:
 			log.Println("Run|Vault is initialized but in sealed state. Unsealing...")
 			//Read the keys in memory from CAS session

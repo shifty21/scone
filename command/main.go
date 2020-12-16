@@ -42,7 +42,8 @@ func Run(args []string) int {
 	if runOpts.Stderr == nil {
 		runOpts.Stderr = os.Stderr
 	}
-	runOpts.config = config.LoadConfig()
+	runOpts.config = config.LoadConfig("resources/vault-init/")
+	// runOpts.config = config.LoadConfig("resources/vault-init/")
 	v, err := vaultinterface.NewVaultInterface()
 	if err != nil {
 		fmt.Printf("Couldnt initialize vaultinterface %v", err)

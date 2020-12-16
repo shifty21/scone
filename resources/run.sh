@@ -22,6 +22,8 @@ get_mrenclave() {
         COMMAND="SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init --version"
     elif [ "$1" == "consul-template" ]; then
         COMMAND="SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template --version"
+    elif [ "$1" == "demo-client" ]; then
+        COMMAND="SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/demo-client --version"
     fi
     echo "$COMMAND"
 }

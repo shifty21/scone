@@ -36,13 +36,16 @@ type Security struct {
 	} `yaml:"attestation,omitempty"`
 }
 
+//InjectionFiles for file injection
+type InjectionFile struct {
+	Path    string `yaml:"path,omitempty"`
+	Content string `yaml:"content,omitempty"`
+}
+
 //Image struct for session
 type Image struct {
-	Name           string `yaml:"name,omitempty"`
-	InjectionFiles []struct {
-		Path    string `yaml:"path,omitempty"`
-		Content string `yaml:"content,omitempty"`
-	} `yaml:"injection_files,omitempty"`
+	Name           string          `yaml:"name,omitempty"`
+	InjectionFiles []InjectionFile `yaml:"injection_files,omitempty"`
 }
 
 //ExportTo struct specifies session to which secrets are exposed
@@ -77,4 +80,9 @@ type SessionYAML struct {
 	Secrets      []Secret     `yaml:"secrets,omitempty"`
 	Creator      string       `yaml:"creator,omitempty"`
 	AccessPolicy AccessPolicy `yaml:"access_policy,omitempty"`
+}
+
+//PredecessorHash for reading predecessor hash of client session
+type PredecessorHash struct {
+	PredecessorHash string `yaml:"predecessor_hash,omitempty"`
 }

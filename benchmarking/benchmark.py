@@ -14,13 +14,16 @@ if __name__=="__main__":
     time_range = config["time_range"]
     vault_address = config["vault_address"]
     vault_token = config["vault_token"]
-    log_files = config["log_files"]
-    
-    for th in thread_range:
-        for conn in connection_range:
-            for tr in time_range:
-                for exp in range(number_of_experiments):
-                    command = 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-random-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'.format(th,conn,tr,vault_token,vault_address,log_files ,th,conn,tr,exp)
-                    subprocess.run(command, shell=True)
-                    time.sleep(10)
-                    # pass
+    # log_files = config["log_files"]
+    cmd = config["cmd_list"]
+    print(cmd)
+    for x in cmd:
+        print("Running for %s with result in %s" % (x["cmd"], x["dir"]))
+        for th in thread_range:
+            for conn in connection_range:
+                for tr in time_range:
+                    for exp in range(number_of_experiments):
+                        command = x["cmd"].format(th,conn,tr,vault_token,vault_address,x["dir"] ,th,conn,tr,exp)
+                        subprocess.run(command, shell=True)
+                        time.sleep(10)
+        print("\n==============================\n")

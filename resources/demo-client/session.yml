@@ -5,7 +5,7 @@ services:
   image_name: nginx_client_image
   mrenclaves:
   - 2b003c701e2d8caedb5527c571a2dbf31aee06b749efe3a6a7757d862c5de2fc
-  command: /root/go/bin/env-print
+  command: /root/go/bin/demo-client
   pwd: /
   environment:
     SCONE_MODE: hw

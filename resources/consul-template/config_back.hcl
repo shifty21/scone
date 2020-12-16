@@ -17,7 +17,7 @@ cert = "resources/demo-client/conf/client.crt"
 key = "resources/demo-client/conf/client-key.key"
 session_name = "demo-client"
 session_file = "resources/demo-client/session.yml"
-export_to_session = "demo-client"
+test_updated_session_file = "resources/demo-client/test_updated_session.yml"
 predecessor_hash_file = "resources/demo-client/predecessor_hash.yaml"
 }
 

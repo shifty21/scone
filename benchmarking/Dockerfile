@@ -11,5 +11,6 @@ RUN cp /home/wrk/wrk /usr/local/bin
 RUN cd /home && git clone https://github.com/hashicorp/vault-guides.git
 COPY benchmark.py /home/vault-guides/operations/benchmarking/wrk-core-vault-operations/
 COPY resource.yaml /home/vault-guides/operations/benchmarking/wrk-core-vault-operations/
+RUN cd /home/vault-guides/operations/benchmarking/wrk-core-vault-operations/ && sed -i -e 's+/v1/secret/+/v1/secret2/+g' write-random-secrets.lua
 RUN apt-get install python3 python3-pip -y
 RUN pip3 install pyyaml
