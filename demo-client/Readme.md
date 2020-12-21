@@ -9,9 +9,9 @@ show dbs
 use admin
 db.createUser(
   {
-    user: "myUserAdmin",
-    pwd: "abc123",
+    user: "admin",
+    pwd: "password",
     roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
   }
 )
-mongo --port 27017  --authenticationDatabase "admin" -u "myUserAdmin" -p "abc123"
+mongo --port 27017  --authenticationDatabase "admin" -u "admin" -p "password"

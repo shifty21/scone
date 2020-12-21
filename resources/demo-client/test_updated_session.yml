@@ -1,0 +1,48 @@
+version: "0.3"
+name: demo-client
+predecessor: 6b0809147960299701c5199e1200f2272b0be65a861e03c1a86fdfd9d9ff010d
+services:
+- name: dev
+  image_name: nginx_client_image
+  mrenclaves:
+  - 2b003c701e2d8caedb5527c571a2dbf31aee06b749efe3a6a7757d862c5de2fc
+  command: /root/go/bin/demo-client
+  pwd: /
+  environment:
+    SCONE_MODE: hw
+images:
+- name: nginx_client_image
+  injection_files:
+  - path: resources/demo-client/config.yml
+    content: |2
+
+      username: "v-root-demo-client-C64GqlcIkzS9AXtrsKxt-1608218531"
+      password: "A1a-aZLt2nVAYYVDBfMB"
+      database: "admin"
+  - path: resources/consul-template/find_address.txt
+    content: |2
+
+      101 2ntdasdasdasdasd
+  - path: resources/consul-template/templates/config.yml
+    content: |2
+
+      LeaseID : "map[password:A1a-wW12ToNj1XLO0w0j username:v-root-demo-client-lgkUfKI9xAHM47B6wOPp-1608321819]"
+      username: "v-root-demo-client-lgkUfKI9xAHM47B6wOPp-1608321819"
+      password: "A1a-wW12ToNj1XLO0w0j"
+      database: "admin"
+  - path: resources/consul-template/templates/find_address.txt
+    content: |2
+
+      101 2ndasd
+security:
+  attestation:
+    tolerate:
+    - debug-mode
+    - outdated-tcb
+    ignore_advisories: '*'
+    mode: hardware
+access_policy:
+  read:
+  - CREATOR
+  update:
+  - CREATOR

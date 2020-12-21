@@ -21,7 +21,7 @@ type DBConfig struct {
 }
 
 func loadConfig() (*DBConfig, error) {
-	yamlFile, err := ioutil.ReadFile("config.yaml")
+	yamlFile, err := ioutil.ReadFile("resources/consul-template/templates/config.yml")
 	if err != nil {
 		return nil, fmt.Errorf("Error getting db config %w ", err)
 	}

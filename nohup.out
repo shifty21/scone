@@ -1,0 +1,21 @@
+2020/12/18 10:03:28 LoadingConfig from file resources/vault-init/
+2020/12/18 10:03:28 Shares &{1 1 1 1}
+2020/12/18 10:03:28 gpgcrypt object 1
+2020/12/18 10:03:28 GetConfig|Starting the vault-init service...
+2020/12/18 10:03:28 Initializing crypto package with public key [resources/vault-init/mykey.pub] and private key [resources/vault-init/mykey.pem]
+2020/12/18 10:03:28 GetRSAPublicKey|RSA public key
+2020/12/18 10:03:28 EncryptionGRPC.EncryptionSerice|Loading tls cred
+2020/12/18 10:03:28 EncryptionGRPC.EncryptionSerice|Starting grpc server
+2020/12/18 10:04:53 EncryptionGRPC.Service|Plain text :Ç;^l/Ctˆ8”„¾ÿñ¥„n²|kSÜZ§şÀ[ã\;
+2020/12/18 10:04:53 EncryptionGRPC.Handler|Plain text: Ç;^l/Ctˆ8”„¾ÿñ¥„n²|kSÜZ§şÀ[ã\;
+2020/12/18 10:04:53 EncryptionGRPC.Service|Plain text :{sVËëéˆ@
+S¦!Ğ¿"€››^"èL4ÉİĞ=`È
+2020/12/18 10:04:53 EncryptionGRPC.Handler|Plain text: {sVËëéˆ@
+S¦!Ğ¿"€››^"èL4ÉİĞ=`È
+2020/12/18 10:04:53 EncryptionGRPC.Service|Plain text :Jõ‚õ{/7î?`—@L9âêóîiaª¥7¥òeC5sœ
+2020/12/18 10:04:53 EncryptionGRPC.Handler|Plain text: Jõ‚õ{/7î?`—@L9âêóîiaª¥7¥òeC5sœ
+2020/12/18 10:04:53 EncryptionGRPC.Handler||Plain text: Ç;^l/Ctˆ8”„¾ÿñ¥„n²|kSÜZ§şÀ[ã\;
+2020/12/18 10:04:53 EncryptionGRPC.Service|Plain text :
+c7DîM@~o©AL’dŸÊ£Á×Û´ğË3¯
+2020/12/18 10:04:53 EncryptionGRPC.Handler|Plain text: 
+c7DîM@~o©AL’dŸÊ£Á×Û´ğË3¯

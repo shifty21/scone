@@ -78,7 +78,6 @@ type SessionYAML struct {
 	Images       []Image      `yaml:"images,omitempty"`
 	Security     Security     `yaml:"security,omitempty"`
 	Secrets      []Secret     `yaml:"secrets,omitempty"`
-	Creator      string       `yaml:"creator,omitempty"`
 	AccessPolicy AccessPolicy `yaml:"access_policy,omitempty"`
 }
 

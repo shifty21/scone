@@ -8,7 +8,7 @@ wait {
 }
 vault {
     address = "http://127.0.0.1:8200"
-    token = "s.7zSPWje7WxrfYo4WPspmuIlT"
+    token = "s.9dPa8pbheYLEeGByB7Gqvg0r"
     renew_token = false
 }
 cas {
@@ -22,8 +22,8 @@ predecessor_hash_file = "resources/demo-client/predecessor_hash.yaml"
 }
 
 template {
-    source      = "resources/consul-template/find_address.tpl"
-    destination = "resources/consul-template/hashicorp_address1.txt"
+    source      = "resources/demo-client/config.yaml.tpl"
+    destination = "resources/demo-client/config.yaml"
     wait {
     min = "2s"
     max = "10s"

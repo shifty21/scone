@@ -25,6 +25,7 @@ func updateSecretFromSession(secrets []Secret, secret Secret) []Secret {
 	for k, v := range secrets {
 		if v.Name == secret.Name {
 			var temp Secret
+			temp.Name = secret.Name
 			temp.Export = secret.Export
 			temp.ExportPublic = secret.ExportPublic
 			temp.Kind = secret.Kind
@@ -63,13 +64,7 @@ func PostCASSession(config *config.CAS, secrets []Secret) error {
 		return err
 	}
 	//Update config file instead
-	// c.config.GetCASConfig().SetPredecessorHash(*updateHash)
 	session.Predecessor = *updateHash
-	err = UpdateSessionFile(config, session)
-	if err != nil {
-		log.Printf("[ERR] wwriting updated session %v", err)
-		return err
-	}
 
 	//Update pred hash
 	err = setPredecessorHash(config.GetPredecessorHashFile(), *updateHash)
@@ -169,8 +164,8 @@ func UpdateSession(config *config.CAS, session *SessionYAML) (*string, error) {
 	marshalled, err := yaml.Marshal(session)
 	if err != nil {
 		return nil, fmt.Errorf("[ERR] marshalling session: %w", err)
-
 	}
+	log.Printf("Marshalled session %v", string(marshalled))
 	var url = config.GetURL()
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(marshalled))
 	if err != nil {
@@ -204,7 +199,11 @@ func UpdateSession(config *config.CAS, session *SessionYAML) (*string, error) {
 		return nil, fmt.Errorf("[ERR] Unable to decode request body: %w", err)
 	}
 	//Only in development
-	UpdateSessionFile(config, session)
+	err = StoreUpdatedSession(config, session)
+	if err != nil {
+		log.Printf("[ERR] writing updated session %v", err)
+	}
+
 	return &response.Hash, nil
 }
 
@@ -223,14 +222,14 @@ func GetSessionFromYaml(config *config.CAS) (*SessionYAML, error) {
 	return &sessionFile, nil
 }
 
-// UpdateSessionFile writes session file back with updated session
+// StoreUpdatedSession writes session file back with updated session
 // This is only for demo purpose, remove in production
-func UpdateSessionFile(config *config.CAS, session *SessionYAML) error {
+func StoreUpdatedSession(config *config.CAS, session *SessionYAML) error {
 	marshalledSession, err := yaml.Marshal(session)
 	if err != nil {
 		return fmt.Errorf("[ERR] while Marhalling session yaml %w", err)
 	}
-	err = ioutil.WriteFile(config.GetSessionFile(), marshalledSession, 0644)
+	err = ioutil.WriteFile(config.UpdatedSessionFileLoc(), marshalledSession, 0644)
 	if err != nil {
 		return fmt.Errorf("[ERR] while writing session file %w", err)
 	}

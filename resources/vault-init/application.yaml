@@ -10,13 +10,14 @@ cas:
     key: resources/vault-init/conf/client-key.key
     certificate: resources/vault-init/conf/client.crt
     session_file: resources/vault-init/session.yml
+    test_updated_session_file: resources/vault-init/test_updated_session.yml
     predecessor_hash_file: resources/vault-init/predecessor_hash.yaml
 #vault config
 vault_address: http://127.0.0.1:8200
 check_interval: 15
 shares:
-    recovery_shares: 2
-    recovery_threshold: 2
+    recovery_shares: 1
+    recovery_threshold: 1
     secret_shares: 1
     secret_threshold: 1
 http_encryption_server:
