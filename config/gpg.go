@@ -53,7 +53,7 @@ func LoadGPGCryptoConfig() *GPGCrypto {
 	if err != nil {
 		log.Fatalf("Error getting gpgcrypto config %v", err)
 	}
-	log.Printf("gpgcrypt object %v", len(keysetslice))
+	log.Printf("gpgcrypt keyset %v", keysetslice)
 	gpgcrypto := &GPGCrypto{keySet: keysetslice, numberOfKeySets: len(keysetslice)}
 	return gpgcrypto
 }

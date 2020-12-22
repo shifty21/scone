@@ -19,21 +19,6 @@ images:
       username: "v-root-demo-client-C64GqlcIkzS9AXtrsKxt-1608218531"
       password: "A1a-aZLt2nVAYYVDBfMB"
       database: "admin"
-  - path: resources/consul-template/find_address.txt
-    content: |2
-
-      101 2ntdasdasdasdasd
-  - path: resources/consul-template/templates/config.yml
-    content: |2
-
-      LeaseID : "map[password:A1a-wW12ToNj1XLO0w0j username:v-root-demo-client-lgkUfKI9xAHM47B6wOPp-1608321819]"
-      username: "v-root-demo-client-lgkUfKI9xAHM47B6wOPp-1608321819"
-      password: "A1a-wW12ToNj1XLO0w0j"
-      database: "admin"
-  - path: resources/consul-template/templates/find_address.txt
-    content: |2
-
-      101 2ndasd
 security:
   attestation:
     tolerate:

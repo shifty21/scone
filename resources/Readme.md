@@ -156,3 +156,25 @@ curl \
     http://127.0.0.1:8200/v1/auth/token/create
     
 
+
+ docker-compose rm -f -s -v cas
+ 1. vault
+    1. register vault and vault-init, update hash of vault-init and predecessor hash
+    2. update session_auto.yaml and register vault-init auto and demo-parent1
+   
+cd /root/go/bin/resources/demo-client && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session1.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
+cd /root/go/bin/resources/vault && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
+cd /root/go/bin/resources/vault-init && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session_auto.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
+cd /root/go/bin/resources/vault-init && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary 
+@session.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
+
+cd /root/go/bin/resources/demo-client && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
+
+cd /root/go/bin/resources/consul-template && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
+
+
+cd /root/go/bin && SCONE_CONFIG_ID=vault-init/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init grpc
+    1. cd /root/go/bin && SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
+    2. cd /root/go/bin && SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
+ 1. demo-client
+    1. 

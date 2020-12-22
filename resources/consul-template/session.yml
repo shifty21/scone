@@ -1,16 +1,20 @@
 version: "0.3"
 name: consul-template
-predecessor: e1b75e01fc8a1ff1a32c5658357deb656e66d458afade3235b210bac0a7d90aa
 services:
 - name: dev
   image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
   mrenclaves:
   - b8a136f200661817481753a02824ae1d799a5382f76a5caa71c348456d08fb42
-  command: /root/go/bin/consul-template -auth -config /root/go/bin/resources/consul-template/config.hcl
-    -once
+  command: /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config.hcl
   pwd: /
   environment:
     SCONE_MODE: hw
+    VAULT_TOKEN: $$SCONE::vault_token_from_initializer$$
+secrets:
+    - name: vault_token_from_initializer
+      import:
+        session: vault-init-auto
+        secret: VAULT_TOKEN
 
 security:
   attestation:

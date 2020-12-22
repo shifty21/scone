@@ -54,7 +54,7 @@ func InitGPGCrypto(config *config.GPGCrypto) ([]*Crypto, error) {
 }
 
 func readKeyFile(filename string) (string, error) {
-	// fmt.Printf("ReadKeyFile| filename %v\n", filename)
+
 	// open private key
 	_, err := os.Stat(filename)
 	if err != nil {
@@ -66,7 +66,7 @@ func readKeyFile(filename string) (string, error) {
 		return "", fmt.Errorf("GetRSAPublicKey|Error reading public key, path %w", err)
 
 	}
-	// fmt.Printf("ReadKeyFile| filename %v bytes read %v\n", filename, string(data))
+	fmt.Printf("ReadKeyFile|Filename %v Data %v\n", filename, string(data))
 	return string(data), nil
 }
 

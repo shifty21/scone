@@ -19,7 +19,7 @@ vault write database/roles/demo-client \
 vault write database/config/admin \
     plugin_name=mongodb-database-plugin \
     allowed_roles="demo-client" \
-    connection_url="mongodb://{{username}}:{{password}}@127.0.0.1:27017/admin" \
+    connection_url="mongodb://{{username}}:{{password}}@demo-client:27017/admin" \
     username="myUserAdmin" \
     password="abc123"
 
@@ -39,5 +39,6 @@ consul-template -config /root/go/bin/resources/consul-template/config.hcl -once
 #update hash
 cd /root/go/bin/resources/vault-init && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session_scone.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
 
+#Get a cas session
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender
 #https://github.com/emdem/consul-cluster-compose

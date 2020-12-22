@@ -1,5 +1,5 @@
 version: "0.3"
-name: vault-init
+name: vault-init-auto
 predecessor: 4b4444d369e9392541cb1b5e6cb27898e32fbdf29cd50b3bca2ef2a937a65338
 services:
 - name: dev
@@ -54,7 +54,7 @@ secrets:
   kind: ascii
   value: s.oABAsfib14wT318Sfxl8hLfk
   export:
-  - session: demo-client
+  - session: consul-template
 - name: VAULT_RESPONSE
   kind: ascii
   value: '&CASConfig{Keys:[], KeysBase64:[], RootToken:s.oABAsfib14wT318Sfxl8hLfk,RecoveryKeys:[], RecoveryKeysBase64:[b8ba979952528ca6d8605c25e52cf2c675b94328575279e7aa2ed0928c23e9ce], }'

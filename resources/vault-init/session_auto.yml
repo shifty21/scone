@@ -4,23 +4,30 @@ name: vault-init-auto
 services:
    - name: dev
      image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
-     mrenclaves: [dc883ef08eeb0baa05b7fce488c57bfe8233d2d2eb50cb83e9b4d261239b0d04]
+     mrenclaves: [97a5e60c810346fe83898d53f6a56b182a6aeaf915cdb8549bc12dc3f447b7cf]
      command: /root/go/bin/vault-init auto
      pwd: /
      environment:
         SCONE_MODE: hw
 secrets:
-    - name: gpg_from_parent1
+    - name: gpg_private_from_parent1
       import:
         session: demo-client1
         secret: gpg_private_key1
-
+    - name: gpg_public_from_parent1
+      import:
+        session: demo-client1
+        secret: gpg_public_key1
+        
 images:
     - name: sconecuratedimages/www2019:vault-1.5.0-alpine
       injection_files:
-       - path: /resources/vault-init/private.asc
+       - path: /root/go/bin/resources/vault/vault-experiments/keys/private.asc
          content: |
-           $$SCONE::gpg_from_parent1$$
+           $$SCONE::gpg_private_from_parent1$$
+       - path: /root/go/bin/resources/vault/vault-experiments/keys/public.asc
+         content: |
+           $$SCONE::gpg_public_from_parent1$$
     
 security:
   attestation:

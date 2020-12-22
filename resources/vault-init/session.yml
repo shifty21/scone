@@ -2,17 +2,17 @@ version: "0.3"
 name: vault-init
 services:
 - name: dev
-  image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+  image_name: vault-init-image
   mrenclaves:
-  - dc883ef08eeb0baa05b7fce488c57bfe8233d2d2eb50cb83e9b4d261239b0d04
+  - 97a5e60c810346fe83898d53f6a56b182a6aeaf915cdb8549bc12dc3f447b7cf
   command: /root/go/bin/vault-init grpc
   pwd: /
   environment:
     SCONE_MODE: hw
 images:
-- name: sconecuratedimages/www2019:vault-1.5.0-alpine
+- name: vault-init-image
   injection_files:
-  - path: /resources/vault-init/mykey.pem
+  - path: /root/go/bin/resources/vault-init/mykey.pem
     content: |
       -----BEGIN RSA PRIVATE KEY-----
       MIIEpgIBAAKCAQEA1OSWQCTN/hgtYEyqh5VgngUDI+qBtyTbiVTdMM+ebMdA6YiV
@@ -47,12 +47,3 @@ security:
     - debug-mode
     - outdated-tcb
     ignore_advisories: '*'
-secrets:
-- name: VAULT_TOKEN
-  kind: ascii
-  value: s.7zSPWje7WxrfYo4WPspmuIlT
-  export:
-  - session: demo-client
-- name: VAULT_RESPONSE
-  kind: ascii
-  value: '&CASConfig{Keys:[], KeysBase64:[], RootToken:s.7zSPWje7WxrfYo4WPspmuIlT,RecoveryKeys:[], RecoveryKeysBase64:[6fa763a30c82478dabd3e72a1914b28982ec7ea3604165dafa65c2f90e806643], }'

@@ -189,7 +189,7 @@ func (v *Vault) StoreEncryptedResponse() error {
 	secrets := []cas.Secret{rootSecret, responseSecret}
 	err := cas.PostCASSession(v.Opt.CASConfig, secrets)
 	if err != nil {
-		log.Printf("Error while posting root token to ")
+		log.Printf("Error while posting root token to %v", err)
 	}
 	return nil
 }
@@ -202,7 +202,7 @@ func (v *Vault) StoreDecryptedResponse() error {
 	secrets := []cas.Secret{rootSecret, responseSecret}
 	err := cas.PostCASSession(v.Opt.CASConfig, secrets)
 	if err != nil {
-		log.Printf("Error while posting root token to ")
+		log.Printf("Error while posting root token to %v", err)
 	}
 	return nil
 }

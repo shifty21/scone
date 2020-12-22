@@ -23,19 +23,13 @@ RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_rsa
 
 ADD . / /root/go/src/github.com/shifty21/scone/
 RUN cd /root/go/src/github.com/shifty21/scone/ && go build -compiler gccgo -o /root/go/bin/vault-init -v
-#Demo-client that pings mongodb with config from cas
-RUN cd /root/go/src/github.com/shifty21/scone/demo-client && go build -compiler gccgo -o /root/go/bin/demo-client -v
 #vault and consul-template
 RUN go get github.com/mitchellh/gox
 RUN cd /root/go/src/github.com/shifty21 && GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:shifty21/go-kms-wrapping.git
 RUN cd /root/go/src/github.com/shifty21 && GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:shifty21/vault.git
-RUN cd /root/go/src/github.com/shifty21 && GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:shifty21/consul-template.git
-
-RUN cd /root/go/src/github.com/shifty21/consul-template && go build -compiler gccgo -o /root/go/bin/consul-template -v
 
 RUN cd /root/go/src/github.com/shifty21/vault && go mod tidy; exit 0
 RUN cd /root/go/pkg/mod/github.com/modern-go/reflect2@v1.0.1 && printf '// +build !gccgo \n \n \n' | cat - type_map.go > /tmp/out && mv /tmp/out type_map.go
 RUN cd /root/go/src/github.com/shifty21/vault && go build -compiler gccgo -o /root/go/bin/vault -v
 
-
-RUN export PATH=$PATH:/root/go/bin
+ENV PATH="${PATH}:/root/go/bin"

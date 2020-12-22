@@ -1,5 +1,5 @@
 version: "0.3"
-name: demo-client5
+name: demo-parent5
 
 services:
    - name: dev5

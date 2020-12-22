@@ -74,8 +74,8 @@ func LoadConfig(path string) *Configuration {
 	log.Printf("LoadingConfig from file %v", path)
 	viper.SetConfigName("application")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(path)
-	// viper.AddConfigPath("/root/go/bin/resources/vault-init/")
+	// viper.AddConfigPath(path)
+	viper.AddConfigPath("/root/go/bin/resources/vault-init/")
 	// viper.AddConfigPath("../resources/vault-init/")
 	viper.ReadInConfig()
 	Config = Configuration{}
