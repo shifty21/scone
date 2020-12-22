@@ -1,13 +1,12 @@
-FROM sconecuratedimages/www2019:mongodb-alpine-scone4.2.1
+FROM sconecuratedimages/www2019:vault-1.5.0-alpine
 
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/main" > /etc/apk/repositories
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/community" >> /etc/apk/repositories
 RUN cat /etc/apk/repositories
 RUN apk update
 RUN apk add make vim git curl git musl-utils busybox-extras openssh-client
 RUN apk add libc-dev gcc-go
 
-RUN rm /root/go/bin/*
 ADD resources /root/go/bin/resources
 
 ADD gitconfig/id_rsa /root/.ssh/id_rsa

@@ -54,6 +54,12 @@ type ExportTo struct {
 	SessionHash string `yaml:"session_hash,omitempty"`
 }
 
+//Import struct specifies secrets imported from
+type Import struct {
+	Session string `yaml:"session,omitempty"`
+	Secret  string `yaml:"secret,omitempty"`
+}
+
 //Secret for secrets
 type Secret struct {
 	Name         string     `yaml:"name,omitempty"`
@@ -61,6 +67,7 @@ type Secret struct {
 	ExportPublic bool       `yaml:"export_public,omitempty"`
 	Value        string     `yaml:"value,omitempty"`
 	Export       []ExportTo `yaml:"export,omitempty"`
+	Import       Import     `yaml:"import,omitempty"`
 }
 
 //AccessPolicy policies

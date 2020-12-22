@@ -17,8 +17,11 @@ services:
         #       published: 18765
         #       protocol: tcp
         #       mode: host
-    demo-client:
+    mongodb:
       image: sconecuratedimages/www2019:mongodb-alpine-scone4.2.1
+      command: sh
+      tty: true
+    demo-client:
       command: sh
       tty: true
       build :

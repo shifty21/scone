@@ -18,6 +18,7 @@ type DBConfig struct {
 	UserName string `yaml:"username"`
 	Password string `yaml:"password"`
 	Database string `yaml:"database"`
+	Address  string `yaml:"address"`
 }
 
 func loadConfig() (*DBConfig, error) {
@@ -41,7 +42,7 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("Config %v\n", config)
-	url := fmt.Sprintf("mongodb://%v:%v@localhost:27017/%v", config.UserName, config.Password, config.Database)
+	url := fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
 	// url := "mongodb://localhost:27017/"
 	fmt.Printf("URI %v\n", url)
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))

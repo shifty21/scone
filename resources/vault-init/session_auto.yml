@@ -12,11 +12,11 @@ services:
 secrets:
     - name: gpg_private_from_parent1
       import:
-        session: demo-client1
+        session: demo-parent1
         secret: gpg_private_key1
     - name: gpg_public_from_parent1
       import:
-        session: demo-client1
+        session: demo-parent1
         secret: gpg_public_key1
         
 images:

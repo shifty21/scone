@@ -1,3 +1,4 @@
 username: "myUserAdmin"
 password: "abc123"
 database: "admin"
+address: mongodb
