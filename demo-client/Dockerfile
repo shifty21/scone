@@ -6,7 +6,8 @@ RUN cat /etc/apk/repositories
 RUN apk update
 RUN apk add make vim git curl git musl-utils busybox-extras openssh-client
 RUN apk add libc-dev gcc-go
-
+#for service management
+RUN apk add openrc
 ADD resources /root/go/bin/resources
 
 ADD gitconfig/id_rsa /root/.ssh/id_rsa
@@ -23,3 +24,7 @@ RUN go get github.com/mitchellh/gox
 RUN cd /root/go/src/github.com/shifty21 && GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:shifty21/consul-template.git
 RUN cd /root/go/src/github.com/shifty21/consul-template && go build -compiler gccgo -o /root/go/bin/consul-template -v
 ENV PATH="${PATH}:/root/go/bin"
+
+ADD demo-client /etc/init.d/
+RUN chmod +x /etc/init.d/demo-client
+RUN rc-update add demo-client

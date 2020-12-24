@@ -19,7 +19,7 @@ vault write database/roles/demo-client \
 vault write database/config/admin \
     plugin_name=mongodb-database-plugin \
     allowed_roles="demo-client" \
-    connection_url="mongodb://{{username}}:{{password}}@demo-client:27017/admin" \
+    connection_url="mongodb://{{username}}:{{password}}@mongodb:27017/admin" \
     username="myUserAdmin" \
     password="abc123"
 

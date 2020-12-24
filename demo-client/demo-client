@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+start()
+{
+	default_start
+}
+
+stop()
+{
+	default_stop
+}
+
+status()
+{
+	default_status
+}
+command="/root/go/bin/demo-client"
+
+# The special RC_SVCNAME variable contains the name of this service.
+pidfile="/run/${RC_SVCNAME}.pid"
+command_args="/root/go/bin/resources/consul-template/templates/config.yml"
+command_background=true

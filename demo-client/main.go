@@ -3,14 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/yaml.v2"
 )
 
 //DBConfig struct
@@ -21,50 +23,104 @@ type DBConfig struct {
 	Address  string `yaml:"address"`
 }
 
-func loadConfig() (*DBConfig, error) {
-	yamlFile, err := ioutil.ReadFile("/root/go/bin/resources/consul-template/templates/config.yml")
+func loadConfig(filepath string, watcher chan DBConfig) (*DBConfig, error) {
+	log.Printf("Reading config from [%v]", filepath)
+	viper.AddConfigPath(filepath)
+	viper.SetConfigType("yml")
+	viper.SetConfigName("config")
+	viper.ReadInConfig()
+	go func() {
+		for {
+			time.Sleep(time.Second * 5)
+			viper.WatchConfig()
+			viper.OnConfigChange(
+				func(e fsnotify.Event) {
+					var config DBConfig
+					viper.ReadInConfig()
+					err := viper.Unmarshal(&config)
+					if err != nil {
+						log.Printf("Error unmarshalling config")
+					}
+					watcher <- config
+				},
+			)
+		}
+	}()
+	var config *DBConfig
+	err := viper.Unmarshal(&config)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting db config %w ", err)
+		log.Printf("Error unmarshalling config")
+		return nil, err
 	}
-	var config DBConfig
-	err = yaml.Unmarshal(yamlFile, &config)
-	if err != nil {
-		return nil, fmt.Errorf("Error Unmarshalling config %w", err)
-	}
-	return &config, nil
+	return config, nil
 
 }
 
 func main() {
-	config, err := loadConfig()
+	SignalChan := make(chan os.Signal)
+	signal.Notify(SignalChan,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGKILL,
+	)
+	watcher := make(chan DBConfig)
+	filePath := os.Args[1:][0]
+	config, err := loadConfig(filePath, watcher)
 	if err != nil {
 		log.Fatalf("Error while loading config %v", err)
 		os.Exit(1)
 	}
 	fmt.Printf("Config %v\n", config)
-	url := fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
-	// url := "mongodb://localhost:27017/"
-	fmt.Printf("URI %v\n", url)
-	client, err := mongo.NewClient(options.Client().ApplyURI(url))
-	if err != nil {
-		log.Printf("Error while Creating new client for mongodb %v", err)
-		os.Exit(1)
-	}
-	fmt.Printf("Created client\n")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatalf("Error while connecting to db %v", err)
-		os.Exit(1)
-	}
-	err = client.Ping(context.TODO(), nil)
+	var client *mongo.Client
+	var ctx context.Context
+	go func() {
+		for {
+			select {
+			case config := <-watcher:
+				fmt.Printf("Config Change even reloading connection %v", config)
+				url := fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
+				fmt.Printf("URI %v\n", url)
+				client, err = mongo.NewClient(options.Client().ApplyURI(url))
+				if err != nil {
+					log.Printf("Error while Creating new client for mongodb %v", err)
+				}
+				ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+				err = client.Connect(ctx)
+				if err != nil {
+					log.Printf("Error while connecting to db %v", err)
+				}
+				err = client.Ping(context.TODO(), nil)
 
-	if err != nil {
-		log.Fatalf("Error while pinging to db %v", err)
-	}
-
-	fmt.Println("Connected to MongoDB!")
-
-	defer client.Disconnect(ctx)
+				if err != nil {
+					log.Printf("Error while pinging to db %v", err)
+				} else {
+					fmt.Println("Connected to MongoDB!")
+				}
+				client.Disconnect(ctx)
+			default:
+				url := fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
+				fmt.Printf("URI %v\n", url)
+				client, err = mongo.NewClient(options.Client().ApplyURI(url))
+				if err != nil {
+					log.Printf("Error while Creating new client for mongodb %v", err)
+				}
+				ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+				err = client.Connect(ctx)
+				if err != nil {
+					log.Printf("Error while connecting to db %v", err)
+				}
+				err = client.Ping(context.TODO(), nil)
+				if err != nil {
+					log.Printf("Error while pinging to db %v", err)
+				} else {
+					fmt.Println("Connected to MongoDB!")
+				}
+			}
+			time.Sleep(5 * time.Second)
+			client.Disconnect(ctx)
+		}
+	}()
+	<-SignalChan
+	fmt.Println("Interrupt encountered, exiting")
 	os.Exit(0)
 }

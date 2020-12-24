@@ -9,9 +9,19 @@ show dbs
 use admin
 db.createUser(
   {
-    user: "admin",
-    pwd: "password",
+    user: "myUserAdmin",
+    pwd: "abc123",
     roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
   }
 )
-mongo --port 27017  --authenticationDatabase "admin" -u "admin" -p "password"
+mongod --auth --port 27017 --dbpath /usr/local/var/mongodb --bind_ip=0.0.0.0
+mongo --port 27017  --authenticationDatabase "admin" -u "myUserAdmin" -p "abc123"
+
+commands
+mkdir -p /usr/local/var/mongodb
+
+rc-update reload 
+
+/etc/init.d/demo_client
+openrc add demo_client default
+rc-service demo-client reload
