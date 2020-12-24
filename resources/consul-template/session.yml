@@ -9,16 +9,14 @@ services:
   pwd: /
   environment:
     SCONE_MODE: hw
-    VAULT_TOKEN: $$SCONE::vault_token_from_initializer$$
-secrets:
-    - name: vault_token_from_initializer
-      import:
-        session: vault-init-auto
-        secret: VAULT_TOKEN
-
 security:
   attestation:
     tolerate:
     - debug-mode
     - outdated-tcb
     ignore_advisories: '*'
+secrets:
+- name: vault_token_from_initializer
+  import:
+    session: vault-init-auto
+    secret: VAULT_TOKEN

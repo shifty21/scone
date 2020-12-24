@@ -26,7 +26,7 @@ func (v *CAS) GetKey() string {
 }
 
 //GetURL return session api
-func (v *CAS) GetURL() string {
+func (v *CAS) GetCASURL() string {
 	return v.url
 }
 

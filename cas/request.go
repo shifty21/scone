@@ -36,7 +36,7 @@ type Security struct {
 	} `yaml:"attestation,omitempty"`
 }
 
-//InjectionFiles for file injection
+//InjectionFile for file injection
 type InjectionFile struct {
 	Path    string `yaml:"path,omitempty"`
 	Content string `yaml:"content,omitempty"`

@@ -16,7 +16,7 @@ type CAS struct {
 func (c *CAS) Run(args []string) int {
 	// cas.GetCASSession(c.config.GetCASConfig())
 	// return 0
-	err := cas.PostCASSession(c.config.GetCASConfig(), nil)
+	err := cas.UpdateCASSession(c.config.GetCASConfig(), nil)
 	if err != nil {
 		log.Printf("Error while Posting session to cas %v", err)
 		return 1

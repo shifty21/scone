@@ -38,8 +38,9 @@ func updateSecretFromSession(secrets []Secret, secret Secret) []Secret {
 	return secrets
 }
 
-//PostCASSession reads secret from sessionfile add secrets and post it to CAS and update session file with udpated hash
-func PostCASSession(config *config.CAS, secrets []Secret) error {
+// UpdateCASSession reads secret from sessionfile add secrets and post it to CAS
+// and update session file with udpated hash
+func UpdateCASSession(config *config.CAS, secrets []Secret) error {
 	if config == nil {
 		return ErrConfigNotFound
 	}
@@ -58,7 +59,7 @@ func PostCASSession(config *config.CAS, secrets []Secret) error {
 		session.Secrets = secrets
 	}
 
-	updateHash, err := UpdateSession(config, session)
+	updateHash, err := PUTCASSession(config, session)
 	if err != nil {
 		log.Printf("[ERR] Updating cas session %v", err)
 		return err
@@ -67,7 +68,7 @@ func PostCASSession(config *config.CAS, secrets []Secret) error {
 	session.Predecessor = *updateHash
 
 	//Update pred hash
-	err = setPredecessorHash(config.GetPredecessorHashFile(), *updateHash)
+	err = StorePredecessorHash(config.GetPredecessorHashFile(), *updateHash)
 	if err != nil {
 		return fmt.Errorf("[ERR] writing updated session %w", err)
 	}
@@ -110,7 +111,7 @@ func GetCASSession(config *config.CAS) (*SessionYAML, error) {
 			TLSClientConfig: tlsConfig,
 		},
 	}
-	var url = config.GetURL() + "/" + config.GetSessionName()
+	var url = config.GetCASURL() + "/" + config.GetSessionName()
 	resp, err := client.Get(url)
 	if err != nil {
 		log.Printf("[ERR] Error getting session information from CAS server, CAS get call [%s] %s \n", url, err)
@@ -147,8 +148,8 @@ func GetCASSession(config *config.CAS) (*SessionYAML, error) {
 	return &sessionYAML, nil
 }
 
-//UpdateSession posts the session provided to cas with specified cert and key
-func UpdateSession(config *config.CAS, session *SessionYAML) (*string, error) {
+//PUTCASSession posts the session provided to cas with specified cert and key
+func PUTCASSession(config *config.CAS, session *SessionYAML) (*string, error) {
 	// log.Printf("Loading certificate from %v and key from %v", *config.Certificate, *config.Key)
 	cer, err := tls.LoadX509KeyPair(config.GetCertificate(), config.GetKey())
 	if err != nil {
@@ -166,7 +167,7 @@ func UpdateSession(config *config.CAS, session *SessionYAML) (*string, error) {
 		return nil, fmt.Errorf("[ERR] marshalling session: %w", err)
 	}
 	log.Printf("Marshalled session %v", string(marshalled))
-	var url = config.GetURL()
+	var url = config.GetCASURL()
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(marshalled))
 	if err != nil {
 		return nil, fmt.Errorf("[ERR] getting session information from CAS server %s, error: %w", url, err)
@@ -199,18 +200,17 @@ func UpdateSession(config *config.CAS, session *SessionYAML) (*string, error) {
 		return nil, fmt.Errorf("[ERR] Unable to decode request body: %w", err)
 	}
 	//Only in development
-	err = StoreUpdatedSession(config, session)
+	err = StoreUpdatedSession(config.UpdatedSessionFileLoc(), session)
 	if err != nil {
 		log.Printf("[ERR] writing updated session %v", err)
 	}
-
 	return &response.Hash, nil
 }
 
 //GetSessionFromYaml updates session file
-func GetSessionFromYaml(config *config.CAS) (*SessionYAML, error) {
+func GetSessionFromYaml(filePath string) (*SessionYAML, error) {
 	// log.Printf("Session file %v\n", *config.SessionFile)
-	file, err := ioutil.ReadFile(config.GetSessionFile())
+	file, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("[ERR] Unable to open file %w", err)
 	}
@@ -224,20 +224,20 @@ func GetSessionFromYaml(config *config.CAS) (*SessionYAML, error) {
 
 // StoreUpdatedSession writes session file back with updated session
 // This is only for demo purpose, remove in production
-func StoreUpdatedSession(config *config.CAS, session *SessionYAML) error {
+func StoreUpdatedSession(fileLocation string, session *SessionYAML) error {
 	marshalledSession, err := yaml.Marshal(session)
 	if err != nil {
 		return fmt.Errorf("[ERR] while Marhalling session yaml %w", err)
 	}
-	err = ioutil.WriteFile(config.UpdatedSessionFileLoc(), marshalledSession, 0644)
+	err = ioutil.WriteFile(fileLocation, marshalledSession, 0644)
 	if err != nil {
 		return fmt.Errorf("[ERR] while writing session file %w", err)
 	}
 	return err
 }
 
-// Update predecessor hash with updated value from cas
-func setPredecessorHash(filePath string, hash string) error {
+// StorePredecessorHash predecessor hash with updated value from cas
+func StorePredecessorHash(filePath string, hash string) error {
 	marshalledSession, err := yaml.Marshal(&PredecessorHash{PredecessorHash: hash})
 	if err != nil {
 		return fmt.Errorf("[ERR] while Marhalling PredecessorHash yaml %w", err)

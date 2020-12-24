@@ -187,7 +187,7 @@ func (v *Vault) StoreEncryptedResponse() error {
 	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
 	responseSecret := cas.Secret{Kind: "ascii", ExportPublic: false, Name: "VAULT_RESPONSE_ENCRYPTED", Value: v.InitResponse.GoString()}
 	secrets := []cas.Secret{rootSecret, responseSecret}
-	err := cas.PostCASSession(v.Opt.CASConfig, secrets)
+	err := cas.UpdateCASSession(v.Opt.CASConfig, secrets)
 	if err != nil {
 		log.Printf("Error while posting root token to %v", err)
 	}
@@ -200,7 +200,7 @@ func (v *Vault) StoreDecryptedResponse() error {
 	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
 	responseSecret := cas.Secret{Kind: "ascii", ExportPublic: false, Name: "VAULT_RESPONSE", Value: v.DecryptedInitResponse.GoString()}
 	secrets := []cas.Secret{rootSecret, responseSecret}
-	err := cas.PostCASSession(v.Opt.CASConfig, secrets)
+	err := cas.UpdateCASSession(v.Opt.CASConfig, secrets)
 	if err != nil {
 		log.Printf("Error while posting root token to %v", err)
 	}

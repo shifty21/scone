@@ -33,10 +33,9 @@ func TestGetCASSession(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		err := PostCASSession(tc.conf, tc.secrets)
+		err := UpdateCASSession(tc.conf, tc.secrets)
 		if err != nil {
 			t.Fatalf("Error posting Session %v", err)
 		}
 	}
-
 }

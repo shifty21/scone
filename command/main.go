@@ -60,6 +60,11 @@ func Run(args []string) int {
 				RunOptions: runOpts,
 			}, nil
 		},
+		"register": func() (cli.Command, error) {
+			return &Register{
+				RunOptions: runOpts,
+			}, nil
+		},
 		"grpc": func() (cli.Command, error) {
 			return &GRPC{
 				RunOptions: runOpts,
