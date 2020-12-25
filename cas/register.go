@@ -5,10 +5,15 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os/exec"
+	"os"
+	"regexp"
+	"strings"
+	"syscall"
+	"unsafe"
 
 	"gopkg.in/yaml.v2"
 )
@@ -23,6 +28,8 @@ type RegisterSession struct {
 	Parameter      string `yaml:"parameter"`
 	SessionFileLoc string `yaml:"session_file_loc"`
 }
+
+// the constant values below are valid for x86_64
 
 //Register contains session related objects
 type Register struct {
@@ -45,18 +52,82 @@ func LoadRegisterSessionConfig(filepath string) (*Register, error) {
 	return register, nil
 }
 
-//GetMREnclave runs a command and gets session
-func GetMREnclave(command string, env string, parameter string) error {
-	log.Printf("run command: %v with paramter %v", command, parameter)
-	cmd := exec.Command(command, parameter)
-	log.Printf("command: %v", cmd.String())
-	stdout, err := cmd.Output()
+// the constant values below are valid for x86_64
+const (
+	mfdCloexec  = 0x0001
+	memfdCreate = 319
+)
+
+func runFromMemory(filePath string, args []string, env []string) string {
+	log.Printf("Filepath %v with paramter %v env variables %v", filePath, args, env)
+	fdName := "" // *string cannot be initialized
+	fd, _, _ := syscall.Syscall(memfdCreate, uintptr(unsafe.Pointer(&fdName)), uintptr(mfdCloexec), 0)
+
+	buffer, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Printf("Error executing command %v", err)
-		return err
+		log.Printf("Error reading filepath %v error %v", filePath, err)
 	}
-	log.Printf("Output of command %s", string(stdout))
-	return nil
+
+	_, err = syscall.Write(int(fd), buffer)
+	if err != nil {
+		log.Printf("Error writing  %v", err)
+	}
+	fdPath := fmt.Sprintf("/proc/self/fd/%d", fd)
+	envvar := os.Environ()
+	for x := range env {
+		log.Printf("Appending env %v", env[x])
+		envvar = append(envvar, env[x])
+	}
+	envvar = append(envvar)
+	argsCombined := []string{"scone"}
+	for x := range args {
+		argsCombined = append(argsCombined, args[x])
+	}
+	// syscall.ForkExec()
+	log.Printf("Envvar %v", envvar)
+	log.Printf("args %v", argsCombined)
+	// var stdin, stdout, stder bytes.Buffer
+	r, w, _ := os.Pipe()
+
+	execSpec := &syscall.ProcAttr{
+		Env:   envvar,
+		Files: []uintptr{w.Fd(), w.Fd(), w.Fd(), fd},
+	}
+	outC := make(chan string)
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+
+		outC <- buf.String()
+	}()
+	fork, err := syscall.ForkExec(fdPath, argsCombined, execSpec)
+	// go syscall.Exec(fdPath, argsCombined, envvar)
+	if err != nil {
+		log.Printf("Error Forking %v", err)
+	}
+	log.Printf("start new process success, pid %d.", fork)
+	// back to normal state
+	w.Close()
+	// os.Stdout = old // restoring the real stdout
+	out := <-outC
+
+	// reading our temp stdout
+	reg, _ := regexp.Compile("Enclave hash: [a-z0-9]*\\n")
+	matched := reg.FindString(out)
+	log.Printf("Regexoutput %v", matched)
+
+	return matched
+	// syscall.Read()
+}
+
+//GetMREnclave runs a command and gets session
+func GetMREnclave(command string, env string, parameter string) (string, error) {
+	hash := runFromMemory(command, strings.Split(parameter, " "), strings.Split(env, " "))
+	if hash == "" {
+		return "", fmt.Errorf("Error while getting enclave hash, please \n" +
+			"check binary is present and its configuration is correct")
+	}
+	return strings.Split(hash, " ")[1], nil
 }
 
 // RegisterCASSession reads secret from sessionfile and post it to CAS
@@ -73,12 +144,12 @@ func RegisterCASSession(config *Register) error {
 			continue
 		}
 		config.Sessions[x].Session = session
-		err = GetMREnclave(config.Sessions[x].Command, config.Sessions[x].ENV, config.Sessions[x].Parameter)
+		hash, err := GetMREnclave(config.Sessions[x].Command, config.Sessions[x].ENV, config.Sessions[x].Parameter)
 		if err != nil {
 			log.Printf("[ERR] Getting MREnclave for %v", config.Sessions[x].Session.Name)
 			continue
 		}
-		config.Sessions[x].Session = session
+		config.Sessions[x].Session.Services[0].MREnclaves = []string{hash}
 		updateHash, err := POSTCASSession(config.CASAddress, config.Sessions[x], session)
 		if err != nil {
 			log.Printf("[ERR] Updating cas session %v", err)
@@ -155,7 +226,7 @@ func POSTCASSession(casAddress string, config *RegisterSession, session *Session
 		return nil, fmt.Errorf("[ERR] Unable to decode request body: %w", err)
 	}
 	//Only in development
-	session.Services[0].MREnclaves[0] = response.Hash
+	session.Predecessor = response.Hash
 	err = StoreUpdatedSession(config.SessionFileLoc, session)
 	if err != nil {
 		log.Printf("[ERR] writing updated session %v", err)

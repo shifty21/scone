@@ -9,6 +9,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mitchellh/cli v1.0.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/rainycape/dl v0.0.0-20151222075243-1b01514224a1 // indirect
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1 // indirect
 	go.mongodb.org/mongo-driver v1.4.4
