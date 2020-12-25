@@ -20,13 +20,14 @@ func (r *Register) Run(args []string) int {
 	registerSessions, err := cas.LoadRegisterSessionConfig(file)
 	if err != nil {
 		log.Printf("Error while Posting session to cas %v", err)
-		return 1
+		os.Exit(1)
 	}
 	err = cas.RegisterCASSession(registerSessions)
 	if err != nil {
 		log.Printf("Error while registering session %v", err)
-		return 1
+		os.Exit(1)
 	}
+	log.Println("Completed RUN ")
 	return 0
 }
 

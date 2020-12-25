@@ -5,13 +5,10 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
-	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -23,6 +20,7 @@ type RegisterSession struct {
 	Key            string `yaml:"key"`
 	Certificate    string `yaml:"certificate"`
 	Command        string `yaml:"command"`
+	Parameter      string `yaml:"parameter"`
 	SessionFileLoc string `yaml:"session_file_loc"`
 }
 
@@ -48,24 +46,16 @@ func LoadRegisterSessionConfig(filepath string) (*Register, error) {
 }
 
 //GetMREnclave runs a command and gets session
-func GetMREnclave(command string, env string) error {
-	cmd := exec.Command(command)
-	var stdoutBuf, stderrBuf bytes.Buffer
-	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
-	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
-	additionalEnv := strings.Split(env, " ")
-	newEnv := os.Environ()
-	for i := range additionalEnv {
-		newEnv = append(newEnv, additionalEnv[i])
-	}
-	cmd.Env = newEnv
-	err := cmd.Run()
+func GetMREnclave(command string, env string, parameter string) error {
+	log.Printf("run command: %v with paramter %v", command, parameter)
+	cmd := exec.Command(command, parameter)
+	log.Printf("command: %v", cmd.String())
+	stdout, err := cmd.Output()
 	if err != nil {
-		log.Fatalf("cmd.Run() failed with %s\n", err)
+		log.Printf("Error executing command %v", err)
+		return err
 	}
-	outStr, errStr := string(stdoutBuf.Bytes()), string(stderrBuf.Bytes())
-	// Enclave hash:
-	fmt.Printf("\nout:========\n%s\nerr:========\n%s\n", outStr, errStr)
+	log.Printf("Output of command %s", string(stdout))
 	return nil
 }
 
@@ -76,34 +66,44 @@ func RegisterCASSession(config *Register) error {
 		return ErrConfigNotFound
 	}
 	for x := range config.Sessions {
-		log.Printf("Sessions to be registered %v", config.Sessions[x])
+		log.Printf("Sessions to be registered %v", config.Sessions[x].Session)
 		session, err := GetSessionFromYaml(config.Sessions[x].SessionFileLoc)
 		if err != nil {
-			return fmt.Errorf("[ERR] while getting session from cas %w", err)
+			log.Printf("[ERR] while getting session from cas %v", err)
+			continue
+		}
+		config.Sessions[x].Session = session
+		err = GetMREnclave(config.Sessions[x].Command, config.Sessions[x].ENV, config.Sessions[x].Parameter)
+		if err != nil {
+			log.Printf("[ERR] Getting MREnclave for %v", config.Sessions[x].Session.Name)
+			continue
 		}
 		config.Sessions[x].Session = session
 		updateHash, err := POSTCASSession(config.CASAddress, config.Sessions[x], session)
 		if err != nil {
 			log.Printf("[ERR] Updating cas session %v", err)
-			return err
+			continue
 		}
 		//Update config file instead
 		session.Predecessor = *updateHash
 		//Update pred hash
 		err = StoreUpdatedSession(config.Sessions[x].SessionFileLoc, session)
 		if err != nil {
-			return fmt.Errorf("[ERR] writing updated session %w", err)
+			log.Printf("[ERR] writing updated session %v", err)
+			continue
 		}
 		log.Printf("CAS session updated successfully %v", config.Sessions[x].Session.Name)
 	}
+	log.Printf("Registered all sessions")
 	return nil
 }
 
 //POSTCASSession posts the session provided to cas with specified cert and key
 func POSTCASSession(casAddress string, config *RegisterSession, session *SessionYAML) (*string, error) {
-	// log.Printf("Loading certificate from %v and key from %v", *config.Certificate, *config.Key)
+	log.Printf("POSTCASSession| registring %v", config.Session.Name)
 	cer, err := tls.LoadX509KeyPair(config.Certificate, config.Key)
 	if err != nil {
+		log.Printf("POSTCASSession|Error loading certificate and key")
 		return nil, fmt.Errorf("[ERR] while loading keypair: %w", err)
 	}
 	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cer}, InsecureSkipVerify: true}
@@ -115,19 +115,24 @@ func POSTCASSession(casAddress string, config *RegisterSession, session *Session
 	//marshall session and send post request to CAS
 	marshalled, err := yaml.Marshal(session)
 	if err != nil {
+		log.Printf("POSTCASSession|Error marshalling session")
 		return nil, fmt.Errorf("[ERR] marshalling session: %w", err)
 	}
 	log.Printf("Marshalled session %v", string(marshalled))
 	var url = casAddress
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(marshalled))
 	if err != nil {
+		log.Printf("POSTCASSession|Error creating post req")
 		return nil, fmt.Errorf("[ERR] getting session information from CAS server %s, error: %w", url, err)
 	}
+	log.Printf("POSTCASSession|sending post session %v", url)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Printf("POSTCASSession|Error posting session")
 		return nil, fmt.Errorf("[ERR] making post request: %w", err)
 	}
+	log.Printf("POSTCASSession|Sent posting session")
 	defer resp.Body.Close()
 	if resp.StatusCode == 403 {
 		return nil, fmt.Errorf("[ERR] Forbidden for: %v", url)
