@@ -20,13 +20,14 @@ import (
 
 //RegisterSession contains session related objects
 type RegisterSession struct {
-	Session        *SessionYAML
-	ENV            string `yaml:"env"`
-	Key            string `yaml:"key"`
-	Certificate    string `yaml:"certificate"`
-	Command        string `yaml:"command"`
-	Parameter      string `yaml:"parameter"`
-	SessionFileLoc string `yaml:"session_file_loc"`
+	Session             *SessionYAML
+	ENV                 string `yaml:"env"`
+	Key                 string `yaml:"key"`
+	Certificate         string `yaml:"certificate"`
+	Command             string `yaml:"command"`
+	Parameter           string `yaml:"parameter"`
+	SessionFileLoc      string `yaml:"session_file_loc"`
+	PredecessorHashFile string `yaml:"predecessor_hash_file"`
 }
 
 // the constant values below are valid for x86_64
@@ -74,23 +75,24 @@ func runFromMemory(filePath string, args []string, env []string) string {
 	}
 	fdPath := fmt.Sprintf("/proc/self/fd/%d", fd)
 	envvar := os.Environ()
-	for x := range env {
-		log.Printf("Appending env %v", env[x])
-		envvar = append(envvar, env[x])
+	for x := range envvar {
+		if strings.Contains(envvar[x], "SCONE_HEAP") {
+			continue
+		}
+		env = append(env, envvar[x])
 	}
-	envvar = append(envvar)
 	argsCombined := []string{"scone"}
 	for x := range args {
 		argsCombined = append(argsCombined, args[x])
 	}
 	// syscall.ForkExec()
-	log.Printf("Envvar %v", envvar)
+	log.Printf("Envvar %v", env)
 	log.Printf("args %v", argsCombined)
 	// var stdin, stdout, stder bytes.Buffer
 	r, w, _ := os.Pipe()
 
 	execSpec := &syscall.ProcAttr{
-		Env:   envvar,
+		Env:   env,
 		Files: []uintptr{w.Fd(), w.Fd(), w.Fd(), fd},
 	}
 	outC := make(chan string)
@@ -112,7 +114,7 @@ func runFromMemory(filePath string, args []string, env []string) string {
 	out := <-outC
 
 	// reading our temp stdout
-	reg, _ := regexp.Compile("Enclave hash: [a-z0-9]*\\n")
+	reg, _ := regexp.Compile("Enclave hash: [a-z0-9]*")
 	matched := reg.FindString(out)
 	log.Printf("Regexoutput %v", matched)
 
@@ -163,6 +165,11 @@ func RegisterCASSession(config *Register) error {
 			log.Printf("[ERR] writing updated session %v", err)
 			continue
 		}
+		err = StorePredecessorHash(config.Sessions[x].PredecessorHashFile, *updateHash)
+		if err != nil {
+			log.Printf("[ERR] writing pred hash %v", err)
+			continue
+		}
 		log.Printf("CAS session updated successfully %v", config.Sessions[x].Session.Name)
 	}
 	log.Printf("Registered all sessions")
@@ -203,7 +210,7 @@ func POSTCASSession(casAddress string, config *RegisterSession, session *Session
 		log.Printf("POSTCASSession|Error posting session")
 		return nil, fmt.Errorf("[ERR] making post request: %w", err)
 	}
-	log.Printf("POSTCASSession|Sent posting session")
+	log.Printf("POSTCASSession|Sent post req")
 	defer resp.Body.Close()
 	if resp.StatusCode == 403 {
 		return nil, fmt.Errorf("[ERR] Forbidden for: %v", url)
@@ -225,7 +232,7 @@ func POSTCASSession(casAddress string, config *RegisterSession, session *Session
 	if err != nil {
 		return nil, fmt.Errorf("[ERR] Unable to decode request body: %w", err)
 	}
-	//Only in development
+	// Only in development
 	session.Predecessor = response.Hash
 	err = StoreUpdatedSession(config.SessionFileLoc, session)
 	if err != nil {

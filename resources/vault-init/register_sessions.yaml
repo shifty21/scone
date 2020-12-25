@@ -6,22 +6,25 @@ sessions:
     session_file_loc: resources/vault-init/session.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/vault-init version
+    predecessor_hash_file: resources/vault-init/predecessor_hash.yaml
   - env: SCONE_VERSION=1
     key: resources/consul-template/conf/client-key.key
     certificate: resources/consul-template/conf/client.crt
     session_file_loc: resources/consul-template/session.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/consul-template --version
+    predecessor_hash_file: resources/consul-template/predecessor_hash.yaml
   - env: "SCONE_HEAP=8G SCONE_VERSION=1"
     key: resources/vault/conf/client-key.key
     certificate: resources/vault/conf/client.crt
     session_file_loc: resources/vault/session.yml
     command: /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/vault --version
+    predecessor_hash_file: resources/vault/predecessor_hash.yaml
   - env: SCONE_VERSION=1
     key: resources/demo-client/conf/client-key.key
     certificate: resources/demo-client/conf/client.crt
     session_file_loc: resources/demo-client/session.yml
     command: ld-scone-x86_64.so.1
     parameter: /root/go/bin/demo-client empty
-  
+    predecessor_hash_file: resources/demo-client/predecessor_hash.yaml
