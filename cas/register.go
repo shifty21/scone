@@ -127,7 +127,7 @@ func GetMREnclave(command string, env string, parameter string) (string, error) 
 		return "", fmt.Errorf("Error while getting enclave hash, please \n" +
 			"check binary is present and its configuration is correct")
 	}
-	return strings.Split(hash, " ")[1], nil
+	return strings.Split(hash, " ")[2], nil
 }
 
 // RegisterCASSession reads secret from sessionfile and post it to CAS
