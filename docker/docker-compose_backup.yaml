@@ -58,6 +58,12 @@ services:
         build: docker/vault_dockerfile/consul/
         #expose:
         #  - "8500"
+    # benchmark:
+    #     command: ["/bin/bash"]
+    #     build: benchmarking/
+    #     tty: true
+        #expose:
+        #  - "8500"
     las:
         image: sconecuratedimages/services:las-scone4.2.1
         environment:
@@ -70,3 +76,48 @@ services:
             #published: 18766
             #protocol: tcp
             #mode: host
+    # consul:
+    #   image: consul:latest
+    #   hostname: "consul"
+    #   # ports:
+    #   #   - "8400:8400"
+    #   #   - "8500:8500"
+    #   #   - "8600:8600"
+    #   command: "agent -server -bootstrap-expect 2 -ui -disable-host-node-id -client 0.0.0.0"
+    # consul2:
+    #   image: consul:latest
+    #   hostname: "consul2"
+    #   command: "agent -server -join consul -disable-host-node-id"
+    #   depends_on: 
+    #     - consul
+    # consul3:
+    #   image: consul:latest
+    #   hostname: "consul3"
+    #   command: "agent -server -join consul -disable-host-node-id"
+    #   depends_on:
+    #     - consul
+    # consul4:
+    #   image: consul:latest
+    #   hostname: "consul4"
+    #   command: "agent -join consul1 -disable-host-node-id"
+    #   depends_on:
+    #     - consul1
+    # consul5:
+    #   image: consul:latest
+    #   hostname: "consul5"
+    #   command: "agent -server -join consul1 -disable-host-node-id"
+    #   depends_on:
+    #     - consul1
+    # consul6:
+    #   image: consul:latest
+    #   hostname: "consul6"
+    #   command: "agent -join consul1 -disable-host-node-id"
+    #   depends_on:
+    #     - consul1
+    # consul7:
+    #   image: consul:latest
+    #   hostname: "consul7"
+    #   command: "agent -join consul1 -disable-host-node-id"
+    #   depends_on:
+    #     - consul1
+    

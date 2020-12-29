@@ -1,16 +1,17 @@
+#vault response encryption and decryption
 crypto:
-    public_key_path: /root/go/bin/resources/vault-init/mykey.pub
-    private_key_path: /root/go/bin/resources/vault-init/mykey.pem
+    public_key_path: resources/vault-init/mykey.pub
+    private_key_path: resources/vault-init/mykey.pem
 #cas vault authentication
 cas:
-    session_name: vault-init-auto
-    export_to_session: consul-template
-    url: https://cas:8081/session
-    key: /root/go/bin/resources/vault-init/conf/client-key.key
-    certificate: /root/go/bin/resources/vault-init/conf/client.crt
-    session_file: /root/go/bin/resources/vault-init/session.yml
-    test_updated_session_file: /root/go/bin/resources/vault-init/test_updated_session.yml
-    predecessor_hash_file: /root/go/bin/resources/vault-init/predecessor_hash.yaml
+    session_name: vault-init
+    export_to_session: demo-client
+    url: https://127.0.0.1:8081/session
+    key: resources/vault-init/conf/client-key.key
+    certificate: resources/vault-init/conf/client.crt
+    session_file: resources/vault-init/session.yml
+    test_updated_session_file: resources/vault-init/test_updated_session.yml
+    predecessor_hash_file: resources/vault-init/predecessor_hash.yaml
 #vault config
 vault_address: http://127.0.0.1:8200
 check_interval: 15
@@ -22,11 +23,11 @@ shares:
 http_encryption_server:
     port: 8083
 grpc_encryption_server:
-    cert: /root/go/bin/resources/vault-init/grpc/cert/service.pem
-    key: /root/go/bin/resources/vault-init/grpc/cert/service.key
-    client_cert: /root/go/bin/resources/vault-init/grpc/cert/ca-cert.pem
+    cert: resources/vault-init/grpc/cert/service.pem
+    key: resources/vault-init/grpc/cert/service.key
+    client_cert: resources/vault-init/grpc/cert/ca-cert.pem
     port: 8082
 gpgcrypto:
-    - public_key_path: /root/go/bin/resources/vault/vault-experiments/keys/public.asc
-      private_key_path: /root/go/bin/resources/vault/vault-experiments/keys/private.asc
+    - public_key_path: resources/vault/vault-experiments/keys/public.asc
+      private_key_path: resources/vault/vault-experiments/keys/private.asc
       pass_phrase: aquickbrownfoxjumpsoverthelazydog

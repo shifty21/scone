@@ -1,12 +1,12 @@
 cas_address: https://cas:8081/session
 sessions:
-  - env: SCONE_VERSION=1
+  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
     key: resources/vault-init/conf/client-key.key
     certificate: resources/vault-init/conf/client.crt
     session_file_loc: resources/vault-init/session.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/vault-init version
-  - env: SCONE_VERSION=1
+  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
     key: resources/vault-init/conf/client-key.key
     certificate: resources/vault-init/conf/client.crt
     session_file_loc: resources/vault-init/session_auto.yml
@@ -20,7 +20,7 @@ sessions:
     command: /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/vault --version
     predecessor_hash_file: resources/vault/predecessor_hash.yaml
-  - env: SCONE_VERSION=1
+  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
     key: resources/demo-client/conf/client-key.key
     certificate: resources/demo-client/conf/client.crt
     session_file_loc: resources/demo-client/session1.yml

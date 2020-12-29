@@ -49,9 +49,9 @@ Try these things
 2.   Demo
    1.  vault and vault-init cas registration
    2.  run vault-init grpc and initialize vault
-   3.  Add vault commands to be executed for demo in script
+   3.  Add vault commands to be executed for demo in script - done
    4.  register consul-template and demo-client in cas
-   5.  Create script for mongodb intialization script
+   5.  Create script for mongodb intialization script - done
    6.  run consul-template and demo-client, demo-client will watch configuration
 3.  Setup thesis document
 4.  analyze benchmarking result and form graphs

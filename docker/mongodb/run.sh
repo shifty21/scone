@@ -12,4 +12,4 @@ killed_mongodb=$!
 printf "Killed non auth monodb exit code %s" "$killed_mongodb"
 printf "Starting mongodb with auth enabled"
 StartMongoW_Auth="mongod --auth --port 27017"
-$StartMongoW_Auth &
+$StartMongoW_Auth

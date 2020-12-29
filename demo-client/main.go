@@ -73,18 +73,19 @@ func main() {
 	fmt.Printf("Config %v\n", config)
 	var client *mongo.Client
 	var ctx context.Context
+	var url string
 	go func() {
 		for {
 			select {
 			case config := <-watcher:
 				fmt.Printf("Config Change even reloading connection %v", config)
-				url := fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
+				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
 				fmt.Printf("URI %v\n", url)
 				client, err = mongo.NewClient(options.Client().ApplyURI(url))
 				if err != nil {
 					log.Printf("Error while Creating new client for mongodb %v", err)
 				}
-				ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+				ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 				err = client.Connect(ctx)
 				if err != nil {
 					log.Printf("Error while connecting to db %v", err)
@@ -98,13 +99,13 @@ func main() {
 				}
 				client.Disconnect(ctx)
 			default:
-				url := fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
+				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
 				fmt.Printf("URI %v\n", url)
 				client, err = mongo.NewClient(options.Client().ApplyURI(url))
 				if err != nil {
 					log.Printf("Error while Creating new client for mongodb %v", err)
 				}
-				ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+				ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 				err = client.Connect(ctx)
 				if err != nil {
 					log.Printf("Error while connecting to db %v", err)
