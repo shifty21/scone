@@ -36,10 +36,26 @@ Possible solution -
 2. If cas sessions could provide pgp keys then vault could encrypt the init response. Which can further be decrypted by private key from sessions. 
 
 Try these things
-1. Generate gpg keys and try using them to auto-unseal, this will encrypt the response of init. These can also be used in normal shamir based initialization.
+1. Generate gpg keys and try using them to auto-unseal, this will encrypt the response of init. These can also be used in normal shamir based initialization. -  done
 2. Create one more package in vault-initializer that will initialize auto-unseal case with pgp keys and ask CAS sessions from stakeholders. Is this really possible ? since this would require the key and cert of the sessions. - done with one key which can be provide by CAS - done need to check the CAS session secret import
-3. Check the case where vault is initialized and sealed if keys are there in memory unseal else exit. Or try to store in a location? - memory check is inserted 
+3. Check the case where vault is initialized and sealed if keys are there in memory unseal else exit. Or try to store in a location? - memory check is inserted with keys in CAS
 4. Remove global variable for initresponse - done
 5. Decrypt pgp then decode to string - done
 6. Combine pgp and other init process and use options to intialize vault interface. Try having one configuration that can have options. 
-7. Checked the injection of secret by using secret from other cas sessions
+7. Checked the injection of secret by using secret from other cas sessions - done
+   
+
+1. Test case 
+2.   Demo
+   1.  vault and vault-init cas registration
+   2.  run vault-init grpc and initialize vault
+   3.  Add vault commands to be executed for demo in script
+   4.  register consul-template and demo-client in cas
+   5.  Create script for mongodb intialization script
+   6.  run consul-template and demo-client, demo-client will watch configuration
+3.  Setup thesis document
+4.  analyze benchmarking result and form graphs
+5.  re-run benchmarking with modified script
+6.  Add dynamic secret script for benchmarking 
+7.  Get the related work data
+8.  Get vault, consul-template document needed for thesis

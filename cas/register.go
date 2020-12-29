@@ -146,12 +146,17 @@ func RegisterCASSession(config *Register) error {
 			continue
 		}
 		config.Sessions[x].Session = session
-		hash, err := GetMREnclave(config.Sessions[x].Command, config.Sessions[x].ENV, config.Sessions[x].Parameter)
-		if err != nil {
-			log.Printf("[ERR] Getting MREnclave for %v", config.Sessions[x].Session.Name)
-			continue
+		if config.Sessions[x].Parameter != "" {
+			log.Printf("Parameters found, calculating hash")
+			hash, err := GetMREnclave(config.Sessions[x].Command, config.Sessions[x].ENV, config.Sessions[x].Parameter)
+			if err != nil {
+				log.Printf("[ERR] Getting MREnclave for %v", config.Sessions[x].Session.Name)
+				continue
+			}
+			config.Sessions[x].Session.Services[0].MREnclaves = []string{hash}
+		} else {
+			log.Printf("No Parameters found, registring session as specified in file")
 		}
-		config.Sessions[x].Session.Services[0].MREnclaves = []string{hash}
 		updateHash, err := POSTCASSession(config.CASAddress, config.Sessions[x], session)
 		if err != nil {
 			log.Printf("[ERR] Updating cas session %v", err)
@@ -165,10 +170,14 @@ func RegisterCASSession(config *Register) error {
 			log.Printf("[ERR] writing updated session %v", err)
 			continue
 		}
-		err = StorePredecessorHash(config.Sessions[x].PredecessorHashFile, *updateHash)
-		if err != nil {
-			log.Printf("[ERR] writing pred hash %v", err)
-			continue
+		if config.Sessions[x].PredecessorHashFile != "" {
+			err = StorePredecessorHash(config.Sessions[x].PredecessorHashFile, *updateHash)
+			if err != nil {
+				log.Printf("[ERR] writing pred hash %v", err)
+				continue
+			}
+		} else {
+			log.Printf("PredecessorHashFile location not provided, skipping storage of the same")
 		}
 		log.Printf("CAS session updated successfully %v", config.Sessions[x].Session.Name)
 	}

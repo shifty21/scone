@@ -18,9 +18,15 @@ services:
         #       protocol: tcp
         #       mode: host
     mongodb:
-      image: sconecuratedimages/www2019:mongodb-alpine-scone4.2.1
-      command: sh
+      build:
+        dockerfile: docker/mongodb/Dockerfile
+        context: .
       tty: true
+      # ports:
+      #     - target: 27017
+      #       published: 27017
+      #       protocol: tcp
+      #       mode: host
     demo-client:
       command: sh
       tty: true
