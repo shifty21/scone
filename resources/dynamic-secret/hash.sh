@@ -1,8 +1,8 @@
 
 #update hash
 
-export VAULT_ADDR=http://127.0.0.1:8200
-./vault login s.9dPa8pbheYLEeGByB7Gqvg0r
+# export VAULT_ADDR=http://127.0.0.1:8200
+./vault login s.YpPpLXLypRaGuNWQTEOQtiZM
 ./vault secrets enable database
 
 ./vault write database/roles/demo-client \

@@ -53,6 +53,7 @@ services:
           - SCONE_MODE=hw
           - SCONE_CAS_ADDR=cas
           - SCONE_LAS_ADDR=las
+          - VAULT_ADDR=http://127.0.0.1:8200
     consul:
         command: consul agent -dev -ui -client 0.0.0.0
         build: docker/vault_dockerfile/consul/

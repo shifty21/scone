@@ -9,7 +9,7 @@ createUser=$!
 printf "Create user command %s \n" "$createUser"
 kill "$MONGO_PID"
 killed_mongodb=$!
-printf "Killed non auth monodb exit code %s" "$killed_mongodb"
-printf "Starting mongodb with auth enabled"
+printf "Killed non auth monodb exit code %s\n" "$killed_mongodb"
+printf "Starting mongodb with auth enabled\n"
 StartMongoW_Auth="mongod --auth --port 27017"
 $StartMongoW_Auth

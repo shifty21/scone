@@ -27,8 +27,8 @@ Other files
    export VAULT_ADDR=http://127.0.0.1:8200
    /root/go/bin/vault operator init -recovery-shares=1 -recovery-threshold=1
    /root/go/bin/vault login s.HEE6qF2teSZa0aNNgQYaHqMY
-   SCONE_CONFIG_ID=vault-init1/dev1 SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
-   SCONE_CONFIG_ID=vault-init1/dev1 SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
+   SCONE_CONFIG_ID=vault-init-scone/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
+   SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
    ```
 5. Once vault have successfully initialied add key to vault
    ```
@@ -181,8 +181,11 @@ cd /root/go/bin && SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scon
 
 
 ### consul-template and demo-client setup
-SCONE_CONFIG_ID=consul-template/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -auth -config /root/go/bin/resources/consul-template/config.hcl
-SCONE_CONFIG_ID=demo-client/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/demo-client /root/go/bin/resources/consul-template/templates/config.yml
+SCONE_CONFIG_ID=consul-template/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config.hcl
+SCONE_CONFIG_ID=demo-client/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/demo-client /root/go/bin/resources/consul-template/templates/
 
 
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender
+
+chmod +x /root/go/bin/resources/dynamic-secret/hash.sh
+./resources/dynamic-secret/hash.sh

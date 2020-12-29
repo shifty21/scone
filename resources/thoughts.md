@@ -46,7 +46,7 @@ Try these things
    
 
 1. Test case 
-2.   Demo
+2.   Demo - done for dynamic secret
    1.  vault and vault-init cas registration
    2.  run vault-init grpc and initialize vault
    3.  Add vault commands to be executed for demo in script - done

@@ -17,14 +17,12 @@ type PostResponse struct {
 
 //Service struct for session
 type Service struct {
-	Name        string   `yaml:"name,omitempty"`
-	ImageName   string   `yaml:"image_name,omitempty"`
-	MREnclaves  []string `yaml:"mrenclaves,omitempty"`
-	Command     string   `yaml:"command,omitempty"`
-	PWD         string   `yaml:"pwd,omitempty"`
-	Environment struct {
-		SconeMode string `yaml:"SCONE_MODE,omitempty"`
-	} `yaml:"environment,omitempty"`
+	Name        string            `yaml:"name,omitempty"`
+	ImageName   string            `yaml:"image_name,omitempty"`
+	MREnclaves  []string          `yaml:"mrenclaves,omitempty"`
+	Command     string            `yaml:"command,omitempty"`
+	PWD         string            `yaml:"pwd,omitempty"`
+	Environment map[string]string `yaml:"environment,omitempty"`
 }
 
 //Security struct for session

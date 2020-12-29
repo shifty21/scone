@@ -4,7 +4,7 @@ services:
 - name: dev
   image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
   mrenclaves:
-  - b8a136f200661817481753a02824ae1d799a5382f76a5caa71c348456d08fb42
+  - f94da6d634b600e8c7be71a6ae2956347f774156a28c0380fd15514305cc1f60
   command: /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config.hcl
   pwd: /
   environment:
