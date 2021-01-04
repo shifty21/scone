@@ -35,19 +35,19 @@ func loadConfig(filepath string, watcher chan *DBConfig) (*DBConfig, error) {
 			viper.WatchConfig()
 			viper.OnConfigChange(
 				func(e fsnotify.Event) {
-					var config DBConfig
+					config := &DBConfig{}
 					viper.ReadInConfig()
-					err := viper.Unmarshal(&config)
+					err := viper.Unmarshal(config)
 					if err != nil {
 						log.Printf("Error unmarshalling config")
 					}
-					watcher <- &config
+					watcher <- config
 				},
 			)
 		}
 	}()
-	var config *DBConfig
-	err := viper.Unmarshal(&config)
+	config := &DBConfig{}
+	err := viper.Unmarshal(config)
 	if err != nil {
 		log.Printf("Error unmarshalling config")
 		return nil, err
@@ -77,7 +77,7 @@ func main() {
 	go func() {
 		for {
 			select {
-			case config = <-watcher:
+			case config := <-watcher:
 				fmt.Printf("Config Change even reloading connection %v", config)
 				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
 				fmt.Printf("URI %v\n", url)

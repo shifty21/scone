@@ -34,4 +34,4 @@ RUN cd /root/go/src/github.com/shifty21/vault && go build -compiler gccgo -o /ro
 
 ENV PATH="${PATH}:/root/go/bin"
 
-RUN chmod +x /root/go/bin/resources/dynamic-secret/hash.sh
+RUN chmod +x /root/go/bin/resources/dynamic-secret/initialize_secrets.sh

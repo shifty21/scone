@@ -139,13 +139,13 @@ func RegisterCASSession(config *Register) error {
 		return ErrConfigNotFound
 	}
 	for x := range config.Sessions {
-		log.Printf("Sessions to be registered %v", config.Sessions[x].Session)
 		session, err := GetSessionFromYaml(config.Sessions[x].SessionFileLoc)
 		if err != nil {
 			log.Printf("[ERR] while getting session from cas %v", err)
 			continue
 		}
 		config.Sessions[x].Session = session
+		log.Printf("Sessions to be registered %v", config.Sessions[x].Session)
 		if config.Sessions[x].Parameter != "" {
 			log.Printf("Parameters found, calculating hash")
 			hash, err := GetMREnclave(config.Sessions[x].Command, config.Sessions[x].ENV, config.Sessions[x].Parameter)
@@ -157,15 +157,15 @@ func RegisterCASSession(config *Register) error {
 		} else {
 			log.Printf("No Parameters found, registring session as specified in file")
 		}
-		updateHash, err := POSTCASSession(config.CASAddress, config.Sessions[x], session)
+		updateHash, err := POSTCASSession(config.CASAddress, config.Sessions[x])
 		if err != nil {
 			log.Printf("[ERR] Updating cas session %v", err)
 			continue
 		}
 		//Update config file instead
-		session.Predecessor = *updateHash
+		config.Sessions[x].Session.Predecessor = *updateHash
 		//Update pred hash
-		err = StoreUpdatedSession(config.Sessions[x].SessionFileLoc, session)
+		err = StoreUpdatedSession(config.Sessions[x].SessionFileLoc, config.Sessions[x].Session)
 		if err != nil {
 			log.Printf("[ERR] writing updated session %v", err)
 			continue
@@ -186,7 +186,7 @@ func RegisterCASSession(config *Register) error {
 }
 
 //POSTCASSession posts the session provided to cas with specified cert and key
-func POSTCASSession(casAddress string, config *RegisterSession, session *SessionYAML) (*string, error) {
+func POSTCASSession(casAddress string, config *RegisterSession) (*string, error) {
 	log.Printf("POSTCASSession| registring %v", config.Session.Name)
 	cer, err := tls.LoadX509KeyPair(config.Certificate, config.Key)
 	if err != nil {
@@ -200,7 +200,7 @@ func POSTCASSession(casAddress string, config *RegisterSession, session *Session
 		},
 	}
 	//marshall session and send post request to CAS
-	marshalled, err := yaml.Marshal(session)
+	marshalled, err := yaml.Marshal(config.Session)
 	if err != nil {
 		log.Printf("POSTCASSession|Error marshalling session")
 		return nil, fmt.Errorf("[ERR] marshalling session: %w", err)
@@ -225,7 +225,7 @@ func POSTCASSession(casAddress string, config *RegisterSession, session *Session
 		return nil, fmt.Errorf("[ERR] Forbidden for: %v", url)
 	}
 	if resp.StatusCode == 404 {
-		return nil, fmt.Errorf("[ERR] No session named: %v", session.Name)
+		return nil, fmt.Errorf("[ERR] No session named: %v", config.Session.Name)
 	}
 	//Parse failure and sucess response individually
 	if resp.StatusCode != 201 && resp.StatusCode != 200 {
@@ -242,8 +242,8 @@ func POSTCASSession(casAddress string, config *RegisterSession, session *Session
 		return nil, fmt.Errorf("[ERR] Unable to decode request body: %w", err)
 	}
 	// Only in development
-	session.Predecessor = response.Hash
-	err = StoreUpdatedSession(config.SessionFileLoc, session)
+	config.Session.Predecessor = response.Hash
+	err = StoreUpdatedSession(config.SessionFileLoc, config.Session)
 	if err != nil {
 		log.Printf("[ERR] writing updated session %v", err)
 	}
