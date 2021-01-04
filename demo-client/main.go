@@ -44,6 +44,7 @@ func loadConfig(filepath string, watcher chan *DBConfig) (*DBConfig, error) {
 					watcher <- &config
 				},
 			)
+			time.Sleep(10 * time.Second)
 		}
 	}()
 	var config *DBConfig
@@ -116,7 +117,7 @@ func main() {
 				} else {
 					fmt.Println("Connected to MongoDB!")
 				}
-				time.Sleep(5 * time.Second)
+				time.Sleep(10 * time.Second)
 				client.Disconnect(ctx)
 			}
 

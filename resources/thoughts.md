@@ -68,3 +68,31 @@ AWS KMS is probably the closest to what we implemented using Vault, but the cost
 Confidant by Lyft was very interesting, but ultimately the complexity of implementing authentication, the lack of per-customer revocation, and our KMS API rate limits concerns steered us away.
 
 Cerberus by Nike was very interesting, but the stack wasn't something we were comfortable with running in production.
+
+
+[SCONE|WARN] src/syscall/anon.c:171:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+unable to allocate additional stack space: errno 12
+SIGABRT: abort
+PC=0x100284456a m=62 sigcode=2
+
+goroutine 1834 [running]:
+
+goroutine 1 [chan receive, 5 minutes]:
+main.main
+	/root/go/src/github.com/shifty21/scone/demo-client/main.go:125
+
+goroutine 33 [syscall, 5 minutes]:
+	goroutine in C code; stack unavailable
+created by signal.Notify..func1
+	../../../src_gcc/libgo/go/os/signal/signal.go:127 +0x50
+
+goroutine 34 [select, 5 minutes, locked to thread]:
+
+goroutine 35 [sleep]:
+time.Sleep
+	../../../src_gcc/libgo/go/runtime/time.go:187
+main.loadConfig..func1
+	/root/go/src/github.com/shifty21/scone/demo-client/main.go:34
+created by main.main
+	/root/go/src/github.com/shifty21/scone/demo-client/main.go:68 +0x298
+
