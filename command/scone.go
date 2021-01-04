@@ -21,7 +21,8 @@ func (s *Scone) Run(args []string) int {
 	s.options = append(s.options, vaultinterface.EnableGPGEncryption())
 	s.options = append(s.options, vaultinterface.SetGPGCryptoConfig(s.config.GetGPGCryptoConfig()))
 	s.options = append(s.options, vaultinterface.SconeCryptoConfig(s.config.GetCryptoConfig()))
-	s.options = append(s.options, vaultinterface.SetConfig(s.config.GetVaultConfig()))
+	s.options = append(s.options, vaultinterface.SetVaultConfig(s.config.GetVaultConfig()))
+	s.options = append(s.options, vaultinterface.SetCASConfig(s.config.GetCASConfig()))
 	err := s.Vault.Finalize(s.options...)
 	if err != nil {
 		log.Printf("Error finalizing vaultinterface %v", err)

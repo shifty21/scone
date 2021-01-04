@@ -1,9 +1,10 @@
+import os
 import re
 import glob
 import argparse
 
 def wrk_data(wrk_output):
-    return str(wrk_output.get('lat_avg')) + ',' + str(wrk_output.get('lat_stdev')) + ',' + str(
+    return str(wrk_output.get('file_name')) + ',' + str(wrk_output.get('lat_avg')) + ',' + str(wrk_output.get('lat_stdev')) + ',' + str(
         wrk_output.get('lat_max')) + ',' + str(wrk_output.get('lat_stdevpm')) + ',' + str(
         wrk_output.get('req_avg')) + ',' + str(wrk_output.get('req_stdev')) + ',' + str(
         wrk_output.get('req_max')) + ','  + str(wrk_output.get('req_stdevpm')) + ',' + str(
@@ -12,7 +13,7 @@ def wrk_data(wrk_output):
         wrk_output.get('err_read')) + ',' + str(wrk_output.get('err_write')) + ',' + str(
         wrk_output.get('err_timeout')) + ',' + str(wrk_output.get('req_sec_tot')) + ',' + str(
         wrk_output.get('read_tot')) + ',' + str(wrk_output.get('threads')) + ',' + str(
-        wrk_output.get('total_requests'))  + ',' + str(wrk_output.get('total_responses'))
+        wrk_output.get('total_requests'))  + ',' + str(wrk_output.get('total_responses')) + '\n'
 
 
 def get_bytes(size_str):
@@ -84,8 +85,9 @@ def get_ms(time_str):
     else:
         return size
 
-def parse_wrk_output(wrk_output):
+def parse_wrk_output(file, wrk_output):
     retval = {}
+    retval['file_name'] = file
     requests = 0
     responses = 0
     thread = 0
@@ -140,26 +142,46 @@ def parse_wrk_output(wrk_output):
     return retval
 
 
-def process_files(path):
-    list_of_files = glob.glob(path+"*.log")
-    for file in list_of_files:
-        data = get_per_file_data(file)
-        print(data)
-
 def get_per_file_data(filename):
     file = open(filename)
     wrk_output =  file.read() 
-    wrk_output_dict = parse_wrk_output(wrk_output)
-    print(str(wrk_output_dict) + "\n\n")
-    print("****wrk output csv line: \n\n")
+    wrk_output_dict = parse_wrk_output(file.name.split("/")[-1], wrk_output)
+    # print(str(wrk_output_dict) + "\n\n")
+    # print("****wrk output csv line: \n\n")
     wrk_output_csv = wrk_data(wrk_output_dict)
     return wrk_output_csv
+
+
+def process_files(dir_name,path):
+    list_of_files = sorted(glob.glob(path+"*.log"))
+    header = 'lat_avg,lat_stdev,lat_max,lat_stdevpm,req_avg,req_stdev,req_max,req_stdevpm,'\
+    'tot_requests,tot_duration,read,err_connect,err_read,err_write,err_timeout,req_sec_tot'\
+    ',read_tot,threads,total_requestss,total_responses\n'
+    result = []
+    result.append(header)
+    for file in list_of_files:
+        data = get_per_file_data(file)
+        result.append(data)
+    with open(dir_name+".csv",'w') as resultcsv:
+        resultcsv.writelines(result)
+
+def process_dir(dirs):
+    
+    list_of_dirs = glob.glob(dirs+"*/")
+    
+    print("Processing directories in path %s with directories %s"%(dirs, list_of_dirs))
+    for dir in list_of_dirs:
+        print("Processing directory %s" % str(dir))
+        process_files(str(dir).split("/")[-2],dir)
+
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('-p', '--filedir',
                     default='./', help='config file path')
+    ap.add_argument('-d', '--dir',
+                    default='./', help='config file path')
     args = ap.parse_args()
     
-    path = args.filedir
-    process_files(path)
+    path = args.dir
+    process_dir(path)

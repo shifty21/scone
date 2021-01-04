@@ -5,7 +5,9 @@ crypto:
 #cas vault authentication
 cas:
     session_name: vault-init
-    export_to_session: demo-client
+    export_to_session:
+        - consul-template
+        - demo-client
     url: https://127.0.0.1:8081/session
     key: resources/vault-init/conf/client-key.key
     certificate: resources/vault-init/conf/client.crt

@@ -41,8 +41,8 @@ type Vault struct {
 	DecryptedInitResponse *utils.InitResponse
 }
 
-//SetConfig sets config that will verify the clients CAS config
-func SetConfig(config *config.Vault) Option {
+//SetVaultConfig sets config containing vault config
+func SetVaultConfig(config *config.Vault) Option {
 	return func(o *Options) {
 		o.VaultConfig = config
 	}
@@ -184,7 +184,16 @@ func (v *Vault) ProcessInitVault(initRequest *utils.InitRequest) error {
 func (v *Vault) StoreEncryptedResponse() error {
 	//Export to session specified in config files
 	//Export to session specified in config files
-	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
+	var exportTo []cas.ExportTo
+	if v.Opt.CASConfig.GetExportToSessionName() == nil {
+		log.Printf("ExportToSession Object null, please check this is provided to export the tokens")
+		return nil
+	}
+	for x := range v.Opt.CASConfig.GetExportToSessionName() {
+		log.Printf("StoreEncryptedResponse|Exporting to %v", v.Opt.CASConfig.GetExportToSessionName()[x])
+		exportTo = append(exportTo, cas.ExportTo{Session: *v.Opt.CASConfig.GetExportToSessionName()[x]})
+	}
+	rootSecret := cas.Secret{Kind: "ascii", Export: exportTo, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
 	responseSecret := cas.Secret{Kind: "ascii", ExportPublic: false, Name: "VAULT_RESPONSE_ENCRYPTED", Value: v.InitResponse.GoString()}
 	secrets := []cas.Secret{rootSecret, responseSecret}
 	err := cas.UpdateCASSession(v.Opt.CASConfig, secrets)
@@ -197,7 +206,16 @@ func (v *Vault) StoreEncryptedResponse() error {
 //StoreDecryptedResponse stores the decrypted response in cas session for future use
 func (v *Vault) StoreDecryptedResponse() error {
 	//Export to session specified in config files
-	rootSecret := cas.Secret{Kind: "ascii", Export: []cas.ExportTo{{Session: v.Opt.CASConfig.GetExportToSessionName()}}, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
+	var exportTo []cas.ExportTo
+	if v.Opt.CASConfig.GetExportToSessionName() == nil {
+		log.Printf("ExportToSession Object null, please check this is provided to export the tokens")
+		return nil
+	}
+	for x := range v.Opt.CASConfig.GetExportToSessionName() {
+		log.Printf("StoreDecryptedResponse|Exporting to %v", v.Opt.CASConfig.GetExportToSessionName()[x])
+		exportTo = append(exportTo, cas.ExportTo{Session: *v.Opt.CASConfig.GetExportToSessionName()[x]})
+	}
+	rootSecret := cas.Secret{Kind: "ascii", Export: exportTo, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}
 	responseSecret := cas.Secret{Kind: "ascii", ExportPublic: false, Name: "VAULT_RESPONSE", Value: v.DecryptedInitResponse.GoString()}
 	secrets := []cas.Secret{rootSecret, responseSecret}
 	err := cas.UpdateCASSession(v.Opt.CASConfig, secrets)

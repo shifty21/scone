@@ -19,7 +19,7 @@ func (v *Vanilla) Run(args []string) int {
 	v.Vault.EncryptKeyFun = vaultvanillainit.EncryptKeyFun
 	v.Vault.ProcessKeyFun = vaultvanillainit.ProcessKeyFun
 
-	v.options = append(v.options, vaultinterface.SetConfig(v.config.GetVaultConfig()))
+	v.options = append(v.options, vaultinterface.SetVaultConfig(v.config.GetVaultConfig()))
 	v.options = append(v.options, vaultinterface.EnableVanillaInitialization())
 	err := v.Vault.Finalize(v.options...)
 	if err != nil {

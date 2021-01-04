@@ -12,30 +12,33 @@ Other files
 
 ## Process
 1. Run docker-compose.yaml - this will bring up vault, consul, cas and las instances.
-2. login to vault container and run [run.sh](#runsh) to register all the binaries.
+2. login to vault container and these commands to register all the binaries to cas.
    ```
-   sh run.sh register all
+   ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
+   ./vault-init register resources/vault-init/register_sessions_vault.yaml
    ```
 3. Start vault first only in case of shamir based initialization, in grpc based auto-initialization perform step 4 first.
    ```
+   Auto-Initialization
    SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
+   Vannilla Initialization
    SCONE_CONFIG_ID=vault1/dev1 SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config_vanilla.hcl
    ```
 4. Start vault_initializer - this will intialize vault based on the type suggeted. For the 2nd senario mentioned above the private key for decryption would be inserted by CAS at /home/mykey.pem. This ensures that only authenticated application is able to intialize vault.
    ```
+   GRPC server
    SCONE_CONFIG_ID=vault-init/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init grpc
-   export VAULT_ADDR=http://127.0.0.1:8200
-   /root/go/bin/vault operator init -recovery-shares=1 -recovery-threshold=1
-   /root/go/bin/vault login s.HEE6qF2teSZa0aNNgQYaHqMY
+   gpg based shamir initialization
    SCONE_CONFIG_ID=vault-init-scone/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
+   gpg based auto-initialization
    SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
    ```
-5. Once vault have successfully initialied add key to vault
+5. Once vault have successfully initialied, add vault token to initialize_secrets.sh
    ```
-   /root/go/bin/vault secrets enable -path=secret/ kv
-   /root/go/bin/vault kv put secret/hello hashicorp="101 2nd St"
+   cd /root/go/bin/ && ./resources/dynamic-secret/initialize_secrets.sh
    ```
-6. Update demo-client's CAS session details to environment variables or configuration file(/root/go/bin/resources/consul-template/config.hcl) for consul_template to pick up
+6. Vault Initialization exports the token to consul-templates session, any other session info can be provided for which the secret needs to be exported
+
 7. Run consul-template to render the demo template (/root/go/bin/resources/consul-template/find_address.tpl) -> 
    ```
    update /root/go/bin/resources/consul-template/config.hcl  with root token from vault
@@ -43,9 +46,10 @@ Other files
    SCONE_CONFIG_ID=consul-template/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -auth -config /root/go/bin/resources/consul-template/config.hcl -once
    ```
 8.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
-
+./resources/dynamic-secret/hash.sh
 ### Additional commands
 ```
+/root/go/bin/vault operator init -recovery-shares=1 -recovery-threshold=1
 consul agent -dev
 consul kv put hashicorp/street_address "101 2nd St"
 consul kv delete -recurse vault/ 
@@ -167,17 +171,10 @@ cd /root/go/bin && SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/
 cd /root/go/bin && SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
    
 ### demo-client
-    
+
+cd /root/go/bin/resources/consul-template && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://"$SCONE_CAS_ADDR":8081/session    
 cd /root/go/bin/resources/consul-template && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
 cd /root/go/bin/resources/demo-client && curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://"$SCONE_CAS_ADDR":8081/session
-
-
-
-
-### Vault initialization
-cd /root/go/bin && SCONE_CONFIG_ID=vault-init/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init grpc
-cd /root/go/bin && SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
-cd /root/go/bin && SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
 
 
 ### consul-template and demo-client setup
@@ -186,6 +183,3 @@ SCONE_CONFIG_ID=demo-client/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.s
 
 
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender
-
-chmod +x /root/go/bin/resources/dynamic-secret/hash.sh
-./resources/dynamic-secret/hash.sh

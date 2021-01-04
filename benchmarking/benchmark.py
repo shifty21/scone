@@ -21,6 +21,8 @@ if __name__=="__main__":
         print("Running for %s with result in %s" % (x["cmd"], x["dir"]))
         for th in thread_range:
             for conn in connection_range:
+                if th > conn:
+                    continue
                 for tr in time_range:
                     for exp in range(number_of_experiments):
                         command = x["cmd"].format(th,conn,tr,vault_token,vault_address,x["dir"] ,th,conn,tr,exp)

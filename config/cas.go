@@ -1,5 +1,11 @@
 package config
 
+import (
+	"log"
+
+	"github.com/spf13/viper"
+)
+
 // CAS is the Min/Max duration used by the Watcher
 type CAS struct {
 	//key for vault-init session
@@ -13,7 +19,7 @@ type CAS struct {
 	//sessionFile file
 	sessionFile string
 	//exportToSession exports secret to particular session
-	exportToSession string
+	exportToSession []*string
 	//predecessorHashFile for predecessor cas hash
 	predecessorHashFile string
 	//testUpdatedSessionFile for string updated session for dev purpose only
@@ -51,7 +57,7 @@ func (v *CAS) GetSessionFile() string {
 }
 
 //GetExportToSessionName export secret to particular session
-func (v *CAS) GetExportToSessionName() string {
+func (v *CAS) GetExportToSessionName() []*string {
 	return v.exportToSession
 }
 
@@ -62,13 +68,19 @@ func (v *CAS) UpdatedSessionFileLoc() string {
 
 //LoadCASConfig loads values from viper
 func LoadCASConfig() *CAS {
+	var exportToSession []*string
+	err := viper.UnmarshalKey("cas.export_to_session", &exportToSession)
+	if err != nil {
+		log.Fatalf("Error getting gpgcrypto config %v", err)
+	}
+	log.Printf("gpgcrypt keyset %v", exportToSession)
 	return &CAS{
 		key:                    getStringOrPanic("cas.key"),
 		url:                    getStringOrPanic("cas.url"),
 		certificate:            getStringOrPanic("cas.certificate"),
 		sessionName:            getStringOrPanic("cas.session_name"),
 		sessionFile:            getStringOrPanic("cas.session_file"),
-		exportToSession:        getStringOrPanic("cas.export_to_session"),
+		exportToSession:        exportToSession,
 		testUpdatedSessionFile: getStringOrPanic("cas.test_updated_session_file"),
 		predecessorHashFile:    getStringOrPanic("cas.predecessor_hash_file"),
 	}

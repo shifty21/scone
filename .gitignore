@@ -4,3 +4,4 @@ gitconfig
 gccgo/gccgo
 vault_binary
 logfiles
+*/*.csv

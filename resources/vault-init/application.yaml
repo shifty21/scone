@@ -4,7 +4,8 @@ crypto:
 #cas vault authentication
 cas:
     session_name: vault-init-auto
-    export_to_session: consul-template
+    export_to_session:
+        - consul-template
     url: https://cas:8081/session
     key: /root/go/bin/resources/vault-init/conf/client-key.key
     certificate: /root/go/bin/resources/vault-init/conf/client.crt

@@ -1,19 +1,19 @@
 version: "0.3"
-name: vault-init-auto
-predecessor: 4b4444d369e9392541cb1b5e6cb27898e32fbdf29cd50b3bca2ef2a937a65338
+name: vault-init
+predecessor: 36378651da665a2309e2cc8a749f275d13e4e2fa6eff0231be00b7a9222674f7
 services:
 - name: dev
-  image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+  image_name: vault-init-image
   mrenclaves:
-  - dc883ef08eeb0baa05b7fce488c57bfe8233d2d2eb50cb83e9b4d261239b0d04
+  - 97a5e60c810346fe83898d53f6a56b182a6aeaf915cdb8549bc12dc3f447b7cf
   command: /root/go/bin/vault-init grpc
   pwd: /
   environment:
     SCONE_MODE: hw
 images:
-- name: sconecuratedimages/www2019:vault-1.5.0-alpine
+- name: vault-init-image
   injection_files:
-  - path: /resources/vault-init/mykey.pem
+  - path: /root/go/bin/resources/vault-init/mykey.pem
     content: |
       -----BEGIN RSA PRIVATE KEY-----
       MIIEpgIBAAKCAQEA1OSWQCTN/hgtYEyqh5VgngUDI+qBtyTbiVTdMM+ebMdA6YiV
@@ -52,12 +52,13 @@ security:
 secrets:
 - name: VAULT_TOKEN
   kind: ascii
-  value: s.oABAsfib14wT318Sfxl8hLfk
+  value: s.ReNySAU467cBb5QcjidNDMFv
   export:
   - session: consul-template
+  - session: demo-client
 - name: VAULT_RESPONSE
   kind: ascii
-  value: '&CASConfig{Keys:[], KeysBase64:[], RootToken:s.oABAsfib14wT318Sfxl8hLfk,RecoveryKeys:[], RecoveryKeysBase64:[b8ba979952528ca6d8605c25e52cf2c675b94328575279e7aa2ed0928c23e9ce], }'
+  value: '&CASConfig{Keys:[c1c0cc03ed7390eb54cff9a3010c00314f98b38f6a5869c6886cd7d1ed4912948be452c81397319cf923a25eeaddc6daa01fe82b0b75f1b2ce7345b7a795886be401ad163d204d8fb7d96fe049c0453bd42cce37cf9f8049e0a5bc32e480b2344ca7f465c034e99c9cf62adc1032626bd097f4a126f5b4897d1b06b752a52545a3039528513ec22f33760f1eee435471508d5e529c84197dea71ba2b8b5a610c328a49b09fe3a36f1d435a3a133b48ea3bb47984293bfb4106ec46565ba8913aa32686e742cb32f71104b21e8069f4d5d8c3130ef4be849518afdb01e4ea7a3c94aaf8f18fa36d140a2701accf8a91bbc330f5db824a52d14e46cf62b16d42ec075983a728724ff6652fdb576eabddefc52ef89da526b3fd3fbc0c90bab7bfc73ea56d9250a75705027ec871ee6f0add0c378dfc45aa07dd9ee40c75c45db3f2dd7daac7c743f437786f81366b7815c1c6076bc56512711a22d3e37dd096ce0ad71940dcdee64eb24c231f86b1f7ae38c0e8903b5bae577a00fd486ab2ecc9c7c5a9b571fcd2201f47bbb21b0d54b8d2e001e412c0a39beb31550fab51615da5a83e6ce1aff1e0e9e0d9e161c1e044e29c58f551e0e9e64a0cb9c6f11c3786a7bb0a4d76ed5cb784fb08f9dd7fa7d9eb99f83d695e61c8ecca966d1945f43462b307b8a338f42229ec7f7bc17ee3f4f721a82c96e88dece0fde42ee5d1abaefbb90b71a2e047e4bd978be2e5ebcc4ae125c400], KeysBase64:[33eef94f37021d8f50720351f6cb22238cc7dc66595749dbc6afda06839489ed], RootToken:s.ReNySAU467cBb5QcjidNDMFv,RecoveryKeys:[], RecoveryKeysBase64:[], }'
 access_policy:
   read:
   - CREATOR

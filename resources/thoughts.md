@@ -46,9 +46,9 @@ Try these things
    
 
 1. Test case 
-2.   Demo - done for dynamic secret
+2.   Demo - done for dynamic database secret (decrets are pushed by consul-template to the demo-client session)
    1.  vault and vault-init cas registration
-   2.  run vault-init grpc and initialize vault
+   2.  run vault-init grpc and initialize vault - this will export the token to consul-template or any other sevice specified in config
    3.  Add vault commands to be executed for demo in script - done
    4.  register consul-template and demo-client in cas
    5.  Create script for mongodb intialization script - done
@@ -56,6 +56,15 @@ Try these things
 3.  Setup thesis document
 4.  analyze benchmarking result and form graphs
 5.  re-run benchmarking with modified script
-6.  Add dynamic secret script for benchmarking 
+6.  Add dynamic secret script for benchmarking
 7.  Get the related work data
 8.  Get vault, consul-template document needed for thesis
+
+
+
+### Related work
+AWS KMS is probably the closest to what we implemented using Vault, but the cost of KMS Keys and the API rate limits made it a non-starter.
+
+Confidant by Lyft was very interesting, but ultimately the complexity of implementing authentication, the lack of per-customer revocation, and our KMS API rate limits concerns steered us away.
+
+Cerberus by Nike was very interesting, but the stack wasn't something we were comfortable with running in production.

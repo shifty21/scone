@@ -33,3 +33,5 @@ RUN cd /root/go/pkg/mod/github.com/modern-go/reflect2@v1.0.1 && printf '// +buil
 RUN cd /root/go/src/github.com/shifty21/vault && go build -compiler gccgo -o /root/go/bin/vault -v
 
 ENV PATH="${PATH}:/root/go/bin"
+
+RUN chmod +x /root/go/bin/resources/dynamic-secret/hash.sh
