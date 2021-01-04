@@ -31,7 +31,7 @@ func loadConfig(filepath string, watcher chan *DBConfig) (*DBConfig, error) {
 	viper.ReadInConfig()
 	go func() {
 		for {
-			time.Sleep(time.Second * 5)
+			time.Sleep(time.Second * 30)
 			viper.WatchConfig()
 			viper.OnConfigChange(
 				func(e fsnotify.Event) {
@@ -44,7 +44,6 @@ func loadConfig(filepath string, watcher chan *DBConfig) (*DBConfig, error) {
 					watcher <- &config
 				},
 			)
-			time.Sleep(10 * time.Second)
 		}
 	}()
 	var config *DBConfig
@@ -117,9 +116,10 @@ func main() {
 				} else {
 					fmt.Println("Connected to MongoDB!")
 				}
-				time.Sleep(10 * time.Second)
+
 				client.Disconnect(ctx)
 			}
+			time.Sleep(30 * time.Second)
 
 		}
 	}()
