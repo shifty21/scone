@@ -72,7 +72,7 @@ func panicIfErrorForKey(err error, key string) {
 //LoadConfig configures vaultinitcas, vaultinitshamir configurations
 func LoadConfig(path string) *Configuration {
 	log.Printf("LoadingConfig from file %v", path)
-	viper.SetConfigName("application copy")
+	viper.SetConfigName("application")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(path)
 	viper.AddConfigPath("/root/go/bin/resources/vault-init/")
