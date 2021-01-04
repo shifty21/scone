@@ -23,7 +23,7 @@ type DBConfig struct {
 	Address  string `yaml:"address"`
 }
 
-func loadConfig(filepath string, watcher chan DBConfig) (*DBConfig, error) {
+func loadConfig(filepath string, watcher chan *DBConfig) (*DBConfig, error) {
 	log.Printf("Reading config from [%v]", filepath)
 	viper.AddConfigPath(filepath)
 	viper.SetConfigType("yml")
@@ -41,7 +41,7 @@ func loadConfig(filepath string, watcher chan DBConfig) (*DBConfig, error) {
 					if err != nil {
 						log.Printf("Error unmarshalling config")
 					}
-					watcher <- config
+					watcher <- &config
 				},
 			)
 		}
@@ -63,7 +63,7 @@ func main() {
 		syscall.SIGTERM,
 		syscall.SIGKILL,
 	)
-	watcher := make(chan DBConfig)
+	watcher := make(chan *DBConfig)
 	filePath := os.Args[1:][0]
 	config, err := loadConfig(filePath, watcher)
 	if err != nil {
@@ -77,7 +77,7 @@ func main() {
 	go func() {
 		for {
 			select {
-			case config := <-watcher:
+			case config = <-watcher:
 				fmt.Printf("Config Change even reloading connection %v", config)
 				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
 				fmt.Printf("URI %v\n", url)
@@ -116,9 +116,10 @@ func main() {
 				} else {
 					fmt.Println("Connected to MongoDB!")
 				}
+				time.Sleep(5 * time.Second)
+				client.Disconnect(ctx)
 			}
-			time.Sleep(5 * time.Second)
-			client.Disconnect(ctx)
+
 		}
 	}()
 	<-SignalChan
