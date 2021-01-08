@@ -11,16 +11,16 @@
     default_ttl="2m" \
     max_ttl="6m"
 
-./vault write database/config/admin \
+SCONE_CONFIG_ID=vault-dynamic-secret/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault write database/config/admin \
     plugin_name=mongodb-database-plugin \
     allowed_roles="demo-client" \
     connection_url="mongodb://{{username}}:{{password}}@mongodb:27017/admin" \
     username="myUserAdmin" \
-    password="abc123"
+    password="$$SCONE::mongodb_password$$"
 
 #for policy
 ./vault policy write demo-client /root/go/bin/resources/dynamic-secret/credential-policy.hcl
 
-#for address template 
+#for address template
 # vault secrets enable -path=secret/ kv
 # vault kv put secret/hello hashicorp="101 2nd St"

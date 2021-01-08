@@ -1,0 +1,23 @@
+version: "0.3"
+name: mongodb-setup
+services:
+- name: dev
+  image_name: mongodb-setup-image
+  mrenclaves:
+  - 2b003c701e2d8caedb5527c571a2dbf31aee06b749efe3a6a7757d862c5de2fc
+  command: /usr/bin/mongo --port 27017  --eval "db = db.getSiblingDB('admin'); db.createUser({ user: 'myUserAdmin', pwd: '$$SCONE::db_password$$', roles: [{ role: 'userAdminAnyDatabase', db: 'admin' }] });"
+  pwd: /
+  environment:
+    SCONE_MODE: hw
+security:
+  attestation:
+    tolerate:
+    - debug-mode
+    - outdated-tcb
+    ignore_advisories: '*'
+secrets:
+    - name: db_password
+      kind: ascii
+      size: 12
+      export: 
+        session: vault-dynamic-secret

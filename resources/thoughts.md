@@ -96,3 +96,12 @@ main.loadConfig..func1
 created by main.main
 	/root/go/src/github.com/shifty21/scone/demo-client/main.go:68 +0x298
 
+
+### Comparisons
+1. Conjur by cyberark
+
+
+Important section
+design
+implt
+evaluation
