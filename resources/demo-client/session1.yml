@@ -16,6 +16,11 @@ security:
     ignore_advisories: "*"
 
 secrets:
+  - name: pasphrase1
+    kind: ascii
+    export:
+    - session: vault-init-auto
+    value: aquickbrownfoxjumpsoverthelazydog
   - name: gpg_private_key1
     kind: ascii
     export:

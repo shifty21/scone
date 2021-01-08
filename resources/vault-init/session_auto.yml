@@ -9,6 +9,7 @@ services:
      pwd: /
      environment:
         SCONE_MODE: hw
+        PASSPHRASE1: $$SCONE::pasphrase1$$
 secrets:
     - name: gpg_private_from_parent1
       import:
@@ -18,6 +19,10 @@ secrets:
       import:
         session: demo-parent1
         secret: gpg_public_key1
+    - name: pasphrase1
+      import:
+        session: demo-parent1
+        secret: pasphrase1
         
 images:
     - name: sconecuratedimages/www2019:vault-1.5.0-alpine

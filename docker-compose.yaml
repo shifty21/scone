@@ -1,13 +1,13 @@
 version: '3.2'
 services:
     cas:
-        command: sh -c "SCONE_HEAP=2G cas -c /etc/cas/cas.toml"
+        command: sh -c "SCONE_HEAP=1G cas -c /etc/cas/cas.toml"
         environment:
          - SCONE_LOG=7
-         - SCONE_MODE=hw
+         - SCONE_MODE=sim
         image: sconecuratedimages/services:cas.trust.group-out-of-date-scone4.2.1
-        devices:
-            - "/dev/isgx"
+        # devices:
+        #     - "/dev/isgx"
         ports:
             - target: 8081
               published: 8081

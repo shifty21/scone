@@ -1,4 +1,6 @@
 start
+export MONGO_INITDB_ROOT_USERNAME=root
+export MONGO_INITDB_ROOT_PASSWORD=rootPassXXX
 mongod --auth --port 27017 --dbpath /usr/local/var/mongodb
 login
 mongo --port 27017  --authenticationDatabase "jack" -u "hammer" -p
