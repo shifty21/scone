@@ -1,11 +1,11 @@
 version: "0.3"
-name: mongodb-setup
+name: mongodb-user-setup
 services:
 - name: dev
-  image_name: mongodb-setup-image
+  image_name: mongodb-user-setup
   mrenclaves:
   - 2b003c701e2d8caedb5527c571a2dbf31aee06b749efe3a6a7757d862c5de2fc
-  command: ["/usr/bin/mongo --port 27017","--eval \"db = db.getSiblingDB('admin'); db.createUser({ user: 'myUserAdmin', pwd: '$$SCONE::db_password$$', roles: [{ role: 'userAdminAnyDatabase', db: 'admin' }] });\""]
+  command: /usr/bin/mongo /home/payload.json
   pwd: /
   environment:
     SCONE_MODE: hw
@@ -21,8 +21,9 @@ secrets:
       size: 12
       export:
         session: vault-dynamic-secret
+        session: env-print
 images:
-    - name: mongodb-setup-image
+    - name: mongodb-user-setup
       injection_files:
        - path: /home/payload.json
          content: |

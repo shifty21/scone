@@ -1,0 +1,17 @@
+version: "0.3"
+name: mongodb
+services:
+- name: dev
+  image_name: mongodb-setup-image
+  mrenclaves:
+  - 2b003c701e2d8caedb5527c571a2dbf31aee06b749efe3a6a7757d862c5de2fc
+  command: /usr/bin/mongod 
+  pwd: /
+  environment:
+    SCONE_MODE: hw
+security:
+  attestation:
+    tolerate:
+    - debug-mode
+    - outdated-tcb
+    ignore_advisories: '*'

@@ -31,6 +31,7 @@ RUN cd /root/go/src/github.com/shifty21 && GIT_SSH_COMMAND="ssh -o UserKnownHost
 RUN cd /root/go/src/github.com/shifty21/vault && go mod tidy; exit 0
 RUN cd /root/go/pkg/mod/github.com/modern-go/reflect2@v1.0.1 && printf '// +build !gccgo \n \n \n' | cat - type_map.go > /tmp/out && mv /tmp/out type_map.go
 RUN cd /root/go/src/github.com/shifty21/vault && go build -compiler gccgo -o /root/go/bin/vault -v
+RUN cd /root/go/bin/resources/env-print && go build -compiler gccgo -o /root/go/bin/env-print
 
 ENV PATH="${PATH}:/root/go/bin"
 

@@ -1,19 +1,15 @@
 version: "0.3"
-name: vault-dynamic-secret
+name: env-print
 services:
 - name: dev
-  image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+  image_name: env-print-image
   mrenclaves:
   - 56d37ffa65f3aa0e83aad166aa2b339b2bdda20254617c4b3b8e3fa794c41991
-  command: /root/go/bin/vault write database/config/admin \
-    plugin_name=mongodb-database-plugin \
-    allowed_roles="demo-client" \
-    connection_url="mongodb://{{username}}:{{password}}@mongodb:27017/admin" \
-    username="myUserAdmin" \
-    password="$$SCONE::mongodb_password$$"
+  command: /root/go/bin/env-print
   pwd: /
   environment:
     SCONE_MODE: hw
+    MONGO_PASSWORD: $$SCONE::mongodb_password$$
 security:
   attestation:
     tolerate:
