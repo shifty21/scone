@@ -1,5 +1,6 @@
 version: "0.3"
 name: mongodb
+predecessor: 1000a5ed965ae634cc3156443dadc98c713db7a51af540efd8af416b5483e4df
 services:
 - name: init
   image_name: mongodb-setup-image

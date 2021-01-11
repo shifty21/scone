@@ -1,8 +1,9 @@
 version: "0.3"
+predecessor: 54d4a280e891213f057e65f60bb877353e278370addd9df601126e2ebd1788d6
 name: mongodb-user-setup
 services:
 - name: dev
-  image_name: mongodb-user-setup
+  image_name: mongodb-user-setup-image
   mrenclaves:
   - f9a9dab728f68775975a86f612363ae93c5495e9af00d231bcd1248462de5903
   command: /usr/bin/mongo /home/payload.json
@@ -23,9 +24,9 @@ secrets:
         - session: vault-auto
         - session: env-print
 images:
-    - name: mongodb-user-setup
+    - name: mongodb-user-setup-image
       injection_files:
-       - path: /home/payload.json
+       - path: /home/payload.js
          content: |
               db = db.getSiblingDB('admin');
               db.createUser(
