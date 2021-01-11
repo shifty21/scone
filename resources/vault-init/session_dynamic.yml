@@ -1,0 +1,35 @@
+version: "0.3"
+predecessor: b2e090b4c179525644a2d045cd74302eb84c6755467a30a07a9194620776f5da
+name: vault-dynamic
+services:
+   - name: generate
+     image_name: dynamicsecret-image
+     mrenclaves: [da24079c4a5f4d47ca8f450b38f9bdc00f8bb3660506d852b66a1b61b666ea18]
+     command: /root/go/bin/vault-init dynamicsecret
+     pwd: /
+     environment:
+        SCONE_MODE: hw
+        mongodb_password: $$SCONE::mongodb_password$$
+        vault_token_env: $$SCONE::vault_token_from_initializer$$
+   - name: fetch
+     image_name: generatesecret-image
+     mrenclaves: [da24079c4a5f4d47ca8f450b38f9bdc00f8bb3660506d852b66a1b61b666ea18]
+     command: /root/go/bin/vault-init generatesecret
+     pwd: /
+     environment:
+        SCONE_MODE: hw
+        mongodb_password: $$SCONE::mongodb_password$$
+        vault_token_env: $$SCONE::vault_token_from_initializer$$
+secrets:
+    - name: mongodb_password
+      import:
+        session: mongodb-user-setup
+        secret: db_password
+    - name: vault_token_from_initializer
+      import:
+        session: vault-init-auto
+        secret: VAULT_TOKEN
+security:
+  attestation:
+    tolerate: [debug-mode, outdated-tcb]
+    ignore_advisories: "*"

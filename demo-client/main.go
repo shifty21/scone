@@ -77,8 +77,8 @@ func main() {
 	go func() {
 		for {
 			select {
-			case config := <-watcher:
-				fmt.Printf("Config Change even reloading connection %v", config)
+			case config = <-watcher:
+				fmt.Printf("Config Change event reloading connection %v", config)
 				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
 				fmt.Printf("URI %v\n", url)
 				client, err = mongo.NewClient(options.Client().ApplyURI(url))

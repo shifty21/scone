@@ -39,6 +39,8 @@ Other files
    SCONE_CONFIG_ID=vault-init-scone/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
    gpg based auto-initialization
    SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
+   SCONE_CONFIG_ID=vault-dynamic/generate SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init dynamicsecret
+   SCONE_CONFIG_ID=vault-dynamic/fetch SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init generatesecret
    ```
 5. Once vault have successfully initialied, add vault token to initialize_secrets.sh
    ```
@@ -61,6 +63,7 @@ Other files
 consul agent -dev
 consul kv put hashicorp/street_address "101 2nd St"
 consul kv delete -recurse vault/ 
+
 ```
 
 ## Run.sh

@@ -3,7 +3,7 @@ export MONGO_INITDB_ROOT_USERNAME=root
 export MONGO_INITDB_ROOT_PASSWORD=rootPassXXX
 mongod --auth --port 27017 --dbpath /usr/local/var/mongodb
 login
-mongo --port 27017  --authenticationDatabase "jack" -u "hammer" -p
+mongo --port 27017  --authenticationDatabase "admin" -u "myUserAdmin" -p
 
 mongo --port 27017  --eval "db = db.getSiblingDB('admin'); db.createUser({ user: 'root',pwd: 'p\"gcup\"7y4+v', roles: [{ role: 'root', db: 'admin' }] });"
 p"gcup"7y4+v
@@ -28,7 +28,7 @@ SCONE_CONFIG_ID=vault-dynamic-secret/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone
 
 SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongo
 mongodb
-SCONE_CONFIG_ID=mongodb-user-setup/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongo /home/payload.json
-SCONE_CONFIG_ID=mongodb/init SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongod
-SCONE_CONFIG_ID=mongodb/auth SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongod
+SCONE_CONFIG_ID=mongodb-user-setup/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongo /home/payload.js
+SCONE_CONFIG_ID=mongodb/init SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongod --dbpath /usr/local/var/mongodb
+SCONE_CONFIG_ID=mongodb/auth SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongod --auth --dbpath /usr/local/var/mongodb
 SCONE_CONFIG_ID=env-print/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/env-print

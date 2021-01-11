@@ -6,6 +6,7 @@ cas:
     session_name: vault-init-auto
     export_to_session:
         - consul-template
+        - vault-dynamic
     url: https://cas:8081/session
     key: /root/go/bin/resources/vault-init/conf/client-key.key
     certificate: /root/go/bin/resources/vault-init/conf/client.crt
@@ -35,7 +36,7 @@ dynamic_secret:
     plugin_name: mongodb-database-plugin
     allowed_roles: demo-client
     connection_url: "mongodb://{{username}}:{{password}}@mongodb:27017/admin"
-    username: myadmin
+    username: myUserAdmin
     database: "admin"
     vault_config_url: http://127.0.0.1:8200/v1/database/config/admin
     creation_statements: '{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }'

@@ -1,32 +1,15 @@
 version: "0.3"
+predecessor: ba8682e20b6aaadd38056ff44fd5aa4abce742c7c622784daef51828e2342308
 name: vault-init-auto
 services:
    - name: dev
      image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
-     mrenclaves: [d1d5cc27d42702c33e1c4e9edb6347caa9924b3ddc773240ba7fc6d51481546a]
-     command: /root/go/bin/vault-init dynamicsecret
+     mrenclaves: [da24079c4a5f4d47ca8f450b38f9bdc00f8bb3660506d852b66a1b61b666ea18]
+     command: /root/go/bin/vault-init auto
      pwd: /
      environment:
         SCONE_MODE: hw
         PASSPHRASE1: $$SCONE::pasphrase1$$
-   - name: dynamicsecret
-     image_name: dynamicsecret-image
-     mrenclaves: [d1d5cc27d42702c33e1c4e9edb6347caa9924b3ddc773240ba7fc6d51481546a]
-     command: /root/go/bin/vault-init dynamicsecret
-     pwd: /
-     environment:
-        SCONE_MODE: hw
-        mongodb_password: $$SCONE::mongodb_password$$
-        VAULT_TOKEN: $$SCONE::VAULT_TOKEN$$
-   - name: generatesecret
-     image_name: generatesecret-image
-     mrenclaves: [d1d5cc27d42702c33e1c4e9edb6347caa9924b3ddc773240ba7fc6d51481546a]
-     command: /root/go/bin/vault-init generatesecret
-     pwd: /
-     environment:
-        SCONE_MODE: hw
-        mongodb_password: $$SCONE::mongodb_password$$
-        VAULT_TOKEN: $$SCONE::VAULT_TOKEN$$
 secrets:
     - name: gpg_private_from_parent1
       import:
@@ -40,10 +23,6 @@ secrets:
       import:
         session: demo-parent1
         secret: pasphrase1
-    - name: mongodb_password
-      import:
-        session: mongodb-user-setup
-        secret: db_password
         
 images:
     - name: sconecuratedimages/www2019:vault-1.5.0-alpine

@@ -1,12 +1,12 @@
 version: "0.3"
-predecessor: 54d4a280e891213f057e65f60bb877353e278370addd9df601126e2ebd1788d6
+predecessor: 9067765050eac3fb0c2444cd8eab563f7058fc711b608798c48bf45f91e81c6d
 name: mongodb-user-setup
 services:
 - name: dev
   image_name: mongodb-user-setup-image
   mrenclaves:
   - f9a9dab728f68775975a86f612363ae93c5495e9af00d231bcd1248462de5903
-  command: /usr/bin/mongo /home/payload.json
+  command: /usr/bin/mongo /home/payload.js
   pwd: /
   environment:
     SCONE_MODE: hw
@@ -21,7 +21,7 @@ secrets:
       kind: ascii
       size: 12
       export:
-        - session: vault-auto
+        - session: vault-dynamic
         - session: env-print
 images:
     - name: mongodb-user-setup-image

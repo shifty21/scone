@@ -29,7 +29,7 @@ func LoadDynamicSecretConfig() *DynamicSecret {
 		ConnectionURL:          getStringOrPanic("dynamic_secret.connection_url"),
 		UserName:               getStringOrPanic("dynamic_secret.username"),
 		Password:               getString("mongodb_password"),
-		VaultToken:             getString("VAULT_TOKEN"),
+		VaultToken:             getString("vault_token_env"),
 		VaultConfigURL:         getStringOrPanic("dynamic_secret.vault_config_url"),
 		VaultRoleURL:           getStringOrPanic("dynamic_secret.vault_role_url"),
 		CreationStatement:      getStringOrPanic("dynamic_secret.creation_statements"),
