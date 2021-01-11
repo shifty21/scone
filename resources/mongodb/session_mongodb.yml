@@ -4,7 +4,7 @@ services:
 - name: init
   image_name: mongodb-setup-image
   mrenclaves:
-  - d18036aeff5c3ba7d39a54c8bfffe3bf1ca34252364a661c0afed23c13407733
+  - 359766728eeb15b6a298611a21e97be4cf740ca898ab409fa4f36b4c017462dc
   command: /usr/bin/mongod 
   pwd: /
   environment:
@@ -12,12 +12,11 @@ services:
 - name: auth
   image_name: mongodb-setup-image
   mrenclaves:
-  - d18036aeff5c3ba7d39a54c8bfffe3bf1ca34252364a661c0afed23c13407733
-  command: /usr/bin/mongod -auth
+  - 359766728eeb15b6a298611a21e97be4cf740ca898ab409fa4f36b4c017462dc
+  command: /usr/bin/mongod -auth --bind_ip=0.0.0.0
   pwd: /
   environment:
     SCONE_MODE: hw
-
 security:
   attestation:
     tolerate:

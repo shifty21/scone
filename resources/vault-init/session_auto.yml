@@ -18,6 +18,7 @@ services:
      pwd: /
      environment:
         SCONE_MODE: hw
+        mongodb_password: $$SCONE::mongodb_password$$
         VAULT_TOKEN: $$SCONE::VAULT_TOKEN$$
 services:
    - name: generatesecret
@@ -27,6 +28,7 @@ services:
      pwd: /
      environment:
         SCONE_MODE: hw
+        mongodb_password: $$SCONE::mongodb_password$$
         VAULT_TOKEN: $$SCONE::VAULT_TOKEN$$
 secrets:
     - name: gpg_private_from_parent1
@@ -41,6 +43,10 @@ secrets:
       import:
         session: demo-parent1
         secret: pasphrase1
+    - name: mongodb_password
+      import:
+        session: mongodb-user-setup
+        secret: db_password
         
 images:
     - name: sconecuratedimages/www2019:vault-1.5.0-alpine

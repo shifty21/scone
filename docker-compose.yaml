@@ -29,6 +29,7 @@ services:
         - SCONE_MODE=hw
         - SCONE_CAS_ADDR=cas
         - SCONE_LAS_ADDR=las
+        - SCONE_ALLOW_DLOPEN=2
       # ports:
       #     - target: 27017
       #       published: 27017
