@@ -5,11 +5,29 @@ services:
    - name: dev
      image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
      mrenclaves: [97a5e60c810346fe83898d53f6a56b182a6aeaf915cdb8549bc12dc3f447b7cf]
-     command: /root/go/bin/vault-init auto
+     command: /root/go/bin/vault-init dynamicsecret
      pwd: /
      environment:
         SCONE_MODE: hw
         PASSPHRASE1: $$SCONE::pasphrase1$$
+services:
+   - name: dynamicsecret
+     image_name: dynamicsecret-image
+     mrenclaves: [97a5e60c810346fe83898d53f6a56b182a6aeaf915cdb8549bc12dc3f447b7cf]
+     command: /root/go/bin/vault-init dynamicsecret
+     pwd: /
+     environment:
+        SCONE_MODE: hw
+        VAULT_TOKEN: $$SCONE::VAULT_TOKEN$$
+services:
+   - name: generatesecret
+     image_name: generatesecret-image
+     mrenclaves: [97a5e60c810346fe83898d53f6a56b182a6aeaf915cdb8549bc12dc3f447b7cf]
+     command: /root/go/bin/vault-init generatesecret
+     pwd: /
+     environment:
+        SCONE_MODE: hw
+        VAULT_TOKEN: $$SCONE::VAULT_TOKEN$$
 secrets:
     - name: gpg_private_from_parent1
       import:

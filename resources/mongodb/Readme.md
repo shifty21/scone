@@ -9,7 +9,13 @@ mongo --port 27017  --eval "db = db.getSiblingDB('admin'); db.createUser({ user:
 
 ["/usr/bin/mongo --port 27017","--eval \"db = db.getSiblingDB('admin'); db.createUser({ user: 'myUserAdmin', pwd: '$$SCONE::db_password$$', roles: [{ role: 'userAdminAnyDatabase', db: 'admin' }] });\"]
 
-curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://cas:8081/session
+curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session_mongodb.yml -X POST https://cas:8081/session
+curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session_register_user.yml -X POST https://cas:8081/session
+## get session
+curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/mongodb
+curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/mongodb-user-setup
+
+
 SCONE_CONFIG_ID=mongodb-setup/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongo /home/payload.json
 vault-dynamic-secret
 
@@ -19,3 +25,8 @@ SCONE_CONFIG_ID=vault-dynamic-secret/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone
     connection_url="mongodb://{{username}}:{{password}}@mongodb:27017/admin" \
     username="myUserAdmin" \
     password="$$SCONE::mongodb_password$$"
+
+SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongo
+mongodb
+SCONE_CONFIG_ID=mongodb-user-setup/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongo /home/payload.json
+SCONE_CONFIG_ID=mongodb/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /usr/bin/mongod

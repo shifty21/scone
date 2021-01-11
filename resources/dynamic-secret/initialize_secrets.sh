@@ -15,7 +15,7 @@ SCONE_CONFIG_ID=vault-dynamic-secret/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone
     plugin_name=mongodb-database-plugin \
     allowed_roles="demo-client" \
     connection_url="mongodb://{{username}}:{{password}}@mongodb:27017/admin" \
-    username="myUserAdmin" \
+    username="mydmin" \
     password="$$SCONE::mongodb_password$$"
 
 #for policy

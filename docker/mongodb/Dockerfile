@@ -4,4 +4,5 @@ RUN apk add vim curl
 COPY docker/mongodb/run.sh /home/run.sh
 RUN chmod +x /home/run.sh
 ADD resources/mongodb /home/mongodb
+ENTRYPOINT [ "/bin/sh" ]
 # ENTRYPOINT ["/home/run.sh"]

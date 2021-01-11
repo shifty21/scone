@@ -105,3 +105,11 @@ Important section
 design
 implt
 evaluation
+
+Errors 
+for Binary secret by CAS 
+Caused by: SCONE variable substitution failed - the service configuration needs to be fixed!
+Caused by: Environment variable 'MONGO_PASSWORD' contains malformed UTF-8 after SCONE value replacement
+for ascii secret value = w(`tF2Q'$xda
+error by vault
+Failed to parse K=V data: invalid key/value pair "\\": format must be key=value

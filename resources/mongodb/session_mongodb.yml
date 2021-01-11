@@ -1,14 +1,23 @@
 version: "0.3"
 name: mongodb
 services:
-- name: dev
+- name: init
   image_name: mongodb-setup-image
   mrenclaves:
-  - 2b003c701e2d8caedb5527c571a2dbf31aee06b749efe3a6a7757d862c5de2fc
+  - d18036aeff5c3ba7d39a54c8bfffe3bf1ca34252364a661c0afed23c13407733
   command: /usr/bin/mongod 
   pwd: /
   environment:
     SCONE_MODE: hw
+- name: auth
+  image_name: mongodb-setup-image
+  mrenclaves:
+  - d18036aeff5c3ba7d39a54c8bfffe3bf1ca34252364a661c0afed23c13407733
+  command: /usr/bin/mongod -auth
+  pwd: /
+  environment:
+    SCONE_MODE: hw
+
 security:
   attestation:
     tolerate:

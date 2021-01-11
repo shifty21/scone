@@ -23,6 +23,13 @@ Other files
    SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
    Vannilla Initialization
    SCONE_CONFIG_ID=vault1/dev1 SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config_vanilla.hcl
+
+   SCONE_CONFIG_ID=vault-dynamic-secret/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault write database/config/admin \
+    plugin_name=mongodb-database-plugin \
+    allowed_roles="demo-client" \
+    connection_url="mongodb://{{username}}:{{password}}@mongodb:27017/admin" \
+    username="myUserAdmin" \
+    password='$$SCONE::mongodb_password$$'
    ```
 4. Start vault_initializer - this will intialize vault based on the type suggeted. For the 2nd senario mentioned above the private key for decryption would be inserted by CAS at /home/mykey.pem. This ensures that only authenticated application is able to intialize vault.
    ```
@@ -179,6 +186,7 @@ cd /root/go/bin/resources/demo-client && curl -k -s --cert conf/client.crt --key
 
 
 ### consul-template and demo-client setup
+s.9O587curdZDFOaR87g25bHqA
 
 
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender

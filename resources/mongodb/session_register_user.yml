@@ -4,7 +4,7 @@ services:
 - name: dev
   image_name: mongodb-user-setup
   mrenclaves:
-  - 2b003c701e2d8caedb5527c571a2dbf31aee06b749efe3a6a7757d862c5de2fc
+  - 78cbcad29089ea2f2cabfde4a41584bcc2e7e1ad103fbec3acac54593d87b7cf
   command: /usr/bin/mongo /home/payload.json
   pwd: /
   environment:
@@ -20,8 +20,8 @@ secrets:
       kind: ascii
       size: 12
       export:
-        session: vault-dynamic-secret
-        session: env-print
+        - session: vault-dynamic-secret
+        - session: env-print
 images:
     - name: mongodb-user-setup
       injection_files:

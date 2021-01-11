@@ -153,7 +153,9 @@ func RegisterCASSession(config *Register) error {
 				log.Printf("[ERR] Getting MREnclave for %v", config.Sessions[x].Session.Name)
 				continue
 			}
-			config.Sessions[x].Session.Services[0].MREnclaves = []string{hash}
+			for i := range config.Sessions[x].Session.Services {
+				config.Sessions[x].Session.Services[i].MREnclaves = []string{hash}
+			}
 		} else {
 			log.Printf("No Parameters found, registring session as specified in file")
 		}

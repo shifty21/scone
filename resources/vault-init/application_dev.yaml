@@ -33,3 +33,18 @@ gpgcrypto:
     - public_key_path: resources/vault/vault-experiments/keys/public.asc
       private_key_path: resources/vault/vault-experiments/keys/private.asc
       pass_phrase: aquickbrownfoxjumpsoverthelazydog
+dynamic_secret:
+    plugin_name: mongodb-database-plugin
+    allowed_roles: demo-client
+    connection_url: "mongodb://{{username}}:{{password}}@127.0.0.1:27017/admin"
+    username: myUserAdmin
+    database: "admin"
+    vault_config_url: http://127.0.0.1:8200/v1/database/config/admin
+    creation_statements: '{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }'
+    default_ttl: 2m
+    max_ttl: 6m
+    vault_role_url: http://127.0.0.1:8200/v1/database/roles/demo-client
+    vault_create_policy_url: http://127.0.0.1:8200/v1/sys/policy/demo-client
+    policy_file: resources/dynamic-secret/credential-policy.hcl
+    vault_secret_engine_url: http://127.0.0.1:8200/v1/sys/mounts/database
+    vault_generate_credential_url: http://127.0.0.1:8200/v1/database/creds/demo-client

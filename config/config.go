@@ -72,7 +72,7 @@ func panicIfErrorForKey(err error, key string) {
 //LoadConfig configures vaultinitcas, vaultinitshamir configurations
 func LoadConfig(path string) *Configuration {
 	log.Printf("LoadingConfig from file %v", path)
-	viper.SetConfigName("application")
+	viper.SetConfigName("application_dev")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(path)
 	viper.AddConfigPath("/root/go/bin/resources/vault-init/")
@@ -84,6 +84,7 @@ func LoadConfig(path string) *Configuration {
 	Config["crypto_config"] = LoadCryptoConfig()
 	Config["grpc_service"] = LoadEncryptionGRPCConfig()
 	Config["gpg_crypto_Config"] = LoadGPGCryptoConfig()
+	Config["dynamic_secret"] = LoadDynamicSecretConfig()
 	return &Config
 }
 
@@ -110,4 +111,9 @@ func (c *Configuration) GetGRPCServiceConfig() *EncryptionGRPC {
 //GetGPGCryptoConfig returns cas related config
 func (c *Configuration) GetGPGCryptoConfig() *GPGCrypto {
 	return Config["gpg_crypto_Config"].(*GPGCrypto)
+}
+
+//GetDynamiSecret returns cas related config
+func (c *Configuration) GetDynamiSecret() *DynamicSecret {
+	return Config["dynamic_secret"].(*DynamicSecret)
 }

@@ -14,9 +14,9 @@ vault write database/roles/demo-client \
 vault write database/config/admin \
     plugin_name=mongodb-database-plugin \
     allowed_roles="demo-client" \
-    connection_url="mongodb://{{username}}:{{password}}@localhost:27017/admin" \
+    connection_url="mongodb://{{username}}:{{password}}@127.0.0.1:27017/admin" \
     username="myUserAdmin" \
-    password="abc123"
+    password="w(`tF2Q'$xda"
 
 #for policy
 vault policy write demo-client resources/dynamic-secret/credential-policy.hcl
