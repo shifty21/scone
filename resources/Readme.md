@@ -39,6 +39,7 @@ Other files
    SCONE_CONFIG_ID=vault-init-scone/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
    gpg based auto-initialization
    SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
+   # initialize dynamic secret for mongodb
    SCONE_CONFIG_ID=vault-dynamic/generate SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init dynamicsecret
    SCONE_CONFIG_ID=vault-dynamic/fetch SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init generatesecret
    ```

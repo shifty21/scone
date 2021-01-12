@@ -1,4 +1,5 @@
 version: "0.3"
+predecessor: 3e084f80a230c8e3aa46e56ca555822ac14993de7ce2b5c5ed37a07684bdf893
 name: mongodb-user-setup
 services:
 - name: dev

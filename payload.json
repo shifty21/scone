@@ -1,7 +1,0 @@
-{
-  "plugin_name": "mongodb-database-plugin",
-  "allowed_roles": "demo-client",
-  "connection_url": "mongodb://{{username}}:{{password}}@127.0.0.1:27017/admin",
-  "username": "myUserAdmin",
-  "password": "w(`tF2Q'$xda"
-}
