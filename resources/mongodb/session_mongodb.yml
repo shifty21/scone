@@ -1,4 +1,5 @@
 version: "0.3"
+predecessor: 90a2369e3226341f9c68a35c10572a921e5121399d3a443ece476c9b1ca06091
 name: mongodb
 services:
 - name: init
@@ -23,3 +24,21 @@ security:
     - debug-mode
     - outdated-tcb
     ignore_advisories: '*'
+secrets:
+  - name: my_ca_certificate
+    kind: x509-ca
+    private_key: my_server_certificate_private_key
+    common_name: "My own CA"
+  - name: my_server_certificate_private_key
+    kind: private-key
+  - name: mongodb_certificates
+    kind: x509
+    private_key: my_server_certificate_private_key
+    issuer: my_ca_certificate
+    common_name: "tu-dresden"
+    valid_for: 90 days
+    endpoint: server
+    dns:
+      - tudresden.de
+    export:
+      - session: env-print

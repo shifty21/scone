@@ -1,23 +1,55 @@
 version: "0.3"
 name: env-print
 services:
-- name: dev
-  image_name: env-print-image
-  mrenclaves:
-  - 56d37ffa65f3aa0e83aad166aa2b339b2bdda20254617c4b3b8e3fa794c41991
-  command: /root/go/bin/env-print
-  pwd: /
-  environment:
-    SCONE_MODE: hw
-    MONGO_PASSWORD: $$SCONE::mongodb_password$$
+  - name: dev
+    image_name: env-print-image
+    mrenclaves:
+    - 4f685a25ed7fa9c957c16007717fab6d701d0d865f3903967abc18703c569888
+    command: /root/go/bin/env-print
+    pwd: /
+    environment:
+      SCONE_MODE: hw
 security:
   attestation:
     tolerate:
     - debug-mode
     - outdated-tcb
     ignore_advisories: '*'
+    # - name: mongodb_certificates
+    #   import:
+    #     session: mongodb
+    #     secret: mongodb_certificates
 secrets:
-    - name: mongodb_password
-      import:
-        session: mongodb-user-setup
-        secret: db_password
+  # - name: mongodb_password
+  #   import:
+  #     session: mongodb-user-setup
+  #     secret: db_password
+  - name: scone_ca_certificate
+    kind: x509-ca
+    private_key: certificate_private_key
+    common_name: "My own CA"
+  - name: certificate_private_key
+    kind: private-key
+  - name: mongodb_certificates
+    kind: x509
+    private_key: certificate_private_key
+    issuer: scone_ca_certificate
+    common_name: "tu-dresden"
+    valid_for: 90 days
+    endpoint: server
+    dns:
+      - tudresden.de
+    export:
+      - session: env-print
+images:
+    - name: env-print-image
+      injection_files:
+       - path: /root/go/bin/certificate.crt
+         content: |
+           $$SCONE::mongodb_certificates.crt$$
+       - path: /root/go/bin/certificate.key
+         content: |
+           $$SCONE::mongodb_certificates.key$$
+       - path: /root/go/bin/certificate.chain
+         content: |
+           $$SCONE::mongodb_certificates.chain$$

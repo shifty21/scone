@@ -6,7 +6,7 @@ vault read database/creds/readonly
 curl --header "X-Vault-Token: $VAULT_TOKEN" --request GET $VAULT_ADDR/v1/database/creds/demo-client | jq
 
 via CURL
-curl --header "X-Vault-Token: s.GRD8xH7dVwsvQO2diHcAXRcW" --request POST \
+curl --header "X-Vault-Token: s.SCWsjXizDGNDmiPHrvP6Pclx" --request POST \
     --data @payload.json \
     http://127.0.0.1:8200/v1/database/config/admin
 
@@ -15,5 +15,5 @@ curl --header "X-Vault-Token: s.GRD8xH7dVwsvQO2diHcAXRcW" --request POST \
   "allowed_roles": "demo-client",
   "connection_url": "mongodb://{{username}}:{{password}}@mongodb:27017/admin",
   "username": "myUserAdmin",
-  "password": ";EO3W,|U:3k"
+  "password": "R/$QNreid\=0"
 }

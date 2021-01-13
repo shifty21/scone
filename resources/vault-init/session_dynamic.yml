@@ -1,5 +1,4 @@
 version: "0.3"
-predecessor: b2e090b4c179525644a2d045cd74302eb84c6755467a30a07a9194620776f5da
 name: vault-dynamic
 services:
    - name: generate

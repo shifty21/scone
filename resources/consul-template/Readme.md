@@ -12,3 +12,10 @@ vault kv put kv/my-secret ttl=30m my-value=s3cr3t
 To update ttl of secret engine
 vault secrets tune -default-lease-ttl=2m secret
 
+### rc service
+rc-status
+rc-status --list
+rc-update add {service-name} {run-level-name}
+rc-service {service-name} start/stop/restart
+
+rc-update add demo-client default

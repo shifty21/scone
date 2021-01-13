@@ -66,6 +66,12 @@ type Secret struct {
 	Value        string     `yaml:"value,omitempty"`
 	Export       []ExportTo `yaml:"export,omitempty"`
 	Import       Import     `yaml:"import,omitempty"`
+	PrivateKey   string     `yaml:"private_key,omitempty"`
+	Issuer       string     `yaml:"issuer,omitempty"`
+	CommonName   string     `yaml:"common_name,omitempty"`
+	Endpoint     string     `yaml:"endpoint,omitempty"`
+	DNS          []string   `yaml:"dns,omitempty"`
+	ValidFor     string     `yaml:"valid_for"`
 }
 
 //AccessPolicy policies

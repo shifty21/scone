@@ -21,6 +21,8 @@ type DBConfig struct {
 	Password string `yaml:"password"`
 	Database string `yaml:"database"`
 	Address  string `yaml:"address"`
+	CertFile string `yami:"cert_file"`
+	KeyFile  string `yami:"key_file"`
 }
 
 func loadConfig(filepath string, watcher chan *DBConfig) (*DBConfig, error) {

@@ -1,5 +1,4 @@
 version: "0.3"
-predecessor: ba8682e20b6aaadd38056ff44fd5aa4abce742c7c622784daef51828e2342308
 name: vault-init-auto
 services:
    - name: dev

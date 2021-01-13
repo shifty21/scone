@@ -113,3 +113,16 @@ Caused by: Environment variable 'MONGO_PASSWORD' contains malformed UTF-8 after 
 for ascii secret value = w(`tF2Q'$xda
 error by vault
 Failed to parse K=V data: invalid key/value pair "\\": format must be key=value
+
+1. mongodb
+   1. Generate tls certificate with CAS and export them to vault-dynamic
+   2. User this to start mongodb
+   3. vault-dynamic registers dynamic secret and then consul-template can watch that config
+2. nginx
+	1. Configure vault PKI and setup root CA 
+	2. Generate Certifcate and key via consul-template
+	3. one more module in scone to setup PKI 
+	4. consul-template will watch the time
+3. consul-template command 
+   1. on running command directly to run demo-client "child: fork/exec /root/go/bin/demo-client: function not implemented"
+   2. on using rc-service or sh, the binaries are not visible to consul-template
