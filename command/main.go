@@ -90,9 +90,18 @@ func Run(args []string) int {
 				RunOptions: runOpts,
 			}, nil
 		},
-
 		"generatesecret": func() (cli.Command, error) {
 			return &GenerateSecret{
+				RunOptions: runOpts,
+			}, nil
+		},
+		"setup-pki": func() (cli.Command, error) {
+			return &PKISecret{
+				RunOptions: runOpts,
+			}, nil
+		},
+		"gen-cert": func() (cli.Command, error) {
+			return &GenerateCertificate{
 				RunOptions: runOpts,
 			}, nil
 		},

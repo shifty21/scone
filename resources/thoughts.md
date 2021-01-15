@@ -115,7 +115,7 @@ error by vault
 Failed to parse K=V data: invalid key/value pair "\\": format must be key=value
 
 1. mongodb
-   1. Generate tls certificate with CAS and export them to vault-dynamic
+   1. Generate tls certificate with CAS and export them to vault-dynamic (wont work, try with vault and export to mongodb)
    2. User this to start mongodb
    3. vault-dynamic registers dynamic secret and then consul-template can watch that config
 2. nginx
@@ -126,3 +126,18 @@ Failed to parse K=V data: invalid key/value pair "\\": format must be key=value
 3. consul-template command 
    1. on running command directly to run demo-client "child: fork/exec /root/go/bin/demo-client: function not implemented"
    2. on using rc-service or sh, the binaries are not visible to consul-template
+4. export of x509 certificate from CAS doesnt seem to me working
+
+
+
+### pki 
+https://www.vaultproject.io/api-docs/secret/pki
+Api integration needed
+1. enable pki
+2. Generate Root
+<!-- 3. intermediate
+4. https://www.vaultproject.io/api-docs/secret/pki#sign-intermediate -->
+5. https://www.vaultproject.io/api-docs/secret/pki#create-update-role
+6. https://www.vaultproject.io/api-docs/secret/pki#generate-certificate
+<!-- 7. https://www.vaultproject.io/api-docs/secret/pki#set-signed-intermediate -->
+   vault write pki/config/urls issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"

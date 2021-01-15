@@ -71,7 +71,7 @@ type Secret struct {
 	CommonName   string     `yaml:"common_name,omitempty"`
 	Endpoint     string     `yaml:"endpoint,omitempty"`
 	DNS          []string   `yaml:"dns,omitempty"`
-	ValidFor     string     `yaml:"valid_for"`
+	ValidFor     string     `yaml:"valid_for,omitempty"`
 }
 
 //AccessPolicy policies

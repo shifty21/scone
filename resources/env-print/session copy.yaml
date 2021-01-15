@@ -16,20 +16,32 @@ security:
     - outdated-tcb
     ignore_advisories: '*'
 secrets:
-  - name: mongodb_cert
+  - name: scone_ca_certificate
+    kind: x509-ca
+    private_key: certificate_private_key
+    common_name: "My own CA"
+  - name: certificate_private_key
+    kind: private-key
+  - name: mongodb_certificates
     kind: x509
-    import:
-      session: mongodb
-      secret: mongodb_certificates
+    private_key: certificate_private_key
+    issuer: scone_ca_certificate
+    common_name: "tu-dresden"
+    valid_for: 90 days
+    endpoint: server
+    dns:
+      - tudresden.de
+    export:
+      - session: env-print
 images:
     - name: env-print-image
       injection_files:
        - path: /root/go/bin/certificate.crt
          content: |
-           $$SCONE::mongodb_cert.key$$
+           $$SCONE::mongodb_certificates.crt$$
        - path: /root/go/bin/certificate.key
          content: |
-           $$SCONE::mongodb_cert.key$$
+           $$SCONE::mongodb_certificates.key$$
        - path: /root/go/bin/certificate.chain
          content: |
-           $$SCONE::mongodb_chain.chain$$
+           $$SCONE::mongodb_certificates.chain$$

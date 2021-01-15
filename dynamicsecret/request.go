@@ -12,11 +12,13 @@ import (
 )
 
 type Request struct {
-	PluginName    string `json:"plugin_name"`
-	AllowedRoles  string `json:"allowed_roles"`
-	ConnectionURL string `json:"connection_url"`
-	UserName      string `json:"username"`
-	Password      string `json:"password"`
+	PluginName        string `json:"plugin_name"`
+	AllowedRoles      string `json:"allowed_roles"`
+	ConnectionURL     string `json:"connection_url"`
+	UserName          string `json:"username,omitempty"`
+	Password          string `json:"password,omitempty"`
+	TLSCertificateKey string `json:"tls_certificate_key,omitempty"`
+	TLSCA             string `json:"tls_ca,omitempty"`
 }
 
 type RoleRequest struct {
@@ -36,53 +38,63 @@ type Policy struct {
 
 //CreateConfig craetes database config
 func CreateConfig(conf *config.DynamicSecret) error {
+	// //enable database secret engine
+	// secretEngine := &SecretEngine{
+	// 	Type: "database",
+	// }
+	// log.Printf("Enabling secret engine with data %v", secretEngine)
+	// data, err := json.Marshal(secretEngine)
+	// if err != nil {
+	// 	return fmt.Errorf("[ERR] marshalling secret engine request %v", err)
+	// }
 
-	secretEngine := &SecretEngine{
-		Type: "database",
-	}
-	log.Printf("Enabling secret engine with data %v", secretEngine)
-	data, err := json.Marshal(secretEngine)
-	if err != nil {
-		return fmt.Errorf("[ERR] marshalling secret engine request %v", err)
-	}
-	err = MakeRequest(conf.VaultSecretEngineURL, data, conf.VaultToken)
-	if err != nil {
-		return fmt.Errorf("[ERR] while creating secret enting %v", err)
-	}
-
-	roleRequest := &RoleRequest{
-		DBName:            conf.Database,
-		CreationStatement: conf.CreationStatement,
-		DefaultTTL:        conf.DefaultTTL,
-		MaxTTL:            conf.MaxTTL,
-	}
-	log.Printf("Making role request with data %v", roleRequest)
-	data, err = json.Marshal(roleRequest)
-	if err != nil {
-		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
-	}
-	err = MakeRequest(conf.VaultRoleURL, data, conf.VaultToken)
-	if err != nil {
-		return fmt.Errorf("[ERR] while creating dynamic secret config %v", err)
-	}
-
+	// err = MakeRequest(conf.GetSecretEngineURL(), data, conf.VaultToken)
+	// if err != nil {
+	// 	return fmt.Errorf("[ERR] while creating secret enting %v", err)
+	// }
+	// //Create database role
+	// roleRequest := &RoleRequest{
+	// 	DBName:            conf.Database,
+	// 	CreationStatement: conf.CreationStatement,
+	// 	DefaultTTL:        conf.DefaultTTL,
+	// 	MaxTTL:            conf.MaxTTL,
+	// }
+	// log.Printf("Making role request with data %v", roleRequest)
+	// data, err = json.Marshal(roleRequest)
+	// if err != nil {
+	// 	return fmt.Errorf("[ERR] marshalling request for database config %v", err)
+	// }
+	// err = MakeRequest(conf.GetRoleURL(), data, conf.VaultToken)
+	// if err != nil {
+	// 	return fmt.Errorf("[ERR] while creating dynamic secret config %v", err)
+	// }
+	// configure mongodb secret engine
 	configRequest := &Request{
 		PluginName:    conf.PluginName,
 		AllowedRoles:  conf.AllowdRoles,
-		ConnectionURL: conf.ConnectionURL,
-		UserName:      conf.UserName,
-		Password:      conf.Password,
+		ConnectionURL: conf.GetMongoDBConnectionURL(),
 	}
+	tlscertificateKey, err := ioutil.ReadFile(conf.TLSCertificateKey)
+	if err != nil {
+		return fmt.Errorf("Error while reading certificate file %v", err)
+	}
+	cacert, err := ioutil.ReadFile(conf.TLSCA)
+	if err != nil {
+		return fmt.Errorf("Error while reading ca certificate file %v", err)
+	}
+	configRequest.TLSCA = string(cacert)
+	configRequest.TLSCertificateKey = string(tlscertificateKey)
 	log.Printf("Making config request with data %v", configRequest)
-	data, err = json.Marshal(configRequest)
+	data, err := json.Marshal(configRequest)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
 	}
-	err = MakeRequest(conf.VaultConfigURL, data, conf.VaultToken)
+	err = MakeRequest(conf.GetConfigURL(), data, conf.VaultToken)
 	if err != nil {
 		return fmt.Errorf("[ERR] while creating dynamic secret config %v", err)
 	}
 
+	//Create policy
 	fileContent, err := ioutil.ReadFile(conf.PolicyFile)
 	if err != nil {
 		return fmt.Errorf("[ERR] Unable to open policy file at %v, err %w", conf.PolicyFile, err)
@@ -95,7 +107,7 @@ func CreateConfig(conf *config.DynamicSecret) error {
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
 	}
-	err = MakeRequest(conf.VaultRoleURL, data, conf.VaultToken)
+	err = MakeRequest(conf.GetPolicyURL(), data, conf.VaultToken)
 	if err != nil {
 		return fmt.Errorf("[ERR] while creating dynamic secret config %v", err)
 	}
@@ -123,15 +135,13 @@ func MakeRequest(url string, data []byte, token string) error {
 	}
 	defer resp.Body.Close()
 
-	var responseData []byte
-	_, err = resp.Body.Read(responseData)
+	defer resp.Body.Close()
+	responseData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Error while read response %v", err)
+		return fmt.Errorf("Error while read response %v", err)
 	}
-	response := &Response{}
-	err = json.Unmarshal(responseData, response)
-	if err != nil {
-		log.Printf("Error while unmarshalling response %v", err)
+	if resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return fmt.Errorf("Error while making request %v", string(responseData))
 	}
 	log.Printf("MakeRequest|Sent database config response %v, with status code %v", resp, resp.StatusCode)
 

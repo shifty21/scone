@@ -14,7 +14,7 @@ cas:
     test_updated_session_file: /root/go/bin/resources/vault-init/test_updated_session.yml
     predecessor_hash_file: /root/go/bin/resources/vault-init/predecessor_hash.yaml
 #vault config
-vault_address: http://127.0.0.1:8200
+vault_address: http://127.0.0.1:8200/v1
 check_interval: 15
 shares:
     recovery_shares: 1
@@ -32,18 +32,35 @@ gpgcrypto:
     - public_key_path: /root/go/bin/resources/vault/vault-experiments/keys/public.asc
       private_key_path: /root/go/bin/resources/vault/vault-experiments/keys/private.asc
       pass_phrase: aquickbrownfoxjumpsoverthelazydog
-dynamic_secret:
+vault_dynamic_secret:
+    vault_url: http://127.0.0.1:8200/v1
     plugin_name: mongodb-database-plugin
     allowed_roles: demo-client
-    connection_url: "mongodb://{{username}}:{{password}}@mongodb:27017/admin"
-    username: myUserAdmin
-    database: "admin"
-    vault_config_url: http://127.0.0.1:8200/v1/database/config/admin
+    username: jack
+    database: admin
     creation_statements: '{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }'
     default_ttl: 2m
     max_ttl: 6m
-    vault_role_url: http://127.0.0.1:8200/v1/database/roles/demo-client
-    vault_create_policy_url: http://127.0.0.1:8200/v1/sys/policy/demo-client
-    policy_file: /root/go/bin/resources/dynamic-secret/credential-policy.hcl
-    vault_secret_engine_url: http://127.0.0.1:8200/v1/sys/mounts/database
-    vault_generate_credential_url: http://127.0.0.1:8200/v1/database/creds/demo-client
+    connection_url: "mongodb://@localhost:27017/admin?ssl=true"
+    config_url: /database/config/
+    role_url: /database/roles/
+    policy_url: /sys/policy/
+    policy_file: resources/dynamic-secret/credential-policy.hcl
+    secret_engine_url: /sys/mounts/database
+    credential_url: /database/creds/
+    tls_certificate_key: /Users/abhishekchoudhary/experiment/mongodb-client.pem
+    tls_ca: /Users/abhishekchoudhary/experiment/mongodb-ca.crt
+vault_pki_config:
+    name: nginx 
+    vault_url: http://127.0.0.1:8200/v1
+    role_url: /pki/roles/
+    policy_url: /sys/policy/
+    secret_engine_url: /sys/mounts/pki
+    policy_file: resources/vault-init/pki.hcl
+    generate_certificate_url: /pki/issue/
+    #internal or exported type
+    generate_root_url: /pki/root/generate/exported
+    set_config_url: /pki/config/urls
+    issuing_certificates: /pki/ca
+    crl_distribution_points: /pki/crl
+    root_ca_cert_location: resources/rootca/

@@ -8,8 +8,8 @@
 ./vault write database/roles/demo-client \
     db_name=admin \
     creation_statements='{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }' \
-    default_ttl="2m" \
-    max_ttl="6m"
+    default_ttl="20m" \
+    max_ttl="30m"
 
 SCONE_CONFIG_ID=vault-dynamic-secret/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault write database/config/admin \
     plugin_name=mongodb-database-plugin \

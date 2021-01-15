@@ -1,4 +1,5 @@
-username: "root"
-password: "rootPassXXX"
+
+username: "v-root-demo-client-KZPG8J5bO9bBM3e7sIWB-1610744139"
+password: "A1a-a5K5zRVgu0w3P2QV"
 database: "admin"
-address: 127.0.0.1
+address: localhost

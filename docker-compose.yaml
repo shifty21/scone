@@ -4,7 +4,7 @@ services:
         command: sh -c "SCONE_HEAP=2G cas -c /etc/cas/cas.toml"
         environment:
          - SCONE_LOG=7
-         - SCONE_MODE=sim
+         - SCONE_MODE=hw
         image: sconecuratedimages/services:cas.trust.group-out-of-date-scone4.2.1
         devices:
             - "/dev/isgx"

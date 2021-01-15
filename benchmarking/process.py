@@ -154,7 +154,7 @@ def get_per_file_data(filename):
 
 def process_files(dir_name,path):
     list_of_files = sorted(glob.glob(path+"*.log"))
-    header = 'lat_avg,lat_stdev,lat_max,lat_stdevpm,req_avg,req_stdev,req_max,req_stdevpm,'\
+    header = 'file_name,lat_avg,lat_stdev,lat_max,lat_stdevpm,req_avg,req_stdev,req_max,req_stdevpm,'\
     'tot_requests,tot_duration,read,err_connect,err_read,err_write,err_timeout,req_sec_tot'\
     ',read_tot,threads,total_requestss,total_responses\n'
     result = []

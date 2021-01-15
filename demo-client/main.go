@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"os"
@@ -80,10 +81,18 @@ func main() {
 		for {
 			select {
 			case config = <-watcher:
-				fmt.Printf("Config Change event reloading connection %v", config)
+				log.Printf("Config Change event reloading connection %v", config)
+
 				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
-				fmt.Printf("URI %v\n", url)
-				client, err = mongo.NewClient(options.Client().ApplyURI(url))
+				log.Printf("URI %v\n", url)
+				client, err = mongo.NewClient(
+					options.Client().ApplyURI(url),
+					options.Client().SetTLSConfig(
+						&tls.Config{
+							InsecureSkipVerify: true,
+						},
+					),
+				)
 				if err != nil {
 					log.Printf("Error while Creating new client for mongodb %v", err)
 				}
@@ -101,9 +110,16 @@ func main() {
 				}
 				client.Disconnect(ctx)
 			default:
-				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v", config.UserName, config.Password, config.Address, config.Database)
+				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v?sslInsecure=true", config.UserName, config.Password, config.Address, config.Database)
 				fmt.Printf("URI %v\n", url)
-				client, err = mongo.NewClient(options.Client().ApplyURI(url))
+				client, err = mongo.NewClient(
+					options.Client().ApplyURI(url),
+					options.Client().SetTLSConfig(
+						&tls.Config{
+							InsecureSkipVerify: true,
+						},
+					),
+				)
 				if err != nil {
 					log.Printf("Error while Creating new client for mongodb %v", err)
 				}

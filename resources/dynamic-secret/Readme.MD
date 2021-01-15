@@ -17,3 +17,37 @@ curl --header "X-Vault-Token: s.SCWsjXizDGNDmiPHrvP6Pclx" --request POST \
   "username": "myUserAdmin",
   "password": "R/$QNreid\=0"
 }
+
+
+mongod  --sslMode requireSSL --sslPEMKeyFile  mongodb.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 --sslCAFile mongodb-ca.crt --setParameter authenticationMechanisms=PLAIN,MONGODB-X509
+
+create user
+mongo --ssl --host localhost --sslCAFile mongodb-ca.crt --sslPEMKeyFile mongodb-client.pem sample.js
+
+sample.js
+db.getSiblingDB("\$external").runCommand(
+    {
+        createUser:"CN=jack",
+        roles: [{"role" : "root","db" : "admin"}]
+});
+
+to test
+
+db.getSiblingDB("$external").auth(
+     {
+         mechanism: "MONGODB-X509",
+         user: "CN=jack"
+     }
+     );
+
+mongod  --sslMode requireSSL --sslPEMKeyFile  mongodb.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 --sslCAFile mongodb-ca.crt --setParameter authenticationMechanisms=PLAIN,MONGODB-X509 --auth
+
+
+
+mongod --auth  --sslMode requireSSL --sslPEMKeyFile  mongodb.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 
+--sslCAFile mongodb-ca.crt  --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509 --sslAllowInvalidCertificates
+
+
+mongod --auth  --tlsMode requireTLS --certificateKeyFile  mongodb.pem --CAFile mongodb-ca.crt --allowConnectionsWithoutCertificates --dbpath /usr/local/var/mongodb --bind_ip 127.0.0.1 --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509 
+
+mongod --tlsMode requireTLS --tlsCertificateKeyFile  mongodb.pem --tlsCAFile mongodb-ca.crt --tlsAllowConnectionsWithoutCertificates --dbpath /usr/local/var/mongodb --bind_ip 127.0.0.1 --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509

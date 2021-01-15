@@ -19,18 +19,20 @@ type GenreateResponse struct {
 
 //GenerateCreadentials generates dynamic secret for the config provided
 func GenerateCreadentials(conf *config.DynamicSecret) error {
-	log.Printf("Generating dynamic secret with token %v and url %v", conf.VaultToken, conf.VaultGenerateConfigURL)
+	log.Printf("Generating dynamic secret with token %v and url %v", conf.VaultToken, conf.DBCredentialURL())
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", conf.VaultGenerateConfigURL, nil)
+	req, err := http.NewRequest("GET", conf.DBCredentialURL(), nil)
 	if err != nil {
-		return fmt.Errorf("[ERR] creating post request %s, error: %w", conf.VaultGenerateConfigURL, err)
+		return fmt.Errorf("[ERR] creating post request %s, error: %w", conf.DBCredentialURL(), err)
 	}
-	log.Printf("MakeRequest|sending post session %v with token %v", conf.VaultGenerateConfigURL, conf.VaultToken)
+	log.Printf("MakeRequest|sending post session %v with token %v", conf.DBCredentialURL(), conf.VaultToken)
 	req.Header.Set("X-Vault-Token", conf.VaultToken)
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("[ERR] making post request: %w", err)
 	}
+
+	log.Printf("MakeRequest|Status code %v", resp.StatusCode)
 	defer resp.Body.Close()
 
 	var responseData []byte
@@ -43,6 +45,6 @@ func GenerateCreadentials(conf *config.DynamicSecret) error {
 	if err != nil {
 		log.Printf("Error while unmarshalling response %v, response body %v", err, string(responseData))
 	}
-	log.Printf("MakeRequest|Sent database config response %v, with status code %v", response, resp.StatusCode)
+	log.Printf("MakeRequest|Sent database config response %v", response)
 	return nil
 }

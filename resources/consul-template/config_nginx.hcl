@@ -3,8 +3,8 @@ kill_signal = "SIGINT"
 max_stale = "4m"
 log_level = "info"
 vault {
-    address = "http://vault:8200"
-    token = "s.E8OoVqCo6FsUSrWlgIHc8vRa"
+    address = "http://localhost:8200"
+    token = "s.y4KOs9NJY8lZnSMruj6wQJh6"
     renew_token = false
 }
 cas {
@@ -22,13 +22,27 @@ predecessor_hash_file = "/root/go/bin/resources/demo-client/predecessor_hash.yam
 //     destination = "/root/go/bin/resources/consul-template/templates/config.yml"
 // }
 
+
 template {
-  source      = "/root/go/bin/resources/consul-template/templates/yet-cert.tpl"
-  destination = "/root/go/bin/resources/consul-template/templates/yet.crt"
+  source      = "resources/consul-template/templates/nginx-cert.tpl"
+  destination = "resources/consul-template/templates/nginx.crt"
   perms       = "0600"
 }
 
 template {
-  source      = "/root/go/bin/resources/consul-template/templates/yet-key.tpl"
-  destination = "/root/go/bin/resources/consul-template/templates/yet.key"
+  source      = "resources/consul-template/templates/nginx-key.tpl"
+  destination = "resources/consul-template/templates/nginx.key"
+}
+
+
+
+template {
+  source      = "resources/consul-template/templates/mongodb-ca-cert.tpl"
+  destination = "resources/consul-template/templates/mongodb-ca.crt"
+  perms       = "0600"
+}
+
+template {
+  source      = "resources/consul-template/templates/mongodb-pem-key.tpl"
+  destination = "resources/consul-template/templates/mongodb.pem"
 }

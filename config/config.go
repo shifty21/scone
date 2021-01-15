@@ -85,6 +85,7 @@ func LoadConfig(path string) *Configuration {
 	Config["grpc_service"] = LoadEncryptionGRPCConfig()
 	Config["gpg_crypto_Config"] = LoadGPGCryptoConfig()
 	Config["dynamic_secret"] = LoadDynamicSecretConfig()
+	Config["pki_secret"] = LoadPKIConfig()
 	return &Config
 }
 
@@ -116,4 +117,9 @@ func (c *Configuration) GetGPGCryptoConfig() *GPGCrypto {
 //GetDynamiSecret returns cas related config
 func (c *Configuration) GetDynamiSecret() *DynamicSecret {
 	return Config["dynamic_secret"].(*DynamicSecret)
+}
+
+//GetPKIConfig returns pki engine config
+func (c *Configuration) GetPKIConfig() *PKIEngine {
+	return Config["pki_secret"].(*PKIEngine)
 }
