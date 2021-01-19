@@ -194,3 +194,8 @@ s.9O587curdZDFOaR87g25bHqA
 
 
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender
+
+sconecuratedimages/www2019:vault-1.5.0-alpine
+sconecuratedimages/services:cas.trust.group-out-of-date-scone4.2.1
+sconecuratedimages/www2019:mongodb-alpine-scone4.2.1
+sconecuratedimages/services:las-scone4.2.1

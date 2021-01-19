@@ -18,8 +18,8 @@ func saveFile(data string, filePath string) error {
 //GenerateRoot generates root certificate
 func GenerateRoot(conf *config.PKIEngine) error {
 	configRequest := &GenerateRootRequest{
-		CommonName: "127.0.0.1",
-		TTL:        "180h",
+		CommonName: conf.RootCommonName,
+		TTL:        conf.RootMaxTTL,
 	}
 	log.Printf("Making GenerateRootRequest CA request with data %v", configRequest)
 	data, err := json.Marshal(configRequest)
@@ -82,9 +82,9 @@ func SetupRootCA(conf *config.PKIEngine) error {
 	roleRequest := &RoleRequest{
 		AllowLocalhost: true,
 		AllowAnyName:   true,
-		MaxTTL:         "60m",
-		KeyUsage:       []string{"digitalSignature"},
-		ExtKeyUsage:    []string{"clientAuth"},
+		MaxTTL:         conf.MaxTTL,
+		KeyUsage:       conf.KeyUsage,
+		ExtKeyUsage:    conf.ExtKeyUsage,
 	}
 	log.Printf("Making role request with data %v", roleRequest)
 	data, err = json.Marshal(roleRequest)

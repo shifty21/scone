@@ -29,9 +29,7 @@ func (r *GenerateSecret) Help() string {
 
 Usage: vault_init register resource/vault-init/
 
-	Register cas sesssion of the binary mentioned in the register_sessions.yaml file.
-	For configuration only provide the directory and make sure the configuration filename 
-	is register_session.yaml
+	Generates database dynamic secret and outputs to terminal
 
 	  $ vault_init register resource/vault-init/
 	  

@@ -85,12 +85,12 @@ func Run(args []string) int {
 				RunOptions: runOpts,
 			}, nil
 		},
-		"dynamicsecret": func() (cli.Command, error) {
+		"init_dynamic_secret": func() (cli.Command, error) {
 			return &DynamicSecret{
 				RunOptions: runOpts,
 			}, nil
 		},
-		"generatesecret": func() (cli.Command, error) {
+		"gen_credentials": func() (cli.Command, error) {
 			return &GenerateSecret{
 				RunOptions: runOpts,
 			}, nil

@@ -4,7 +4,7 @@ max_stale = "4m"
 log_level = "info"
 vault {
     address = "http://localhost:8200"
-    token = "s.y4KOs9NJY8lZnSMruj6wQJh6"
+    token = "s.AwGTolybl2kAXCoKZWHl3wg8"
     renew_token = false
 }
 cas {
@@ -18,8 +18,8 @@ predecessor_hash_file = "/root/go/bin/resources/demo-client/predecessor_hash.yam
 }
 
 // template {
-//     source      = "/root/go/bin/resources/consul-template/templates/config.yml.tpl"
-//     destination = "/root/go/bin/resources/consul-template/templates/config.yml"
+//     source      = "resources/consul-template/templates/config.yml.tpl"
+//     destination = "resources/consul-template/templates/config.yml"
 // }
 
 
@@ -33,7 +33,6 @@ template {
   source      = "resources/consul-template/templates/nginx-key.tpl"
   destination = "resources/consul-template/templates/nginx.key"
 }
-
 
 
 template {

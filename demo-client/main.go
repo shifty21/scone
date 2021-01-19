@@ -110,8 +110,8 @@ func main() {
 				}
 				client.Disconnect(ctx)
 			default:
-				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v?sslInsecure=true", config.UserName, config.Password, config.Address, config.Database)
-				fmt.Printf("URI %v\n", url)
+				url = fmt.Sprintf("mongodb://%v:%v@%v:27017/%v?ssl=true&sslAllowInvalidCertificates=true", config.UserName, config.Password, config.Address, config.Database)
+				fmt.Printf("Default URI %v\n", url)
 				client, err = mongo.NewClient(
 					options.Client().ApplyURI(url),
 					options.Client().SetTLSConfig(

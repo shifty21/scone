@@ -6,7 +6,9 @@ cas:
     session_name: vault-init-auto
     export_to_session:
         - consul-template
-        - vault-dynamic
+        - vault-init-dynamicsecret
+        - vault-init-pki
+        - vault-init-generate-pki
     url: https://cas:8081/session
     key: /root/go/bin/resources/vault-init/conf/client-key.key
     certificate: /root/go/bin/resources/vault-init/conf/client.crt
@@ -39,28 +41,40 @@ vault_dynamic_secret:
     username: jack
     database: admin
     creation_statements: '{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }'
-    default_ttl: 2m
-    max_ttl: 6m
-    connection_url: "mongodb://@localhost:27017/admin?ssl=true"
+    default_ttl: 20m
+    max_ttl: 60m
+    connection_url: "mongodb://@127.0.0.1:27017/admin?ssl=true"
     config_url: /database/config/
     role_url: /database/roles/
     policy_url: /sys/policy/
     policy_file: resources/dynamic-secret/credential-policy.hcl
     secret_engine_url: /sys/mounts/database
     credential_url: /database/creds/
-    tls_certificate_key: /Users/abhishekchoudhary/experiment/mongodb-client.pem
-    tls_ca: /Users/abhishekchoudhary/experiment/mongodb-ca.crt
+    tls_certificate_key: resources/generatedcert/mongo.pem
+    tls_ca: resources/generatedcert/issue_ca.crt
 vault_pki_config:
+    mount_point: pki
     name: nginx 
-    vault_url: http://127.0.0.1:8200/v1
-    role_url: /pki/roles/
-    policy_url: /sys/policy/
-    secret_engine_url: /sys/mounts/pki
+    default_ttl: 20m
+    max_ttl: 60m
+    root_max_ttl: 180h
+    root_common_name: "127.0.0.1"
+    key_usage: 
+        - digitalSignature
+    ext_key_usage:
+        - clientAuth
+    vault_url: http://127.0.0.1:8200/v1/
+    role_url: /roles/
+    policy_url: sys/policy/
+    secret_engine_url: sys/mounts/
     policy_file: resources/vault-init/pki.hcl
-    generate_certificate_url: /pki/issue/
+    certificate_common_name: "127.0.0.1"
+    certificate_ttl: 
+    generate_certificate_url: /issue/
     #internal or exported type
-    generate_root_url: /pki/root/generate/exported
-    set_config_url: /pki/config/urls
-    issuing_certificates: /pki/ca
-    crl_distribution_points: /pki/crl
+    generate_root_url: /root/generate/exported
+    set_config_url: /config/urls
+    issuing_certificates: /ca
+    crl_distribution_points: /crl
     root_ca_cert_location: resources/rootca/
+    generated_cert_location: resources/generatedcert/

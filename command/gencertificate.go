@@ -29,11 +29,9 @@ func (r *GenerateCertificate) Help() string {
 
 Usage: vault_init register resource/vault-init/
 
-	Register cas sesssion of the binary mentioned in the register_sessions.yaml file.
-	For configuration only provide the directory and make sure the configuration filename 
-	is register_session.yaml
+	Generates pki certificates and exports them to specified sessions
 
-	  $ vault_init register resource/vault-init/
+	  $ vault_init generate_certificates resource/vault-init/
 	  
 `
 

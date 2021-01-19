@@ -127,17 +127,34 @@ Failed to parse K=V data: invalid key/value pair "\\": format must be key=value
    1. on running command directly to run demo-client "child: fork/exec /root/go/bin/demo-client: function not implemented"
    2. on using rc-service or sh, the binaries are not visible to consul-template
 4. export of x509 certificate from CAS doesnt seem to me working
-
-
+   
+5. Separate registration and generation so nginx and mongodb certificate can be generated 
+6. generate mongodb certifcate and export to mongodb and vault-init for dynamic secret
+7. generate nginx secret to nginx session and start it
+8. user mongodb secret to start mongodb and start demo-client
+9. Test consul-template if session update is getting reflected without writing to file system
 
 ### pki 
 https://www.vaultproject.io/api-docs/secret/pki
 Api integration needed
-1. enable pki
-2. Generate Root
+1. Enable pki done 
+2. Generate Root done
 <!-- 3. intermediate
 4. https://www.vaultproject.io/api-docs/secret/pki#sign-intermediate -->
-5. https://www.vaultproject.io/api-docs/secret/pki#create-update-role
-6. https://www.vaultproject.io/api-docs/secret/pki#generate-certificate
+5. https://www.vaultproject.io/api-docs/secret/pki#create-update-role done 
+6. https://www.vaultproject.io/api-docs/secret/pki#generate-certificate done
 <!-- 7. https://www.vaultproject.io/api-docs/secret/pki#set-signed-intermediate -->
-   vault write pki/config/urls issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"
+   vault write pki/config/urls issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl" done
+
+Vault-init-auto - export vault token to
+- vault-init-pki (setup import for vault token)
+- vault-init-generate-pki (setup import for vault token)
+  - export TLS certificate 
+    - nginx and start nginx
+    - mongodb and start mongodb
+    - vault-init-dynamicsecret
+- vault-init-dynamicsecret (setup and import tls certificate and vault token)
+- consul-template
+  
+
+

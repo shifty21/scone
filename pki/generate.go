@@ -16,9 +16,9 @@ func GenerateCertificate(conf *config.PKIEngine) error {
 	log.Printf("Generating certificate and key with token %v and url %v", conf.VaultToken, conf.GetGenerateCertificateURL())
 	client := &http.Client{}
 	configRequest := &GenerateRootRequest{
-		CommonName: "127.0.0.1",
-		Format:     "pem",
-		TTL:        "10m",
+		TTL:        conf.CertificateTTL,
+		CommonName: conf.CertificateCommonName,
+		IPSans:     "127.0.0.1",
 	}
 	requestData, err := json.Marshal(configRequest)
 	if err != nil {
@@ -49,5 +49,29 @@ func GenerateCertificate(conf *config.PKIEngine) error {
 	}
 	log.Printf("MakeRequest|response %v, with status code %v", response, resp.StatusCode)
 	//export to cas session
+	SaveCertificateResponse(response, conf)
 	return nil
+}
+
+//SaveCertificateResponse saves all the server certificates to location of GeneratedCertLocation
+func SaveCertificateResponse(response *CertificateResponse, conf *config.PKIEngine) {
+	err := saveFile(response.Data.Certificate, conf.GeneratedCertLocation+"server.crt")
+	if err != nil {
+		log.Printf("Error while saving privatekey %v", err)
+	}
+
+	err = saveFile(response.Data.PrivateKey, conf.GeneratedCertLocation+"server.pem")
+	if err != nil {
+		log.Printf("Error while saving privatekey %v", err)
+	}
+
+	err = saveFile(response.Data.IssuingCA, conf.GeneratedCertLocation+"issue_ca.crt")
+	if err != nil {
+		log.Printf("Error while saving privatekey %v", err)
+	}
+
+	err = saveFile(response.Data.SerialNumber, conf.GeneratedCertLocation+"serial.txt")
+	if err != nil {
+		log.Printf("Error while saving privatekey %v", err)
+	}
 }
