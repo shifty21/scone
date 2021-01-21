@@ -32,6 +32,7 @@ type PKIEngine struct {
 	GeneratedCertLocation string   `mapstructure:"generated_cert_location"`
 	CertificateTTL        string   `mapstructure:"certificate_ttl"`
 	CertificateCommonName string   `mapstructure:"certificate_common_name"`
+	CertificateIPSAN      string   `mapstructure:"certificate_ip_san"`
 }
 
 //GetRoleURL get api for creating pki role

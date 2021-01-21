@@ -1,0 +1,16 @@
+cas_address: https://cas:8081/session
+sessions:
+  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
+    key: resources/consul-template/conf/client-key.key
+    certificate: resources/consul-template/conf/client.crt
+    session_file_loc: resources/consul-template/session_demo_client.yml
+    command:  /opt/scone/lib/ld-scone-x86_64.so.1
+    parameter: /root/go/bin/consul-template --version
+    predecessor_hash_file: resources/consul-template/mongodb_predecessor_hash.yaml
+  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
+    key: resources/mongodb/conf/client-key.key
+    certificate: resources/mongodb/conf/client.crt
+    session_file_loc: resources/mongodb/session.yml
+    command: /opt/scone/lib/ld-scone-x86_64.so.1
+    parameter: /root/go/bin/mongodb
+    predecessor_hash_file: resources/mongodb/predecessor_hash.yaml

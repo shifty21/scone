@@ -1,9 +1,8 @@
 function done(summary, latency, requests)
     -- open output file
     for index, thread in ipairs(threads) do
-      print("time_started","min_latency,max_latency,mean_latency,stdev,50th,90th,99th,99.999th,duration,requests,bytes,connect_errors,read_errors,write_errors,status_errors,timeouts\n")
-      print(string.format("%s,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d\n",
-      os.date("!%Y-%m-%dT%TZ"),
+      print("min_latency,max_latency,mean_latency,stdev,50th,90th,99th,99.999th,duration,requests,bytes,connect_errors,read_errors,write_errors,status_errors,timeouts\n")
+      print(string.format("%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d\n",
       latency.min,    -- minimum latency
       latency.max,    -- max latency
       latency.mean,   -- mean of latency

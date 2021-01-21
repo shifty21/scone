@@ -5,3 +5,4 @@ gccgo/gccgo
 vault_binary
 logfiles
 */*.csv
+logfiles_1st

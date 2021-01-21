@@ -146,9 +146,9 @@ Api integration needed
 <!-- 7. https://www.vaultproject.io/api-docs/secret/pki#set-signed-intermediate -->
    vault write pki/config/urls issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl" done
 
-Vault-init-auto - export vault token to
+Vault-init-auto - export vault token to below
 - vault-init-pki (setup import for vault token)
-- vault-init-generate-pki (setup import for vault token)
+- consul-template each service will have
   - export TLS certificate 
     - nginx and start nginx
     - mongodb and start mongodb

@@ -1,0 +1,23 @@
+version: "0.3"
+name: consul-template-mongodb
+services:
+- name: dev
+  image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
+  mrenclaves:
+  - f94da6d634b600e8c7be71a6ae2956347f774156a28c0380fd15514305cc1f60
+  command: /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once
+  pwd: /
+  environment:
+    SCONE_MODE: hw
+    VAULT_TOKEN: $$SCONE::vault_token_from_initializer$$
+security:
+  attestation:
+    tolerate:
+    - debug-mode
+    - outdated-tcb
+    ignore_advisories: '*'
+secrets:
+- name: vault_token_from_initializer
+  import:
+    session: vault-init-auto
+    secret: VAULT_TOKEN

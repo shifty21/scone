@@ -1,10 +1,10 @@
 version: "0.3"
-name: vault-init-dynamicsecret
+name: vault-init-pki
 services:
-   - name: generate
-     image_name: dynamicsecret-image
+   - name: dev
+     image_name: pki-image
      mrenclaves: [da24079c4a5f4d47ca8f450b38f9bdc00f8bb3660506d852b66a1b61b666ea18]
-     command: /root/go/bin/vault-init init_dynamic_secret
+     command: /root/go/bin/vault-init setup-pki
      pwd: /
      environment:
         SCONE_MODE: hw

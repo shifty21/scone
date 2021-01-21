@@ -13,7 +13,7 @@ def wrk_data(wrk_output):
         wrk_output.get('err_read')) + ',' + str(wrk_output.get('err_write')) + ',' + str(
         wrk_output.get('err_timeout')) + ',' + str(wrk_output.get('req_sec_tot')) + ',' + str(
         wrk_output.get('read_tot')) + ',' + str(wrk_output.get('threads')) + ',' + str(
-        wrk_output.get('total_requests'))  + ',' + str(wrk_output.get('total_responses')) + '\n'
+        wrk_output.get('connections'))+ "," + str(wrk_output.get('total_requests'))  + ',' + str(wrk_output.get('total_responses')) + '\n'
 
 
 def get_bytes(size_str):
@@ -91,7 +91,9 @@ def parse_wrk_output(file, wrk_output):
     requests = 0
     responses = 0
     thread = 0
+    connections = 0
     for line in wrk_output.splitlines():
+        # print("Processing line %s" %(line))
         x = re.search("^\s+Latency\s+(\d+\.\d+\w*)\s+(\d+\.\d+\w*)\s+(\d+\.\d+\w*)\s+(\d+\.\d+\w*).*$", line)
         if x is not None:
             retval['lat_avg'] = get_ms(x.group(1))
@@ -125,9 +127,19 @@ def parse_wrk_output(file, wrk_output):
         x = re.search(
             "^thread (\d+) made (\d+) requests including (\d+) writes and got (\d+) responses.*$", line)
         if x is not None:
-            thread = get_number(x.group(1))
+            thread = thread + get_number(x.group(1))
             requests = requests +  get_number(x.group(2))
             responses =  responses + get_number(x.group(4))
+        x = re.search(
+            "^thread (\d+) made (\d+) requests including (\d+) lists and got (\d+) responses.*$", line)
+        if x is not None:
+            # thread = thread + get_number(x.group(1))
+            requests = requests +  get_number(x.group(2))
+            responses =  responses + get_number(x.group(4))
+        x = re.search("^\s\s(\d+) threads and (\d+) connections.*$", line)
+        if x is not None:
+            thread = thread + get_number(x.group(1))
+            connections = connections + get_number(x.group(2))
     if 'err_connect' not in retval:
         retval['err_connect'] = 0
     if 'err_read' not in retval:
@@ -137,6 +149,7 @@ def parse_wrk_output(file, wrk_output):
     if 'err_timeout' not in retval:
         retval['err_timeout'] = 0
     retval['threads'] = thread
+    retval['connections'] = connections
     retval['total_requests'] = requests
     retval['total_responses'] = responses
     return retval
@@ -156,11 +169,12 @@ def process_files(dir_name,path):
     list_of_files = sorted(glob.glob(path+"*.log"))
     header = 'file_name,lat_avg,lat_stdev,lat_max,lat_stdevpm,req_avg,req_stdev,req_max,req_stdevpm,'\
     'tot_requests,tot_duration,read,err_connect,err_read,err_write,err_timeout,req_sec_tot'\
-    ',read_tot,threads,total_requestss,total_responses\n'
+    ',read_tot,threads,connections,total_requests,total_responses\n'
     result = []
     result.append(header)
     for file in list_of_files:
         data = get_per_file_data(file)
+        # print(data)
         result.append(data)
     with open(dir_name+".csv",'w') as resultcsv:
         resultcsv.writelines(result)
@@ -173,6 +187,8 @@ def process_dir(dirs):
     for dir in list_of_dirs:
         print("Processing directory %s" % str(dir))
         process_files(str(dir).split("/")[-2],dir)
+    if len(list_of_dirs) == 0:
+        process_files("sample",str("./"))
 
 
 if __name__ == '__main__':

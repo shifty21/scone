@@ -14,35 +14,35 @@ import (
 //SetupDynamicSecret creates database config
 func SetupDynamicSecret(conf *config.DynamicSecret) error {
 	// //enable database secret engine
-	// secretEngine := &SecretEngine{
-	// 	Type: "database",
-	// }
-	// log.Printf("Enabling secret engine with data %v", secretEngine)
-	// data, err := json.Marshal(secretEngine)
-	// if err != nil {
-	// 	return fmt.Errorf("[ERR] marshalling secret engine request %v", err)
-	// }
+	secretEngine := &SecretEngine{
+		Type: "database",
+	}
+	log.Printf("Enabling secret engine with data %v", secretEngine)
+	data, err := json.Marshal(secretEngine)
+	if err != nil {
+		return fmt.Errorf("[ERR] marshalling secret engine request %v", err)
+	}
 
-	// err = MakeRequest(conf.GetSecretEngineURL(), data, conf.VaultToken)
-	// if err != nil {
-	// 	return fmt.Errorf("[ERR] while creating secret enting %v", err)
-	// }
-	// // //Create database role
-	// roleRequest := &RoleRequest{
-	// 	DBName:            conf.Database,
-	// 	CreationStatement: conf.CreationStatement,
-	// 	DefaultTTL:        conf.DefaultTTL,
-	// 	MaxTTL:            conf.MaxTTL,
-	// }
-	// log.Printf("Making role request with data %v", roleRequest)
-	// data, err = json.Marshal(roleRequest)
-	// if err != nil {
-	// 	return fmt.Errorf("[ERR] marshalling request for database config %v", err)
-	// }
-	// err = MakeRequest(conf.GetRoleURL(), data, conf.VaultToken)
-	// if err != nil {
-	// 	return fmt.Errorf("[ERR] while creating dynamic secret config %v", err)
-	// }
+	err = MakeRequest(conf.GetSecretEngineURL(), data, conf.VaultToken)
+	if err != nil {
+		log.Printf("[ERR] while creating secret enting %v", err)
+	}
+	// //Create database role
+	roleRequest := &RoleRequest{
+		DBName:            conf.Database,
+		CreationStatement: conf.CreationStatement,
+		DefaultTTL:        conf.DefaultTTL,
+		MaxTTL:            conf.MaxTTL,
+	}
+	log.Printf("Making role request with data %v", roleRequest)
+	data, err = json.Marshal(roleRequest)
+	if err != nil {
+		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
+	}
+	err = MakeRequest(conf.GetRoleURL(), data, conf.VaultToken)
+	if err != nil {
+		return fmt.Errorf("[ERR] while creating dynamic secret config %v", err)
+	}
 	// configure mongodb secret engine
 	configRequest := &Request{
 		PluginName:    conf.PluginName,
@@ -60,7 +60,7 @@ func SetupDynamicSecret(conf *config.DynamicSecret) error {
 	configRequest.TLSCA = string(cacert)
 	configRequest.TLSCertificateKey = string(tlscertificateKey)
 	log.Printf("Making config request with data %v", configRequest)
-	data, err := json.Marshal(configRequest)
+	data, err = json.Marshal(configRequest)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
 	}

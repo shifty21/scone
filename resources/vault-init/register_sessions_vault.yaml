@@ -3,7 +3,7 @@ sessions:
   - env: "SCONE_HEAP=2G SCONE_VERSION=1"
     key: resources/vault-init/conf/client-key.key
     certificate: resources/vault-init/conf/client.crt
-    session_file_loc: resources/vault-init/session.yml
+    session_file_loc: resources/vault-init/session_grpc.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/vault-init version
   - env: "SCONE_HEAP=2G SCONE_VERSION=1"
@@ -12,13 +12,28 @@ sessions:
     session_file_loc: resources/vault-init/session_auto.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/vault-init version
-    predecessor_hash_file: resources/vault-init/predecessor_hash.yaml
+    predecessor_hash_file: resources/vault-init/auto_predecessor_hash.yaml
+  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
+    key: resources/vault-init/conf/client-key.key
+    certificate: resources/vault-init/conf/client.crt
+    session_file_loc: resources/vault-init/session_pki.yml
+    command:  /opt/scone/lib/ld-scone-x86_64.so.1
+    parameter: /root/go/bin/vault-init version
+    predecessor_hash_file: resources/vault-init/pki_predecessor_hash.yaml
   - env: "SCONE_HEAP=2G SCONE_VERSION=1"
     key: resources/vault-init/conf/client-key.key
     certificate: resources/vault-init/conf/client.crt
     session_file_loc: resources/vault-init/session_dynamic.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/vault-init version
+    predecessor_hash_file: resources/vault-init/dynamic_predecessor_hash.yaml
+  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
+    key: resources/consul-template/conf/client-key.key
+    certificate: resources/consul-template/conf/client.crt
+    session_file_loc: resources/consul-template/session_dynamic_secret.yml
+    command:  /opt/scone/lib/ld-scone-x86_64.so.1
+    parameter: /root/go/bin/consul-template --version
+    predecessor_hash_file: resources/consul-template/dynamic_predecessor_hash.yaml
   - env: "SCONE_HEAP=8G SCONE_VERSION=1"
     key: resources/vault/conf/client-key.key
     certificate: resources/vault/conf/client.crt
@@ -27,21 +42,7 @@ sessions:
     parameter: /root/go/bin/vault --version
     predecessor_hash_file: resources/vault/predecessor_hash.yaml
   - env: "SCONE_HEAP=2G SCONE_VERSION=1"
-    key: resources/vault/conf/client-key.key
-    certificate: resources/vault/conf/client.crt
-    session_file_loc: resources/vault/session_dynamic.yml
-    command: /opt/scone/lib/ld-scone-x86_64.so.1
-    parameter: /root/go/bin/vault --version
-    predecessor_hash_file: resources/vault/dynamic_predecessor_hash.yaml
-  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
-    key: resources/env-print/conf/client-key.key
-    certificate: resources/env-print/conf/client.crt
-    session_file_loc: resources/env-print/session.yaml
-    command: /opt/scone/lib/ld-scone-x86_64.so.1
-    parameter: /root/go/bin/env-print
-    predecessor_hash_file: resources/env-print/predecessor_hash.yaml
-  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
-    key: resources/demo-client/conf/client-key.key
-    certificate: resources/demo-client/conf/client.crt
-    session_file_loc: resources/demo-client/session1.yml
+    key: resources/parent/conf/client-key.key
+    certificate: resources/parent/conf/client.crt
+    session_file_loc: resources/parent/session1.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1

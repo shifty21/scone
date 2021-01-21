@@ -86,7 +86,11 @@ mongod --auth  --sslMode requireSSL --sslPEMKeyFile  mongodb.pem --dbpath /usr/l
 vault write database/config/admin \
     plugin_name=mongodb-database-plugin allowed_roles="demo-client" connection_url="mongodb://@localhost:27017/admin?ssl=true" tls_certificate_key=@mongodb-client.pem tls_ca=@mongodb-ca.crt
 
+mongo --port 27017 --ssl  --sslAllowInvalidCertificates --authenticationDatabase "admin" -u  "v-root-demo-client-As7igycgBpWm4YvaWJqV-1611019219" -p
 
-    mongo --port 27017 --ssl  --sslAllowInvalidCertificates --authenticationDatabase "admin" -u  "v-root-demo-client-As7igycgBpWm4YvaWJqV-1611019219" -p
+mongod -auth  --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslAllowInvalidCertificates --sslPEMKeyFile  mongo.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 --sslCAFile issue_ca.crt  --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509  --sslDisabledProtocols 'none'
 
-    mongod -auth  --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslAllowInvalidCertificates --sslPEMKeyFile  mongo.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 --sslCAFile issue_ca.crt  --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509  --sslDisabledProtocols 'none'
+
+mongod --auth --port 27017 --dbpath /usr/local/var/mongodb
+
+mongo --port 27017  --eval 'db.getSiblingDB("\$external").runCommand({createUser:"CN=jack",roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]});'

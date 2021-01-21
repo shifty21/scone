@@ -18,7 +18,7 @@ func GenerateCertificate(conf *config.PKIEngine) error {
 	configRequest := &GenerateRootRequest{
 		TTL:        conf.CertificateTTL,
 		CommonName: conf.CertificateCommonName,
-		IPSans:     "127.0.0.1",
+		IPSans:     conf.CertificateIPSAN,
 	}
 	requestData, err := json.Marshal(configRequest)
 	if err != nil {

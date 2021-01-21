@@ -1,11 +1,10 @@
-Number of secrets is: 10000
-thread 1 created
-Running 20s test @ http://vault:8200
-  1 threads and 4 connections
+thread 1 created with print_secrets set to 10000
+Running 20s test @ http://vault1:8200
+  1 threads and 1 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    74.96ms   19.45ms 177.10ms   73.81%
-    Req/Sec    53.29     12.72    80.00     56.00%
-  1066 requests in 20.01s, 125.96KB read
-Requests/sec:     53.26
-Transfer/sec:      6.29KB
-thread 1 made 1071 requests including 1071 writes and got 1066 responses
+    Latency    68.19ms   37.92ms 253.50ms   86.80%
+    Req/Sec    16.53      5.66    30.00     61.93%
+  311 requests in 20.02s, 41.37MB read
+Requests/sec:     15.54
+Transfer/sec:      2.07MB
+thread 1 made 313 requests including 313 lists and got 311 responses

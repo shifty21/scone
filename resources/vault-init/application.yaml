@@ -5,10 +5,12 @@ crypto:
 cas:
     session_name: vault-init-auto
     export_to_session:
-        - consul-template
-        - vault-init-dynamicsecret
         - vault-init-pki
-        - vault-init-generate-pki
+        - vault-init-dynamicsecret
+        - consul-template-nginx
+        - consul-template-mongodb
+        - consul-template-demo-client
+        - consul-template-dynamic-secret
     url: https://cas:8081/session
     key: /root/go/bin/resources/vault-init/conf/client-key.key
     certificate: /root/go/bin/resources/vault-init/conf/client.crt
@@ -50,15 +52,15 @@ vault_dynamic_secret:
     policy_file: resources/dynamic-secret/credential-policy.hcl
     secret_engine_url: /sys/mounts/database
     credential_url: /database/creds/
-    tls_certificate_key: resources/generatedcert/mongo.pem
-    tls_ca: resources/generatedcert/issue_ca.crt
+    tls_certificate_key: resources/consul-template/templates/client.pem
+    tls_ca: resources/consul-template/templates/client-ca.crt
 vault_pki_config:
     mount_point: pki
     name: nginx 
     default_ttl: 20m
     max_ttl: 60m
     root_max_ttl: 180h
-    root_common_name: "127.0.0.1"
+    root_common_name: "scone_root_ca"
     key_usage: 
         - digitalSignature
     ext_key_usage:
@@ -69,6 +71,7 @@ vault_pki_config:
     secret_engine_url: sys/mounts/
     policy_file: resources/vault-init/pki.hcl
     certificate_common_name: "127.0.0.1"
+    certificate_ip_san: "127.0.0.1"
     certificate_ttl: 
     generate_certificate_url: /issue/
     #internal or exported type
