@@ -1,28 +1,27 @@
 number_of_experiments: 10
 thread_range: [1,2,3]
 connection_range: [1,2,3,4,5,6,7,8,9,10,12,14,16,18,20]
-time_range: [20,40]
-vault_address: http://vault1:8200
-vault_token: s.0Gu7cfsRTCTlJqtjjb129wB8
-# log_files: /home/logfiles/
+time_range: [20,30,40,50]
+vault_address: http://vault:8200
+vault_token: s.y9Y3n7UCI2dPvvTX51hoDH6D
 cmd_list:
-  # - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-random-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
-  #   dir: /home/logfiles/write-random-secrets-basic/
+  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-random-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
+    dir: /home/logfiles/write-random-secrets-basic/
   - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
     dir: /home/logfiles/write-secrets-basic/
   - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s read-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
     dir: /home/logfiles/read-secrets-basic/
-  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-list.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
+  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-list.lua {} > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
     dir: /home/logfiles/write-list-basic/
-  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s list-secrets.lua > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
+  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s list-secrets.lua {} > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
     dir: /home/logfiles/list-secrets-basic/
   - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-random-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
-  #   dir: /home/logfiles/write-random-secrets-scone/
-  # - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
-  #   dir: /home/logfiles/write-secrets-scone/
-  # - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s read-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
-  #   dir: /home/logfiles/read-secrets-scone/
-  # - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-list.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
-  #   dir: /home/logfiles/write-list-scone/
-  # - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s list-secrets.lua > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
-  #   dir: /home/logfiles/list-secrets-scone/
+    dir: /home/logfiles/write-random-secrets-scone/
+  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
+    dir: /home/logfiles/write-secrets-scone/
+  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s read-secrets.lua {} -- 10000 > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
+    dir: /home/logfiles/read-secrets-scone/
+  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s write-list.lua {} > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
+    dir: /home/logfiles/write-list-scone/
+  - cmd: 'wrk -t{} -c{} -d{}s -H "X-Vault-Token: {}" -s list-secrets.lua {} > {}prod-test-write-1000-random-secrets-t{}-c{}-{}sec-exp{}.log'
+    dir: /home/logfiles/list-secrets-scone/

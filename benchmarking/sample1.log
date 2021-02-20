@@ -1,0 +1,15 @@
+Number of secrets is: 10000
+thread 1 created
+Number of secrets is: 10000
+thread 2 created
+Running 50s test @ http://vault:8200
+  2 threads and 2 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   304.34us  446.91us   9.19ms   97.20%
+    Req/Sec     3.90k    87.98     4.08k    76.60%
+  388666 requests in 50.02s, 44.85MB read
+Requests/sec:   7769.58
+Transfer/sec:      0.90MB
+min_lat: 184.000000,max_lat: 9192.000000,mean_lat: 304.339013,stdev_lat: 446.911748,50per: 222.000000,90per: 304.000000,99per: 2833.000000,9999per: 8164.000000,dur: 50024053,req: 388666,byte: 47028586,econn: 0,eread: 0,ewrite: 0,estatus: 0,etout: 0,resp: 194321,writes: 194322
+
+min_lat: 184.000000,max_lat: 9192.000000,mean_lat: 304.339013,stdev_lat: 446.911748,50per: 222.000000,90per: 304.000000,99per: 2833.000000,9999per: 8164.000000,dur: 50024053,req: 388666,byte: 47028586,econn: 0,eread: 0,ewrite: 0,estatus: 0,etout: 0,resp: 194345,writes: 194345

@@ -7,15 +7,14 @@ def wrk_data(wrk_output):
     return str(wrk_output.get('run_time')) + ',' + str(wrk_output.get('lat_avg')) + ',' + str(wrk_output.get('lat_stdev')) + ',' + str(
         wrk_output.get('lat_max')) + ',' + str(wrk_output.get('lat_stdevpm')) + ',' + str(
         wrk_output.get('req_avg')) + ',' + str(wrk_output.get('req_stdev')) + ',' + str(
-        wrk_output.get('req_max')) + ','  + str(wrk_output.get('req_stdevpm')) + ','  + str(
+        wrk_output.get('req_max')) + ','  + str(wrk_output.get('req_stdevpm')) + ',' + str(
+        wrk_output.get('tot_requests')) + ',' + str(wrk_output.get('tot_duration')) + ',' + str(
         wrk_output.get('read')) + ',' + str(wrk_output.get('err_connect')) + ',' + str(
         wrk_output.get('err_read')) + ',' + str(wrk_output.get('err_write')) + ',' + str(
         wrk_output.get('err_timeout')) + ',' + str(wrk_output.get('req_sec_tot')) + ',' + str(
         wrk_output.get('read_tot')) + ',' + str(wrk_output.get('threads')) + ',' + str(
-        wrk_output.get('connections'))+ ',' + str(wrk_output.get('total_requests'))  + ',' + str(
-        wrk_output.get('total_responses')) + ',' + str(wrk_output.get('min_lat'))+ ',' + str(
-        wrk_output.get('50per'))  + ',' + str(wrk_output.get('90per'))+ ',' + str(
-        wrk_output.get('99per'))+ ',' + str(wrk_output.get('9999per'))+ ',' + str(wrk_output.get('throughput')) + '\n'
+        wrk_output.get('connections'))+ "," + str(wrk_output.get('total_requests'))  + ',' + str(wrk_output.get('total_responses')) + '\n'
+
 
 def get_bytes(size_str):
     x = re.search("^(\d+\.*\d*)(\w+)$", size_str)
@@ -111,7 +110,7 @@ def parse_wrk_output(file, wrk_output):
             retval['req_stdevpm'] = get_number(x.group(4))
         x = re.search("^\s+(\d+)\ requests in (\d+\.\d+\w*)\,\ (\d+\.\d+\w*)\ read.*$", line)
         if x is not None:
-            retval['total_requests'] = get_number(x.group(1))
+            retval['tot_requests'] = get_number(x.group(1))
             retval['tot_duration'] = get_ms(x.group(2))
             retval['read'] = get_bytes(x.group(3))
         x = re.search("^Requests\/sec\:\s+(\d+\.*\d*).*$", line)
@@ -127,33 +126,22 @@ def parse_wrk_output(file, wrk_output):
             retval['err_read'] = get_number(x.group(2))
             retval['err_write'] = get_number(x.group(3))
             retval['err_timeout'] = get_number(x.group(4))
-        # x = re.search(
-        #     "^thread (\d+) made (\d+) requests including (\d+) writes and got (\d+) responses.*$", line)
-        # if x is not None:
-        #     # thread = thread + get_number(x.group(1))
-        #     requests = requests +  get_number(x.group(2))
-        #     responses =  responses + get_number(x.group(4))
-        # x = re.search(
-        #     "^thread (\d+) made (\d+) requests including (\d+) lists and got (\d+) responses.*$", line)
-        # if x is not None:
-        #     # thread = thread + get_number(x.group(1))
-        #     requests = requests +  get_number(x.group(2))
-        #     responses =  responses + get_number(x.group(4))
+        x = re.search(
+            "^thread (\d+) made (\d+) requests including (\d+) writes and got (\d+) responses.*$", line)
+        if x is not None:
+            # thread = thread + get_number(x.group(1))
+            requests = requests +  get_number(x.group(2))
+            responses =  responses + get_number(x.group(4))
+        x = re.search(
+            "^thread (\d+) made (\d+) requests including (\d+) lists and got (\d+) responses.*$", line)
+        if x is not None:
+            # thread = thread + get_number(x.group(1))
+            requests = requests +  get_number(x.group(2))
+            responses =  responses + get_number(x.group(4))
         x = re.search("^\s\s(\d+) threads and (\d+) connections.*$", line)
         if x is not None:
             thread = thread + get_number(x.group(1))
             connections = connections + get_number(x.group(2))
-        x = re.search("^min_lat: (\d+)[.]\d+\,max_lat: (\d+)[.]\d+\,mean_lat: (\d+)[.]\d+\,stdev_lat: (\d+)[.]\d+,50per: (\d+)[.]\d+,90per: (\d+)[.]\d+,99per: (\d+)[.]\d+,9999per: (\d+)[.]\d+,dur: \d+,req: (\d+),byte: (\d+),econn: \d+,eread: \d+,ewrite: \d+,estatus: \d+,etout: \d+,resp: (\d+),writes: (\d+).*$",line)
-        if x is not None:
-            retval['min_lat'] = get_ms(x.group(1)+"us")
-            retval['50per'] = get_ms(x.group(5)+"us")
-            retval['90per'] = get_ms(x.group(6)+"us")
-            retval['99per'] = get_ms(x.group(7)+"us")
-            retval['9999per'] = get_ms(x.group(8)+"us")
-            responses =  responses + get_number(x.group(11))
-        x = re.search("^Requests\/sec:[ ]{2,}(\d+).(\d+)$", line)
-        if x is not None:
-            retval['throughput'] = x.group(1)
     if 'err_connect' not in retval:
         retval['err_connect'] = 0
     if 'err_read' not in retval:
@@ -164,8 +152,8 @@ def parse_wrk_output(file, wrk_output):
         retval['err_timeout'] = 0
     retval['threads'] = thread
     retval['connections'] = connections
+    retval['total_requests'] = requests
     retval['total_responses'] = responses
-    # retval['throughput'] = retval['total_requests']/retval['run_time']
     return retval
 
 
@@ -180,15 +168,15 @@ def get_per_file_data(filename):
 
 
 def process_files(dir_name,path):
-    print("Processing dir_name %s, path %s"%(dir_name,path))
     list_of_files = sorted(glob.glob(path+"*.log"))
     header = 'run_time,lat_avg,lat_stdev,lat_max,lat_stdevpm,req_avg,req_stdev,req_max,req_stdevpm,'\
-    'read,err_connect,err_read,err_write,err_timeout,req_sec_tot'\
-    ',read_tot,threads,connections,total_requests,total_responses,min_lat,50per,90per,99per,9999per,throughput\n'
+    'tot_requests,tot_duration,read,err_connect,err_read,err_write,err_timeout,req_sec_tot'\
+    ',read_tot,threads,connections,total_requests,total_responses\n'
     result = []
     result.append(header)
     for file in list_of_files:
         data = get_per_file_data(file)
+        # print(data)
         if data.__contains__("None"):
             continue
         result.append(data)
@@ -198,14 +186,13 @@ def process_files(dir_name,path):
 def process_dir(dirs):
     
     list_of_dirs = glob.glob(dirs+"*/")
+    
+    print("Processing directories in path %s with directories %s"%(dirs, list_of_dirs))
     for dir in list_of_dirs:
-        # print("Processing directory %s" % str(dir))
-        if "csv" in dir:
-            print("Skipping CSV dir")
-            continue
+        print("Processing directory %s" % str(dir))
         process_files(str(dir).split("/")[-2],dir)
     if len(list_of_dirs) == 0:
-        process_files("sample1.log",str("./"))
+        process_files("sample",str("./"))
 
 
 if __name__ == '__main__':

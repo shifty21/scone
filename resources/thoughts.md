@@ -157,4 +157,106 @@ Vault-init-auto - export vault token to below
 - consul-template
   
 
+Data benchmarking runs
+- basic version
+  - time
+  - threads
+  - connections
+  - no of requests/latency(50,90,99,99.99 percentile, mean and stdev)/bytes of data/duration/
+- feature version
+  - time
+  - threads
+  - connections
+  - no of requests/latency(50,90,99,99.99 percentile, mean and stdev)/bytes of data/duration/
 
+Components involved
+Vault - Vault will provide the PKI engine and database engine. It comes with HTTP and command line interface which can be directly used. Both of which require supplying token for communication.
+
+Vault startup provides 2 kinds of un-sealing. First one requires you to supply key-shares via the rest endpoint which gives back set of key-shares that one use to unseal the vault. Second one is auto-unseal which requires trusting a 3rd party KMS for encryption and decryption.
+
+gRPC KMS - For supporting the KMS for encryption and decryption we will create a gRPC based service that will perform the encryption and decryption.
+
+Vault-initializer - To securely distribute the vault token and make sure only authorized application will initialize we will create a Go based vault-initializer that will create a wrapper over the existing vault REST API's. We will support both shamir-key based startup and auto-unseal startup. Once vault is unsealed it results in a root token. For this thesis we will use this token, but in production this should not be used. 
+
+Shamir-key based startup module - Starting vault with shamir-key based technique involves by first calling the intialization api that takes in secret shares and secret thresholds. To enable encryption of keys vault provides option to set PGP keys and these keys are to be provided by the stakeholders. While starting up vault with SCONE backed by CAS theses key would be provided by multple CAS sessions via export secret option. Each key share is encrypted with the public key provided in the order of supplied keys. The output is an encrypted key share response. Each of these encrypted keys will be decrypted by the Private key counter-part of the public key which is provided by the CAS session.
+{
+  "secret_shares": 10,
+  "secret_threshold": 5
+}
+Once vault is initialized it requires to be unsealed which is done by supplying the key-shares one by one till the threshold is reached. Upon reaching the threshold vault is unsealed and outputs a root token.
+
+Auto-Unseal based startup module - Unlike Shamir based Unseal mechanism this one requires external KMS engines like AliCloud KMS, Amazon KMS, Azure Key Vault, and Google Cloud KMS. The external KMS engines provide API endpoints to encrypt and decrypt vault keys. This can be easily provided by scone by providing these two endpoints to encrypt and decrypt data. Startup with auto-unseal only requires us to call one endpoint which will output recovery key shares and a root token. The recovery key shares can be used to perform admin operation in case of loss of root token.
+
+To support this create a encryption service that provides these two endpoints. This can be done via REST endpoints or gRPC service. Since gRPC is the defacto standard for inter-service interaction we will explore that option.
+
+CAS - CAS will be used to store sessions and updated sessions of all the applications. A secure way to supply the tokens to these application can be done via CAS sessions.
+
+CAS module - CAS module will perform 2 roles. First to support the supply of tokens other service session. This CAS module will interact with CAS to get the latest CAS session of a service and update it by adding a CAS secret called VAULT_TOKEN and exporting it to services that need it. In the thesis 3 services will need the token to perform their opeartions including pki_engine module, database_secret engine module and consul_template.
+
+Second role of CAS module will be to inject the generated secrets from vault into CAS session of the application. This will be done in consul_template.
+
+go-kms-wrapping - Auto-Unseal in vault requires an external KMS service for encryption and decryption of master key. Vault calls the KMS services via "go-kms-wrapping"\cite{go-kms-wrapping} library which acts as wrapper for calling the KMS stores. We will need to include our gRPC services client endpoints in "go-kms-wrapper". There will also be a small modification required on vault to include the configuration and calling of gRPC service.
+
+gRPC-KMS - We will create a gRPC service which will expose 2 interfaces over TLS to support encryption and decryption needs of vault.
+consul_template - The secrets supported by consul_template are rendered on disk. We will replace this by CAS module which will render the secrets as injection files in CAS sessions. It requires one to supply "cas" stanza in consul-template config.
+
+cas {
+  get_session_api = "https://cas:8081/session"
+  cert = "/root/go/bin/resources/vault-init/conf/client.crt"
+  key = "/root/go/bin/resources/vault-init/conf/client-key.key"
+  session_name = "vault-init-dynamicsecret"
+  session_file = "/root/go/bin/resources/vault-init/session_dynamic.yml"
+  predecessor_hash_file = "/root/go/bin/resources/vault-init/dynamicsecret_predecessor_hash.yaml"
+}
+
+In a production environment consul-template is deployed with the application that requires the secrets.
+
+
+We will cover 2 Application Scenarios in the thesis. First, using the PKI secret engine and second Database secret engine. Both engines are described in detail in background section. We have taken Nginx as a sample application to enable scone support for vault's PKI engine and MongoDB for the database secret engine. Both of these are used with their respective sconcurated images.
+
+Steps involved in these scenarios.
+1. Initialize and unseal vault. These steps are performed by user and the root token provided by Vault is used by user to configure PKI and database secret engine along with consul_template.
+   1. Configure the PKI secret engine with the token from step 1
+   2. Configure the Database secret engine with the token from step 1
+2. Supply consul-template the token received in step 1. Configure consul-template to read certificates from vault for Nginx and MongoDB and database credentials for MongoDB.
+3. Secret rendering by consul-template
+   1. Render nginx certificates and start nginx. 
+   2. Render MongoDB certificates and start MongoDB
+   3. Render database credentials for MongoDB and start the demo-client to test connection
+4. Consul-template keep monitoring for TTL of the secrets for any change and re-renders the secrets on expiry.
+
+Using vault with SCONE will involve following steps.
+1. Initialize and unseal vault with vault_initializer. The root token provided by Vault after unsealing is exported to the CAS sessions of service that will require this for operation. This will involve pki_module, database secret enigne module and consul-template.
+   1. Configure the PKI secret engine with the token import from CAS secret by vault_intializer.
+   2. Configure the Database secret engine with the token import from CAS secret by vault_intializer.
+2. Use the imported token from vault_initializer to startup up consul-template. Configure consul-template to read certificates from vault for Nginx and MongoDB and database credentials for MongoDB.
+3. Secret rendering by consul-template will be done in CAS sessions of respective service. Each service will have its own consul-template session.
+   1. Render nginx certificates in the nignx CAS session.
+   2. Render MongoDB certificates in MongoDB's CAS session.
+   3. Render database credentials for MongoDB in demo-client's CAS session and test test connection
+4. Consul-template keep monitoring for TTL of the secrets for any change and updates secrets into CAS sessions upon expiry.
+
+
+The docker-Compose services will involve 7 services
+1. CAS - CAS is the container for Configuration and Attestation Service
+2. LAS - LAS is the container required for local attestation and creation of quotes
+3. MongoDB - Container to run SCONE based MongoDB
+4. Demo-client - Container to run consul-template and demo-client that will test connection to MongoDB
+5. Nginx - Container to run consul-template and SCONE based Nginx with secrets generated by Vault.
+6. Benchmarking - Container to perform benchmarking
+7. Vault - Container for SCONE based Vault and vault_intializer
+8. Consul - Container for Vault's backend DB
+
+
+
+
+1 consul - complete with 1 extra list run
+1 mem - without list run 
+
+
+
+need 
+1 list run of mem - 2
+1 complete run of mem - 8
+1 consul run without list - 6
+1 run contins - 4 native 4 scone - 8 days

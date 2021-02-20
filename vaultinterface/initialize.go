@@ -72,6 +72,7 @@ func NewVaultInterface() (*Vault, error) {
 		syscall.SIGINT,
 		syscall.SIGTERM,
 		syscall.SIGKILL,
+		syscall.SIGABRT,
 	)
 
 	return v, nil

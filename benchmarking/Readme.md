@@ -30,6 +30,11 @@ export VAULT_TOKEN=s.0Gu7cfsRTCTlJqtjjb129wB8
 ./vault auth enable userpass
 ./vault write auth/userpass/users/loadtester password=benchmark policies=default
 
+
+s.BKhcoOAWRcs70s9QtzKknwHf
+vault operator init -recovery-shares=1 -recovery-threshold=1
+
+
 nohup wrk -t1 -c1 -d20s -H "X-Vault-Token: $VAULT_TOKEN" -s write-random-secrets.lua $VAULT_ADDR -- 10000 > prod-test-write-1000-random-secrets-t6-c16-20sec.log &
 
 Luascript
@@ -43,3 +48,8 @@ curl --header "X-Vault-Token: $VAULT_TOKEN" http://vault:8200/v1/secret/hello
  &{[ec9f2fb75d63e78e2106c30ebe4e8c6dc9d45aaecd2a92f6f568bd218a151a8839 d9e87c734b9548d38d1d3a117d6505352e575e7de191f574120c1be67ed6bc4f99 899b7322d4196a1a192081a1b493b639fe17e50810961a88db3d754a25f2673220 d0a7f409fcc85ad5657f3f765a3cd6037c2e46d58fb806105c1ad11757c5fa4243 3b66d087c4085d3cf629be8fda1ce982c54dffc4ed5f7484041fee531694c4aee5] [7J8vt11j544hBsMOvk6MbcnUWq7NKpL29Wi9IYoVGog5 2eh8c0uVSNONHToRfWUFNS5XXn3hkfV0Egwb5n7WvE+Z iZtzItQZahoZIIGhtJO2Of4X5QgQlhqI2z11SiXyZzIg 0Kf0CfzIWtVlfz92WjzWA3wuRtWPuAYQXBrRF1fF+kJD O2bQh8QIXTz2Kb6P2hzpgsVN/8TtX3SEBB/uUxaUxK7l] [] [] s.8G00yeiBG8x4FOXdInvvDueR}
 
  Unseal|Auto-Initialization Enabled, no need to call unseal apis. InitResponse: [&{[] [] [] [34acec262f9b27b36b336a726c9d37627708ac18a50eb2b9dff7a7d7261d5fb8] s.fKVhmaDVj4FZJCS4gQFPfG5g}]
+
+
+ 
+
+ wrk -t1 -c1 -d20s -H "X-Vault-Token: s.7F8zYIPWcbUcpuLOJRlqIr14" -s write-secrets.lua http://vault:8200 -- 10000

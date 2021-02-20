@@ -16,9 +16,9 @@ cas:
     certificate: /root/go/bin/resources/vault-init/conf/client.crt
     session_file: /root/go/bin/resources/vault-init/session.yml
     test_updated_session_file: /root/go/bin/resources/vault-init/test_updated_session.yml
-    predecessor_hash_file: /root/go/bin/resources/vault-init/predecessor_hash.yaml
+    predecessor_hash_file: /root/go/bin/resources/vault-init/auto_predecessor_hash.yaml
 #vault config
-vault_address: http://127.0.0.1:8200/v1
+vault_address: http://127.0.0.1:8200
 check_interval: 15
 shares:
     recovery_shares: 1

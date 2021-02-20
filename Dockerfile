@@ -1,4 +1,4 @@
-FROM sconecuratedimages/www2019:vault-1.5.0-alpine
+FROM registry.scontain.com:5050/sconecuratedimages/www2019:vault-1.5.0-alpine
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
@@ -34,5 +34,3 @@ RUN cd /root/go/src/github.com/shifty21/vault && go build -compiler gccgo -o /ro
 RUN cd /root/go/bin/resources/env-print && go build -compiler gccgo -o /root/go/bin/env-print
 
 ENV PATH="${PATH}:/root/go/bin"
-
-RUN chmod +x /root/go/bin/resources/dynamic-secret/initialize_secrets.sh

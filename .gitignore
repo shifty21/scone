@@ -6,3 +6,5 @@ vault_binary
 logfiles
 */*.csv
 logfiles_1st
+logfiles_consul_1st
+logfiles_in_mem_1st

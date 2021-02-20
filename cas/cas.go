@@ -70,7 +70,14 @@ func UpdateCASSession(config *config.CAS, secrets []Secret) error {
 	//Update pred hash
 	err = StorePredecessorHash(config.GetPredecessorHashFile(), *updateHash)
 	if err != nil {
-		return fmt.Errorf("[ERR] writing updated session %w", err)
+		return fmt.Errorf("[ERR] writing updated session hash %w", err)
+	}
+
+	//Remove secrets and store the file
+	session.Secrets = nil
+	err = StoreUpdatedSession(config.GetSessionFile(), session)
+	if err != nil {
+		log.Printf("[ERR] writing updated session %v", err)
 	}
 	log.Println("CAS session updated successfully")
 	return nil
@@ -198,11 +205,6 @@ func PUTCASSession(config *config.CAS, session *SessionYAML) (*string, error) {
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, fmt.Errorf("[ERR] Unable to decode request body: %w", err)
-	}
-	//Only in development
-	err = StoreUpdatedSession(config.UpdatedSessionFileLoc(), session)
-	if err != nil {
-		log.Printf("[ERR] writing updated session %v", err)
 	}
 	return &response.Hash, nil
 }
