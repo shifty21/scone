@@ -3,7 +3,7 @@ sessions:
   - env: "SCONE_HEAP=2G SCONE_VERSION=1"
     key: resources/consul-template/conf/client-key.key
     certificate: resources/consul-template/conf/client.crt
-    session_file_loc: resources/consul-template/session_demo_client.yml
+    session_file_loc: resources/consul-template/session_mongodb.yml
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/consul-template --version
     predecessor_hash_file: resources/consul-template/mongodb_predecessor_hash.yaml

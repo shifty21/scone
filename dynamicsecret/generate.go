@@ -45,6 +45,6 @@ func GenerateCreadentials(conf *config.DynamicSecret) error {
 	if err != nil {
 		log.Printf("Error while unmarshalling response %v, response body %v", err, string(responseData))
 	}
-	log.Printf("MakeRequest|Sent database config response %v", response)
+	log.Printf("MakeRequest|Sent database config, with status code %v", resp.StatusCode)
 	return nil
 }

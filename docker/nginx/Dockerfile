@@ -7,8 +7,6 @@ RUN apk update
 RUN apk add make vim git curl git musl-utils busybox-extras openssh-client
 RUN apk add libc-dev gcc-go
 
-RUN rm /root/go/bin/*
-
 #packages
 #vault_initializer
 ADD resources /root/go/bin/resources

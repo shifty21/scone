@@ -114,7 +114,7 @@ func MakeRequest(url string, data []byte, token string) error {
 	if resp.StatusCode != 204 && resp.StatusCode != 200 {
 		return fmt.Errorf("Error while making request %v", string(responseData))
 	}
-	log.Printf("MakeRequest|Sent database config response %v, with status code %v", resp, resp.StatusCode)
+	log.Printf("MakeRequest|Sent database config, with status code %v", resp.StatusCode)
 
 	return nil
 }

@@ -1,11 +1,11 @@
 version: "0.3"
-name: mongodb
+name: nginx
 services:
 - name: init
-  image_name: mongodb-setup-image
+  image_name: nginx-image
   mrenclaves:
   - 359766728eeb15b6a298611a21e97be4cf740ca898ab409fa4f36b4c017462dc
-  command: /usr/bin/nginx
+  command: /usr/sbin/nginx
   pwd: /
   environment:
     SCONE_MODE: hw

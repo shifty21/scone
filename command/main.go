@@ -85,7 +85,7 @@ func Run(args []string) int {
 				RunOptions: runOpts,
 			}, nil
 		},
-		"init_dynamic_secret": func() (cli.Command, error) {
+		"setup_dynamic_secret": func() (cli.Command, error) {
 			return &DynamicSecret{
 				RunOptions: runOpts,
 			}, nil

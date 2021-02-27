@@ -14,8 +14,16 @@ Other files
 1. Run docker-compose.yaml - this will bring up vault, consul, cas and las instances.
 2. login to vault container and these commands to register all the binaries to cas.
    ```
-   ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
+   
    ./vault-init register resources/vault-init/register_sessions_vault.yaml
+   registers - grpc, shamir_init,auto_init, pki, dynamic, consul_dynamic_secret, vault, 1 stakeholder 
+
+   ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
+   consul-template and demo-client
+   ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
+   consul-template and nginx
+   ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
+   consul-template and mongodb
    ```
 3. Start vault first only in case of shamir based initialization, in grpc based auto-initialization perform step 4 first.
    ```
@@ -23,40 +31,48 @@ Other files
    SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
    Vannilla Initialization
    SCONE_CONFIG_ID=vault1/dev1 SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config_vanilla.hcl
-
-   SCONE_CONFIG_ID=vault-dynamic-secret/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault write database/config/admin \
-    plugin_name=mongodb-database-plugin \
-    allowed_roles="demo-client" \
-    connection_url="mongodb://{{username}}:{{password}}@mongodb:27017/admin" \
-    username="myUserAdmin" \
-    password='$$SCONE::mongodb_password$$'
+   
    ```
 4. Start vault_initializer - this will intialize vault based on the type suggeted. For the 2nd senario mentioned above the private key for decryption would be inserted by CAS at /home/mykey.pem. This ensures that only authenticated application is able to intialize vault.
    ```
    GRPC server
-   SCONE_CONFIG_ID=vault-init/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init grpc
+   SCONE_CONFIG_ID=vault-init-grpc/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init grpc
    gpg based shamir initialization
    SCONE_CONFIG_ID=vault-init-scone/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
    gpg based auto-initialization
    SCONE_CONFIG_ID=vault-init-auto/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init auto
+
+   export token to 
+   - session: vault-init-pki
+   - session: vault-init-dynamicsecret
+   - session: consul-template-nginx
+   - session: consul-template-mongodb
+   - session: consul-template-demo-client
+   - session: consul-template-dynamic-secret
+
    # initialize dynamic secret for mongodb
-   SCONE_CONFIG_ID=vault-dynamic/generate SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init dynamicsecret
+   SCONE_CONFIG_ID=vault-init-pki/configure SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init setup-pki
+   configure
+   SCONE_CONFIG_ID=vault-init-dynamicsecret/generate SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init dynamicsecret
    SCONE_CONFIG_ID=vault-dynamic/fetch SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init generatesecret
    ```
-5. Once vault have successfully initialied, add vault token to initialize_secrets.sh
+5. Setup Certificates for nginx and mongodb
+   SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once
+6. 
+   Once vault have successfully initialied, add vault token to initialize_secrets.sh
    ```
    cd /root/go/bin/ && ./resources/dynamic-secret/initialize_secrets.sh
    ```
-6. Vault Initialization exports the token to consul-templates session, any other session info can be provided for which the secret needs to be exported
+7. Vault Initialization exports the token to consul-templates session, any other session info can be provided for which the secret needs to be exported
 
-7. Run consul-template to render the demo template (/root/go/bin/resources/consul-template/find_address.tpl) -> 
+8. Run consul-template to render the demo template (/root/go/bin/resources/consul-template/find_address.tpl) -> 
    ```
    update /root/go/bin/resources/consul-template/config.hcl  with root token from vault
    
    SCONE_CONFIG_ID=consul-template/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config.hcl
    SCONE_CONFIG_ID=demo-client/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/demo-client /root/go/bin/resources/consul-template/templates/
    ```
-8.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
+9.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
 ./resources/dynamic-secret/hash.sh
 ### Additional commands
 ```

@@ -9,21 +9,21 @@ vault {
 }
 cas {
 get_session_api = "https://cas:8081/session"
-cert = "/root/go/bin/resources/demo-client/conf/client.crt"
-key = "/root/go/bin/resources/demo-client/conf/client-key.key"
-session_name = "demo-client"
-session_file = "/root/go/bin/resources/demo-client/session.yml"
-test_updated_session_file = "/root/go/bin/resources/demo-client/test_updated_session.yml"
-predecessor_hash_file = "/root/go/bin/resources/demo-client/predecessor_hash.yaml"
+cert = "/root/go/bin/resources/nginx/conf/client.crt"
+key = "/root/go/bin/resources/nginx/conf/client-key.key"
+session_name = "nginx"
+session_file = "/root/go/bin/resources/nginx/session.yml"
+test_updated_session_file = "/root/go/bin/resources/nginx/test_updated_session.yml"
+predecessor_hash_file = "/root/go/bin/resources/nginx/predecessor_hash.yaml"
 }
 
 template {
-  source      = "resources/consul-template/templates/nginx-cert.tpl"
-  destination = "resources/consul-template/templates/nginx.crt"
+  source      = "/root/go/bin/resources/consul-template/templates/nginx-cert.tpl"
+  destination = "/root/go/bin/resources/consul-template/templates/nginx.crt"
   perms       = "0600"
 }
 
 template {
-  source      = "resources/consul-template/templates/nginx-key.tpl"
-  destination = "resources/consul-template/templates/nginx.key"
+  source      = "/root/go/bin/resources/consul-template/templates/nginx-key.tpl"
+  destination = "/root/go/bin/resources/consul-template/templates/nginx.key"
 }

@@ -2,7 +2,6 @@ package encryptiongrpc
 
 import (
 	"context"
-	"log"
 
 	"github.com/shifty21/scone/rsacrypto"
 )
@@ -36,7 +35,7 @@ func NewEncryptionhttp(crypto *rsacrypto.Crypto) Service {
 func (s *ServiceImpl) Encrypt(ctx context.Context, data []byte) ([]byte, error) {
 	encryptedData, _ := s.crypto.EncryptBytes(data)
 	decryptedData, _ := s.crypto.DecryptByte(encryptedData)
-	log.Printf("%vPlain text :%v\n", serviceLog, string(decryptedData))
+	// log.Printf("%vPlain text :%v\n", serviceLog, string(decryptedData))
 	return encryptedData, nil
 }
 

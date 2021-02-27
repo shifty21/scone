@@ -43,8 +43,8 @@ vault_dynamic_secret:
     username: jack
     database: admin
     creation_statements: '{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }'
-    default_ttl: 20m
-    max_ttl: 60m
+    default_ttl: 100h
+    max_ttl: 200h
     connection_url: "mongodb://@127.0.0.1:27017/admin?ssl=true"
     config_url: /database/config/
     role_url: /database/roles/
@@ -57,8 +57,8 @@ vault_dynamic_secret:
 vault_pki_config:
     mount_point: pki
     name: nginx 
-    default_ttl: 20m
-    max_ttl: 60m
+    default_ttl: 100h
+    max_ttl: 200h
     root_max_ttl: 180h
     root_common_name: "scone_root_ca"
     key_usage: 
@@ -69,7 +69,7 @@ vault_pki_config:
     role_url: /roles/
     policy_url: sys/policy/
     secret_engine_url: sys/mounts/
-    policy_file: resources/vault-init/pki.hcl
+    policy_file: /root/go/bin/resources/vault-init/pki.hcl
     certificate_common_name: "127.0.0.1"
     certificate_ip_san: "127.0.0.1"
     certificate_ttl: 
@@ -79,5 +79,5 @@ vault_pki_config:
     set_config_url: /config/urls
     issuing_certificates: /ca
     crl_distribution_points: /crl
-    root_ca_cert_location: resources/rootca/
-    generated_cert_location: resources/generatedcert/
+    root_ca_cert_location: /root/go/bin/resources/rootca/
+    generated_cert_location: /root/go/bin/resources/generatedcert/

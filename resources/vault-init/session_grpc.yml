@@ -1,5 +1,5 @@
 version: "0.3"
-name: vault-init
+name: vault-init-grpc
 services:
 - name: dev
   image_name: vault-init-image
