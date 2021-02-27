@@ -30,15 +30,28 @@ services:
         - SCONE_CAS_ADDR=cas
         - SCONE_LAS_ADDR=las
         - SCONE_ALLOW_DLOPEN=2
+    nginx:
+      build:
+        dockerfile: docker/nginx/Dockerfile
+        context: .
+      tty: true
+      devices:
+          - "/dev/isgx"
+      environment: 
+        - SCONE_LOG=7
+        - SCONE_MODE=hw
+        - SCONE_CAS_ADDR=cas
+        - SCONE_LAS_ADDR=las
+        - SCONE_ALLOW_DLOPEN=2
       # ports:
       #     - target: 27017
       #       published: 27017
       #       protocol: tcp
       #       mode: host
-    benchmark:
-        command: ["/bin/bash"]
-        build: benchmarking/
-        tty: true
+    # benchmark:
+    #     command: ["/bin/bash"]
+    #     build: benchmarking/
+    #     tty: true
     demo-client:
       command: sh
       tty: true

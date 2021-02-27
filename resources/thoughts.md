@@ -260,3 +260,23 @@ need
 1 complete run of mem - 8
 1 consul run without list - 6
 1 run contins - 4 native 4 scone - 8 days
+
+Vault start
+SCONE - 36.75
+Native - 0.56
+
+
+vault start
+scone - 67.56sec, 37.41sec, 58.22sec, 37.23sec, 38.20sec = 52.278sec
+native - 1.16sec,2.47sec, 0.93sec, 1.90sec, 0.94sec = 1.48sec
+Init
+SCONE - 56.42s, 18.72s, 48.38s, 48.22s, 20.23s = 38.394 sec
+Native - 0.95*2, 0.93*3 = 0.938sec
+
+PKI setup
+native - 1.56sec
+scone - 28.05s, 24.68s = 26.36sec
+
+Dynamic - 43.84s
+native - 20.13s
+

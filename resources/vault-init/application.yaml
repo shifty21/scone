@@ -49,11 +49,11 @@ vault_dynamic_secret:
     config_url: /database/config/
     role_url: /database/roles/
     policy_url: /sys/policy/
-    policy_file: resources/dynamic-secret/credential-policy.hcl
+    policy_file: /root/go/bin/resources/dynamic-secret/credential-policy.hcl
     secret_engine_url: /sys/mounts/database
     credential_url: /database/creds/
-    tls_certificate_key: resources/consul-template/templates/client.pem
-    tls_ca: resources/consul-template/templates/client-ca.crt
+    tls_certificate_key: /root/go/bin/resources/consul-template/templates/client.pem
+    tls_ca: /root/go/bin/resources/consul-template/templates/client-ca.crt
 vault_pki_config:
     mount_point: pki
     name: nginx 
