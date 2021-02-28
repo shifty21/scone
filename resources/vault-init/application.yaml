@@ -45,7 +45,7 @@ vault_dynamic_secret:
     creation_statements: '{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }'
     default_ttl: 100h
     max_ttl: 200h
-    connection_url: "mongodb://@127.0.0.1:27017/admin?ssl=true"
+    connection_url: "mongodb://@127.0.0.1:27017/admin"
     config_url: /database/config/
     role_url: /database/roles/
     policy_url: /sys/policy/

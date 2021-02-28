@@ -5,7 +5,7 @@ services:
   image_name: sconecuratedimages/www2019:vault-1.5.0-alpine
   mrenclaves:
   - f94da6d634b600e8c7be71a6ae2956347f774156a28c0380fd15514305cc1f60
-  command: /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once
+  command: /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
   pwd: /
   environment:
     SCONE_MODE: hw

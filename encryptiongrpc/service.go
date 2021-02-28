@@ -34,7 +34,7 @@ func NewEncryptionhttp(crypto *rsacrypto.Crypto) Service {
 //Encrypt gets weather from darksky if its not present in cache
 func (s *ServiceImpl) Encrypt(ctx context.Context, data []byte) ([]byte, error) {
 	encryptedData, _ := s.crypto.EncryptBytes(data)
-	decryptedData, _ := s.crypto.DecryptByte(encryptedData)
+	// decryptedData, _ := s.crypto.DecryptByte(encryptedData)
 	// log.Printf("%vPlain text :%v\n", serviceLog, string(decryptedData))
 	return encryptedData, nil
 }

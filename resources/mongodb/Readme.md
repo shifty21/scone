@@ -26,9 +26,19 @@ mongo --port 27017  --authenticationDatabase "admin" -u "v-root-demo-client-ohPd
     db.createUser({user: "CN=127.0.0.1",
                roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]
     });
+    db.getSiblingDB("$external");
+    db.createUser({user: "CN=mongodb",
+               roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]
+    });
     db.getSiblingDB("\$external").runCommand(
     {
         createUser:"CN=jack",
+        roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]
+    });
+
+    db.getSiblingDB("\$external").runCommand(
+    {
+        createUser:"CN=mongodb",
         roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]
     });
     db.getSiblingDB("\$external").runCommand(
@@ -88,9 +98,18 @@ vault write database/config/admin \
 
 mongo --port 27017 --ssl  --sslAllowInvalidCertificates --authenticationDatabase "admin" -u  "v-root-demo-client-As7igycgBpWm4YvaWJqV-1611019219" -p
 
-mongod -auth  --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslAllowInvalidCertificates --sslPEMKeyFile  mongo.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 --sslCAFile issue_ca.crt  --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509  --sslDisabledProtocols 'none'
+mongod -auth --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslAllowInvalidCertificates --sslPEMKeyFile  mongo.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 --sslCAFile issue_ca.crt  --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509
 
 
 mongod --auth --port 27017 --dbpath /usr/local/var/mongodb
 
 mongo --port 27017  --eval 'db.getSiblingDB("\$external").runCommand({createUser:"CN=jack",roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]});'
+
+mongod -auth --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslAllowInvalidCertificates --sslPEMKeyFile  mongo.pem --dbpath /usr/local/var/mongodb  --bind_ip 127.0.0.1 --sslCAFile issue_ca.crt  --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509
+
+
+consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl  -once -render-to-disk
+
+To test the connection via client 
+mongo --port 27017  --authenticationDatabase "admin" -u "v-root-demo-client-u1UptO4IVYf9HuGiXHJC-1614512963" -p "A1a-M46n4xR2fd87yqpy" --sslAllowInvalidCerti
+ficates --ssl

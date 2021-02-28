@@ -3,7 +3,7 @@ kill_signal = "SIGINT"
 max_stale = "4m"
 log_level = "info"
 vault {
-    address = "http://localhost:8200"
+    address = "http://vault:8200"
     token = "s.pM50W8ai7dRZsSGIsdMx1dMp"
     renew_token = false
 }
@@ -18,12 +18,12 @@ cas {
 }
 
 template {
-  source      = "resources/consul-template/templates/mongodb-ca-cert.tpl"
-  destination = "resources/consul-template/templates/mongodb-ca.crt"
+  source      = "/root/go/bin/resources/consul-template/templates/mongodb-ca-cert.tpl"
+  destination = "/root/go/bin/resources/consul-template/templates/mongodb-ca.crt"
   perms       = "0600"
 }
 
 template {
-  source      = "resources/consul-template/templates/mongodb-pem-key.tpl"
-  destination = "resources/consul-template/templates/mongodb.pem"
+  source      = "/root/go/bin/resources/consul-template/templates/mongodb-pem-key.tpl"
+  destination = "/root/go/bin/resources/consul-template/templates/mongodb.pem"
 }

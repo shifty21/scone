@@ -14,16 +14,16 @@ cas {
   session_name = "vault-init-dynamicsecret"
   session_file = "/root/go/bin/resources/vault-init/session_dynamic.yml"
   test_updated_session_file = "/root/go/bin/resources/vault-init/dynamicsecret_updated_session.yml"
-  predecessor_hash_file = "/root/go/bin/resources/vault-init/dynamicsecret_predecessor_hash.yaml"
+  predecessor_hash_file = "/root/go/bin/resources/vault-init/dynamic_predecessor_hash.yaml"
 }
 
 template {
-  source      = "resources/consul-template/templates/client-ca-cert.tpl"
-  destination = "resources/consul-template/templates/client-ca.crt"
+  source      = "/root/go/bin/resources/consul-template/templates/client-ca-cert.tpl"
+  destination = "/root/go/bin/resources/consul-template/templates/client-ca.crt"
   perms       = "0600"
 }
 
 template {
-  source      = "resources/consul-template/templates/client-pem-key.tpl"
-  destination = "resources/consul-template/templates/client.pem"
+  source      = "/root/go/bin/resources/consul-template/templates/client-pem-key.tpl"
+  destination = "/root/go/bin/resources/consul-template/templates/client.pem"
 }

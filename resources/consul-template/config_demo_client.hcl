@@ -18,6 +18,6 @@ predecessor_hash_file = "/root/go/bin/resources/demo-client/predecessor_hash.yam
 }
 
 template {
-    source      = "resources/consul-template/templates/config.yml.tpl"
-    destination = "resources/consul-template/templates/config.yml"
+    source      = "/root/go/bin/resources/consul-template/templates/config.yml.tpl"
+    destination = "/root/go/bin/resources/consul-template/templates/config.yml"
 }

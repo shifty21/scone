@@ -52,27 +52,28 @@ Other files
 
    # initialize dynamic secret for mongodb
    SCONE_CONFIG_ID=vault-init-pki/configure SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init setup-pki
-   configure
-   SCONE_CONFIG_ID=vault-init-dynamicsecret/generate SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init dynamicsecret
-   SCONE_CONFIG_ID=vault-dynamic/fetch SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init generatesecret
+   Run consul-template to generate mongodb and nginx certificates
+   SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once -render-to-disk
+   SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
    ```
 5. Setup Certificates for nginx and mongodb
-   SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once
-6. 
-   Once vault have successfully initialied, add vault token to initialize_secrets.sh
-   ```
-   cd /root/go/bin/ && ./resources/dynamic-secret/initialize_secrets.sh
-   ```
-7. Vault Initialization exports the token to consul-templates session, any other session info can be provided for which the secret needs to be exported
 
-8. Run consul-template to render the demo template (/root/go/bin/resources/consul-template/find_address.tpl) -> 
+   Create certificates for configuring dynamic_secret engine
+   SCONE_CONFIG_ID=consul-template-dynamic-secret/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_dynamic_secret.hcl -once -render-to-disk
+   setup dynamic secret engine
+   SCONE_CONFIG_ID=vault-init-dynamicsecret/configure SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init setup_dynamic_secret
+
+   Helper module
+
+   SCONE_CONFIG_ID=vault-dynamic/fetch SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init generatesecret
+
+
+6. Run consul-template to render the demo-client config 
    ```
-   update /root/go/bin/resources/consul-template/config.hcl  with root token from vault
-   
-   SCONE_CONFIG_ID=consul-template/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config.hcl
+   update /root/go/bin/resources/consul-template/config_demo_client.hcl  with root token imported from vault-init-auto
    SCONE_CONFIG_ID=demo-client/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/demo-client /root/go/bin/resources/consul-template/templates/
    ```
-9.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
+7.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
 ./resources/dynamic-secret/hash.sh
 ### Additional commands
 ```
@@ -208,10 +209,16 @@ cd /root/go/bin/resources/demo-client && curl -k -s --cert conf/client.crt --key
 ### consul-template and demo-client setup
 s.9O587curdZDFOaR87g25bHqA
 
-
+vault-init-dynamicsecret
+curl -k -s --cert conf/client.crt --key conf/client-key.key https://cas:8081/session/vault-init-dynamicsecret
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender
 
 sconecuratedimages/www2019:vault-1.5.0-alpine
 sconecuratedimages/services:cas.trust.group-out-of-date-scone4.2.1
 sconecuratedimages/www2019:mongodb-alpine-scone4.2.1
 sconecuratedimages/services:las-scone4.2.1
+
+
+setting up dynamic secret engine with ssl=true in connection url gives certificate signed by unknown authority
+disable that to remove that error
+https://github.com/hashicorp/vault/pull/9519
