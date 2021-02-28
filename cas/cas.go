@@ -173,7 +173,7 @@ func PUTCASSession(config *config.CAS, session *SessionYAML) (*string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("[ERR] marshalling session: %w", err)
 	}
-	log.Printf("Marshalled session %v", string(marshalled))
+	// log.Printf("Marshalled session %v", string(marshalled))
 	var url = config.GetCASURL()
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(marshalled))
 	if err != nil {

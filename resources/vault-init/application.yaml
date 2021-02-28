@@ -40,12 +40,12 @@ vault_dynamic_secret:
     vault_url: http://127.0.0.1:8200/v1
     plugin_name: mongodb-database-plugin
     allowed_roles: demo-client
-    username: jack
+    username: mongodb
     database: admin
     creation_statements: '{ "db": "admin", "roles": [{ "role": "readWrite" }, {"role": "readWrite", "db": "dev"},{"role": "readWrite", "db": "test"}, {"role": "read", "db": "production"}] }'
     default_ttl: 100h
     max_ttl: 200h
-    connection_url: "mongodb://@127.0.0.1:27017/admin"
+    connection_url: "mongodb://@mongodb:27017/admin"
     config_url: /database/config/
     role_url: /database/roles/
     policy_url: /sys/policy/
@@ -56,7 +56,7 @@ vault_dynamic_secret:
     tls_ca: /root/go/bin/resources/consul-template/templates/client-ca.crt
 vault_pki_config:
     mount_point: pki
-    name: nginx 
+    name: scone 
     default_ttl: 100h
     max_ttl: 200h
     root_max_ttl: 180h

@@ -20,17 +20,17 @@ Other files
 
    ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
    consul-template and demo-client
-   ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
+   ./vault-init register resources/vault-init/register_sessions_nginx.yaml
    consul-template and nginx
-   ./vault-init register resources/vault-init/register_sessions_demo_client.yaml
+   ./vault-init register resources/vault-init/register_sessions_mongodb.yaml
    consul-template and mongodb
    ```
 3. Start vault first only in case of shamir based initialization, in grpc based auto-initialization perform step 4 first.
    ```
    Auto-Initialization
    SCONE_CONFIG_ID=vault/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config.hcl
-   Vannilla Initialization
-   SCONE_CONFIG_ID=vault1/dev1 SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config_vanilla.hcl
+   Shamir Seal
+   SCONE_CONFIG_ID=vault-shamir/dev SCONE_HEAP=8G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault server -config /root/go/bin/resources/vault/config_vanilla.hcl
    
    ```
 4. Start vault_initializer - this will intialize vault based on the type suggeted. For the 2nd senario mentioned above the private key for decryption would be inserted by CAS at /home/mykey.pem. This ensures that only authenticated application is able to intialize vault.
@@ -49,14 +49,13 @@ Other files
    - session: consul-template-mongodb
    - session: consul-template-demo-client
    - session: consul-template-dynamic-secret
-
-   # initialize dynamic secret for mongodb
+5. Configure PKI
    SCONE_CONFIG_ID=vault-init-pki/configure SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init setup-pki
    Run consul-template to generate mongodb and nginx certificates
    SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once -render-to-disk
    SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
    ```
-5. Setup Certificates for nginx and mongodb
+6. Setup Certificates for nginx and mongodb
 
    Create certificates for configuring dynamic_secret engine
    SCONE_CONFIG_ID=consul-template-dynamic-secret/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_dynamic_secret.hcl -once -render-to-disk

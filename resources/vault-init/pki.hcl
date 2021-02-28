@@ -1,4 +1,4 @@
-path "pki/issue/nginx" {
+path "pki/issue/scone" {
       capabilities = ["create", "update"]
 }
 

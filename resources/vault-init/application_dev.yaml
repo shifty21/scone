@@ -50,7 +50,7 @@ vault_dynamic_secret:
     secret_engine_url: /sys/mounts/database
     credential_url: /database/creds/
 vault_pki_config:
-    name: nginx 
+    name: scone 
     vault_url: http://127.0.0.1:8200/v1
     role_url: /pki/roles/
     policy_url: /sys/policy/

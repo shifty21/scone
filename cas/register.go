@@ -207,7 +207,7 @@ func POSTCASSession(casAddress string, config *RegisterSession) (*string, error)
 		log.Printf("POSTCASSession|Error marshalling session")
 		return nil, fmt.Errorf("[ERR] marshalling session: %w", err)
 	}
-	log.Printf("Marshalled session %v", string(marshalled))
+	// log.Printf("Marshalled session %v", string(marshalled))
 	var url = casAddress
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(marshalled))
 	if err != nil {

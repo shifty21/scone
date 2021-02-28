@@ -1,4 +1,4 @@
-FROM sconecuratedimages/www2019:vault-1.5.0-alpine
+FROM registry.scontain.com:5050/sconecuratedimages/www2019:vault-1.5.0-alpine
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/main" > /etc/apk/repositories
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/community" >> /etc/apk/repositories
