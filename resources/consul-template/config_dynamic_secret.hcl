@@ -4,7 +4,6 @@ max_stale = "4m"
 log_level = "info"
 vault {
     address = "http://localhost:8200"
-    token = "s.pM50W8ai7dRZsSGIsdMx1dMp"
     renew_token = false
 }
 cas {

@@ -4,7 +4,6 @@ max_stale = "4m"
 log_level = "info"
 vault {
     address = "http://vault:8200"
-    token = "s.pM50W8ai7dRZsSGIsdMx1dMp"
     renew_token = false
 }
 cas {
@@ -14,7 +13,7 @@ cas {
         session_name = "mongodb"
         session_file = "/root/go/bin/resources/mongodb/session.yml"
         test_updated_session_file = "/root/go/bin/resources/mongodb/mongodb_updated_session.yml"
-        predecessor_hash_file = "/root/go/bin/resources/mongodb/mongodb_predecessor_hash.yaml"
+        predecessor_hash_file = "/root/go/bin/resources/mongodb/predecessor_hash.yaml"
 }
 
 template {
