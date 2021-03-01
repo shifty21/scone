@@ -51,3 +51,5 @@ mongod --auth  --sslMode requireSSL --sslPEMKeyFile  mongodb.pem --dbpath /usr/l
 mongod --auth  --tlsMode requireTLS --certificateKeyFile  mongodb.pem --CAFile mongodb-ca.crt --allowConnectionsWithoutCertificates --dbpath /usr/local/var/mongodb --bind_ip 127.0.0.1 --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509 
 
 mongod --tlsMode requireTLS --tlsCertificateKeyFile  mongodb.pem --tlsCAFile mongodb-ca.crt --tlsAllowConnectionsWithoutCertificates --dbpath /usr/local/var/mongodb --bind_ip 127.0.0.1 --setParameter authenticationMechanisms=SCRAM-SHA-1,MONGODB-X509
+
+mongo --ssl --host hostname.example.com --sslPEMKeyFile /etc/ssl/client.pem --sslCAFile /etc/ssl/ca.pem

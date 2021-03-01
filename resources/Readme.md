@@ -37,7 +37,6 @@ Other files
    ```
    GRPC server
    SCONE_CONFIG_ID=vault-init-grpc/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init grpc
-
    gpg based shamir initialization
    SCONE_CONFIG_ID=vault-init-scone/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init scone
    gpg based auto-initialization
@@ -53,17 +52,30 @@ Other files
 
 5. Configure PKI
    SCONE_CONFIG_ID=vault-init-pki/configure SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init setup-pki
-   Run consul-template to generate mongodb and nginx certificates
-   SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once -render-to-disk
-   SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
    ```
-6. Start MongoDB and create external user
+6. Start nginx
       ```
-      SCONE_CONFIG_ID=mongodb/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/bin/mongod -config /root/go/bin/resources/mongodb/mongo.conf
+      1. Run consul-template to generate certificates
+   
+      SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once -render-to-disk
+      
+      1. Start Nginx 
+   
+      SCONE_CONFIG_ID=nginx/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/sbin/nginx
+
+      curl https://nginx:443 -svo /dev/null
       ```
 7. Start MongoDB and create external user
       ```   
+      1. Run consul-template to generate certificates
+
+      SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
+      
+      1. Start MongoDB
+      
       SCONE_CONFIG_ID=mongodb/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/bin/mongod -config /root/go/bin/resources/mongodb/mongo.conf
+      1. Create Admin User
+      mongo --eval 'db.getSiblingDB("\$external").runCommand({createUser:"CN=mongodb",roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]});'
       ```
 8. Setup Certificates for nginx and mongodb
 
@@ -76,13 +88,13 @@ Other files
 
    SCONE_CONFIG_ID=vault-dynamic/fetch SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init generatesecret
 
-9. Run consul-template to render the demo-client config 
+9.  Run consul-template to render the demo-client config 
    ```
    update /root/go/bin/resources/consul-template/config_demo_client.hcl  with root token imported from vault-init-auto
    SCONE_CONFIG_ID=consul-template-demo-client/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_demo_client.hcl -once -render-to-disk
    SCONE_CONFIG_ID=demo-client/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/demo-client /root/go/bin/resources/consul-template/templates/
    ```
-10.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
+11.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.
 ./resources/dynamic-secret/hash.sh
 ### Additional commands
 ```
@@ -216,16 +228,9 @@ cd /root/go/bin/resources/demo-client && curl -k -s --cert conf/client.crt --key
 
 
 ### consul-template and demo-client setup
-s.9O587curdZDFOaR87g25bHqA
-
 vault-init-dynamicsecret
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://cas:8081/session/vault-init-dynamicsecret
 curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender
-
-sconecuratedimages/www2019:vault-1.5.0-alpine
-sconecuratedimages/services:cas.trust.group-out-of-date-scone4.2.1
-sconecuratedimages/www2019:mongodb-alpine-scone4.2.1
-sconecuratedimages/services:las-scone4.2.1
 
 
 setting up dynamic secret engine with ssl=true in connection url gives certificate signed by unknown authority

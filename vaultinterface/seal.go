@@ -45,7 +45,7 @@ func (v *Vault) Unseal(processKeyFun ProcessKeyFun) error {
 		return fmt.Errorf("Unseal|unable to read keys for vault unseal: %w", err)
 	}
 	if v.Opt.IsAutoInitilization {
-		log.Printf("Unseal|Auto-Initialization Enabled, no need to call unseal apis. InitResponse: [%v]", v.DecryptedInitResponse)
+		log.Println("Unseal|Auto-Initialization Enabled, no need to call unseal apis")
 		return nil
 	}
 	log.Println("Unseal|Starting the unsealing process with InitResponse")

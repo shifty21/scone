@@ -213,7 +213,7 @@ func (v *Vault) StoreDecryptedResponse() error {
 		return nil
 	}
 	for x := range v.Opt.CASConfig.GetExportToSessionName() {
-		log.Printf("StoreDecryptedResponse|Exporting to %v", v.Opt.CASConfig.GetExportToSessionName()[x])
+		// log.Printf("StoreDecryptedResponse|Exporting to %v", v.Opt.CASConfig.GetExportToSessionName()[x])
 		exportTo = append(exportTo, cas.ExportTo{Session: *v.Opt.CASConfig.GetExportToSessionName()[x]})
 	}
 	rootSecret := cas.Secret{Kind: "ascii", Export: exportTo, Name: "VAULT_TOKEN", Value: v.DecryptedInitResponse.RootToken}

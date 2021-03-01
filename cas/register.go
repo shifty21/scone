@@ -145,7 +145,7 @@ func RegisterCASSession(config *Register) error {
 			continue
 		}
 		config.Sessions[x].Session = session
-		log.Printf("Sessions to be registered %v", config.Sessions[x].Session)
+		// log.Printf("Sessions to be registered %v", config.Sessions[x].Session)
 		if config.Sessions[x].Parameter != "" {
 			log.Printf("Parameters found, calculating hash")
 			hash, err := GetMREnclave(config.Sessions[x].Command, config.Sessions[x].ENV, config.Sessions[x].Parameter)

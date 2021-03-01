@@ -7,10 +7,10 @@ sessions:
     command:  /opt/scone/lib/ld-scone-x86_64.so.1
     parameter: /root/go/bin/consul-template --version
     predecessor_hash_file: resources/consul-template/predecessor_hash.yaml
-  - env: "SCONE_HEAP=2G SCONE_VERSION=1"
+  - env: "SCONE_HEAP=2G SCONE_FORK=1 SCONE_VERSION=1"
     key: resources/nginx/conf/client-key.key
     certificate: resources/nginx/conf/client.crt
     session_file_loc: resources/nginx/session.yml
     command: /opt/scone/lib/ld-scone-x86_64.so.1
-    parameter: /usr/sbin/nginx
+    parameter: /usr/sbin/nginx -v
     predecessor_hash_file: resources/nginx/predecessor_hash.yaml
