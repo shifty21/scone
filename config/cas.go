@@ -66,7 +66,7 @@ func LoadCASConfig() *CAS {
 	if err != nil {
 		log.Fatalf("Error getting gpgcrypto config %v", err)
 	}
-	log.Printf("gpgcrypt keyset %v", exportToSession)
+	// log.Printf("gpgcrypt keyset %v", exportToSession)
 	return &CAS{
 		key:                 getStringOrPanic("cas.key"),
 		url:                 getStringOrPanic("cas.url"),

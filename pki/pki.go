@@ -21,7 +21,7 @@ func GenerateRoot(conf *config.PKIEngine) error {
 		CommonName: conf.RootCommonName,
 		TTL:        conf.RootMaxTTL,
 	}
-	log.Printf("Making GenerateRootRequest CA request with data %v", configRequest)
+	// log.Printf("Making GenerateRootRequest CA request with data %v", configRequest)
 	data, err := json.Marshal(configRequest)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
@@ -86,7 +86,7 @@ func SetupRootCA(conf *config.PKIEngine) error {
 		KeyUsage:       conf.KeyUsage,
 		ExtKeyUsage:    conf.ExtKeyUsage,
 	}
-	log.Printf("Making role request with data %v", roleRequest)
+	// log.Printf("Making Role request with data %v", roleRequest)
 	data, err = json.Marshal(roleRequest)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
@@ -117,7 +117,7 @@ func SetupRootCA(conf *config.PKIEngine) error {
 	policy := &Policy{
 		Policy: string(fileContent),
 	}
-	log.Printf("Making Policy request with data %v", string(fileContent))
+	// log.Printf("Making Policy request with data %v", string(fileContent))
 	data, err = json.Marshal(policy)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)

@@ -83,6 +83,6 @@ func LoadPKIConfig() *PKIEngine {
 		log.Printf("Error loading share config, using default shares")
 	}
 	pkiEngine.VaultToken = getString("vault_token_env")
-	log.Printf("Loaded configuration %v", pkiEngine)
+	// log.Printf("Loaded configuration %v", pkiEngine)
 	return pkiEngine
 }

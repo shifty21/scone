@@ -34,7 +34,7 @@ func SetupDynamicSecret(conf *config.DynamicSecret) error {
 		DefaultTTL:        conf.DefaultTTL,
 		MaxTTL:            conf.MaxTTL,
 	}
-	log.Printf("Making role request with data %v", roleRequest)
+	// log.Printf("Making Role request with data %v", roleRequest)
 	data, err = json.Marshal(roleRequest)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
@@ -59,7 +59,7 @@ func SetupDynamicSecret(conf *config.DynamicSecret) error {
 	}
 	configRequest.TLSCA = string(cacert)
 	configRequest.TLSCertificateKey = string(tlscertificateKey)
-	log.Printf("Making config request with data %v", configRequest)
+	// log.Printf("Making config request with data %v", configRequest)
 	data, err = json.Marshal(configRequest)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)
@@ -77,7 +77,7 @@ func SetupDynamicSecret(conf *config.DynamicSecret) error {
 	policy := &Policy{
 		Policy: string(fileContent),
 	}
-	log.Printf("Making Policy request with data %v", string(fileContent))
+	// log.Printf("Making Policy request with data %v", string(fileContent))
 	data, err = json.Marshal(policy)
 	if err != nil {
 		return fmt.Errorf("[ERR] marshalling request for database config %v", err)

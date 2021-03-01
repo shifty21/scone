@@ -67,15 +67,22 @@ Other files
       ```
 7. Start MongoDB and create external user
       ```   
-      1. Run consul-template to generate certificates
-
-      SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
-      
       1. Start MongoDB
       
       SCONE_CONFIG_ID=mongodb/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/bin/mongod -config /root/go/bin/resources/mongodb/mongo.conf
-      1. Create Admin User
+      
+      2. Create Admin User
+      
       mongo --eval 'db.getSiblingDB("\$external").runCommand({createUser:"CN=mongodb",roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]});'
+      
+      3. Run consul-template to generate certificates
+
+      SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
+      
+      4. Restart MongoDB with Auth and TLS enabled
+      
+      cat resources/mongodb/mongo_auth.conf > resources/mongodb/mongo.conf 
+      SCONE_CONFIG_ID=mongodb/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/bin/mongod -config /root/go/bin/resources/mongodb/mongo.conf
       ```
 8. Setup Certificates for nginx and mongodb
 

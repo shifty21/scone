@@ -36,11 +36,11 @@ func readKeyFile(filename string) error {
 		return fmt.Errorf("readKeyFile|File error %w", err)
 	}
 
-	data, err := ioutil.ReadFile(filename)
+	_, err = ioutil.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("GetRSAPublicKey|Error reading public key, path %w", err)
 
 	}
-	fmt.Printf("ReadKeyFile|Filename %v\n", filename)
+	log.Printf("ReadKeyFile|Filename %v\n", filename)
 	return nil
 }

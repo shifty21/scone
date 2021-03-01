@@ -189,7 +189,7 @@ func RegisterCASSession(config *Register) error {
 
 //POSTCASSession posts the session provided to cas with specified cert and key
 func POSTCASSession(casAddress string, config *RegisterSession) (*string, error) {
-	log.Printf("POSTCASSession| registring %v", config.Session.Name)
+	log.Printf("POSTCASSession|Registering %v", config.Session.Name)
 	cer, err := tls.LoadX509KeyPair(config.Certificate, config.Key)
 	if err != nil {
 		log.Printf("POSTCASSession|Error loading certificate and key")

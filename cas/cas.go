@@ -51,7 +51,7 @@ func UpdateCASSession(config *config.CAS, secrets []Secret) error {
 	if session.Secrets != nil {
 		if secrets != nil {
 			for _, v := range secrets {
-				log.Printf("Adding secret %v", v)
+				// log.Printf("Adding secret %v", v)
 				session.Secrets = updateSecretFromSession(session.Secrets, v)
 			}
 		}
