@@ -57,7 +57,7 @@ Other files
       ```
       1. Run consul-template to generate certificates
    
-      SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once -render-to-disk
+      SCONE_CONFIG_ID=consul-template-nginx/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_nginx.hcl -once
       
       1. Start Nginx 
    
@@ -71,15 +71,15 @@ Other files
       
       SCONE_CONFIG_ID=mongodb/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/bin/mongod -config /root/go/bin/resources/mongodb/mongo.conf
       
-      2. Create Admin User
+      1. Create Admin User
       
       mongo --eval 'db.getSiblingDB("\$external").runCommand({createUser:"CN=mongodb",roles: [{"role" : "userAdminAnyDatabase","db" : "admin"}]});'
       
-      3. Run consul-template to generate certificates
+      1. Run consul-template to generate certificates
 
-      SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once -render-to-disk
+      SCONE_CONFIG_ID=consul-template-mongodb/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_mongodb.hcl -once
       
-      4. Restart MongoDB with Auth and TLS enabled
+      1. Restart MongoDB with Auth and TLS enabled
       
       cat resources/mongodb/mongo_auth.conf > resources/mongodb/mongo.conf 
       SCONE_CONFIG_ID=mongodb/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/bin/mongod -config /root/go/bin/resources/mongodb/mongo.conf
@@ -87,7 +87,7 @@ Other files
 8. Setup Certificates for nginx and mongodb
 
    Create certificates for configuring dynamic_secret engine
-   SCONE_CONFIG_ID=consul-template-dynamic-secret/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_dynamic_secret.hcl -once -render-to-disk
+   SCONE_CONFIG_ID=consul-template-dynamic-secret/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_dynamic_secret.hcl -once
    setup dynamic secret engine
    SCONE_CONFIG_ID=vault-init-dynamicsecret/configure SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/vault-init setup_dynamic_secret
 
@@ -98,7 +98,7 @@ Other files
 9.  Run consul-template to render the demo-client config 
    ```
    update /root/go/bin/resources/consul-template/config_demo_client.hcl  with root token imported from vault-init-auto
-   SCONE_CONFIG_ID=consul-template-demo-client/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_demo_client.hcl -once -render-to-disk
+   SCONE_CONFIG_ID=consul-template-demo-client/dev SCONE_HEAP=2G SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/consul-template -config /root/go/bin/resources/consul-template/config_demo_client.hcl -once
    SCONE_CONFIG_ID=demo-client/dev SCONE_VERSION=1 /opt/scone/lib/ld-scone-x86_64.so.1 /root/go/bin/demo-client /root/go/bin/resources/consul-template/templates/
    ```
 11.  The template should be rendered in(/root/go/bin/resources/consul-template/hashicorp_address.txt) if demo-client session is verifed by CAS.

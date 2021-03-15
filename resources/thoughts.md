@@ -280,3 +280,32 @@ scone - 28.05s, 24.68s = 26.36sec
 Dynamic - 43.84s
 native - 20.13s
 
+
+
+nginx
+
+native - 0.51sec
+SCONE - 18.82sec
+
+Consul-template for certificate generation
+native - 17.27s
+SCONE - 29.33s
+
+mongodb
+native - 5.26
+scone - 7.95sec
+
+credentials by consul-template
+native - 0.52s
+SCONE - 16.89s
+
+demo -
+native - 0.85s
+scone - 52.34sec  
+
+
+Error while running command from consul-template via SCONE runtime
+2021/03/12 23:58:12.370950 [INFO] (child) spawning: /bin/sh /root/go/bin/run.sh
+[SCONE|INFO] src/enclave/enclave.c:389:_enclave_terminate(): Persisting fspf data before terminating enclave due to unhandled signal 6
+[SCONE|DEBUG] src/shielding/hierarchy.c:432:fs_hierarchy_update_persist_fspfs(): Persisting of fspf not necessary: no fspf registered
+[SCONE|ERROR] tools/starter/signal.c:55:die_by_signal(): Enclave terminated due to signal: Aborted

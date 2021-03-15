@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+start()
+{
+	default_start
+}
+
+stop()
+{
+	default_stop
+}
+
+status()
+{
+	default_status
+}
+command="SCONE_CONFIG_ID=nginx/init SCONE_HEAP=2G SCONE_VERSION=1 /usr/sbin/nginx"
+
+# The special RC_SVCNAME variable contains the name of this service.
+pidfile="/run/${RC_SVCNAME}.pid"
+command_background=true

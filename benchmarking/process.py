@@ -4,6 +4,8 @@ import glob
 import argparse
 
 def wrk_data(wrk_output):
+    if (int(wrk_output.get('run_time')) != 20):
+        return ""
     return str(wrk_output.get('run_time')) + ',' + str(wrk_output.get('lat_avg')) + ',' + str(wrk_output.get('lat_stdev')) + ',' + str(
         wrk_output.get('lat_max')) + ',' + str(wrk_output.get('lat_stdevpm')) + ',' + str(
         wrk_output.get('req_avg')) + ',' + str(wrk_output.get('req_stdev')) + ',' + str(
@@ -11,7 +13,7 @@ def wrk_data(wrk_output):
         wrk_output.get('read')) + ',' + str(wrk_output.get('err_connect')) + ',' + str(
         wrk_output.get('err_read')) + ',' + str(wrk_output.get('err_write')) + ',' + str(
         wrk_output.get('err_timeout')) + ',' + str(wrk_output.get('req_sec_tot')) + ',' + str(
-        wrk_output.get('read_tot')) + ',' + str(wrk_output.get('threads')) + ',' + str(
+        int(wrk_output.get('read_tot'))/1000000) + ',' + str(wrk_output.get('threads')) + ',' + str(
         wrk_output.get('connections'))+ ',' + str(wrk_output.get('total_requests'))  + ',' + str(
         wrk_output.get('total_responses')) + ',' + str(wrk_output.get('min_lat'))+ ',' + str(
         wrk_output.get('50per'))  + ',' + str(wrk_output.get('90per'))+ ',' + str(
@@ -189,7 +191,7 @@ def process_files(dir_name,path):
     result.append(header)
     for file in list_of_files:
         data = get_per_file_data(file)
-        if data.__contains__("None"):
+        if data.__contains__("None") or data == "":
             continue
         result.append(data)
     with open(dir_name+".csv",'w') as resultcsv:
